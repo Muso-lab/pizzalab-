@@ -156,13 +156,64 @@ function runTests() {
     fridgeTemp: 4,
     acclimationHours: 1,
     hoursRoomAppretto: 5,
-    isIndirect: false
+    isIndirect: false,
+    ovenPreheatMinutes: 45,
+    ovenName: "Forno Elettrico"
   });
   assert(timeline.steps.length >= 6, `Tappe timeline generate: ${timeline.steps.length}`);
   const firstStep = timeline.steps[0];
   const lastStep = timeline.steps[timeline.steps.length - 1];
   assert(lastStep.label.includes("Infornata") || lastStep.label.includes("Cottura"), `Ultimo step infornata`);
   console.log(`Inizio impasto calcolato a ritroso: ${firstStep.formattedTime} -> Infornata: ${lastStep.formattedTime}`);
+
+  // TEST 8: Bugfix 0 Ore di Puntata
+  console.log("\n--- Test 8: Verifica Risoluzione Bug '0 Ore di Puntata' ---");
+  const timelineZeroPuntata = generateTimeline({
+    bakeDate: bakeTarget,
+    hoursRoomPuntata: 0, // ZERO PUNTATA!
+    hoursFridge: 0,
+    hoursRoomAppretto: 8,
+    isIndirect: false
+  });
+  const hasPuntataStep = timelineZeroPuntata.steps.some(s => s.id === 'puntata');
+  assert(!hasPuntataStep, `Nessun passaggio 'puntata' presente quando le ore di puntata sono 0`);
+  
+  // Verifica ordine temporale rigoroso: mixing deve precedere staglio
+  const mixingIdx = timelineZeroPuntata.steps.findIndex(s => s.id === 'mixing');
+  const staglioIdx = timelineZeroPuntata.steps.findIndex(s => s.id === 'staglio');
+  assert(mixingIdx !== -1 && staglioIdx !== -1 && mixingIdx < staglioIdx, `Impastamento precede rigorosamente lo staglio dei panetti`);
+
+  // TEST 9: Calcolo Prudenziale (Mancanza Dati / Senza Termometro)
+  console.log("\n--- Test 9: Calcolo Prudenziale Lievito ---");
+  const standardCalc = calculateDirectDough({
+    numBalls: 4,
+    ballWeight: 260,
+    hydration: 65,
+    ambientTemp: 21,
+    hoursRoomPuntata: 2,
+    hoursRoomAppretto: 6,
+    isPrudentialMode: false
+  });
+  const prudentialCalc = calculateDirectDough({
+    numBalls: 4,
+    ballWeight: 260,
+    hydration: 65,
+    ambientTemp: 21,
+    hoursRoomPuntata: 2,
+    hoursRoomAppretto: 6,
+    isPrudentialMode: true // Attiva calcolo prudenziale
+  });
+  const ratioYeast = prudentialCalc.yeastFresh / standardCalc.yeastFresh;
+  assert(Math.abs(ratioYeast - 0.90) < 0.03, `Calcolo prudenziale riduce il lievito del ~10% come margine di sicurezza (${prudentialCalc.yeastFresh}g vs ${standardCalc.yeastFresh}g)`);
+
+  // TEST 10: Differenziazione Planetaria vs Spirale & Forni
+  console.log("\n--- Test 10: Differenziazione Planetaria vs Spirale & Forni ---");
+  const { MIXERS, OVENS } = require('../js/engine.js');
+  assert(MIXERS.planetaria_alta.friction === 10, `Planetaria ad alta velocità ha attrito elevato (10°C)`);
+  assert(MIXERS.spirale_1.friction === 4, `Spirale 1ª vel ha attrito moderato (4°C)`);
+  assert(MIXERS.a_mano.friction === 1, `A mano ha attrito minimo (1°C)`);
+  assert(OVENS.forno_casa_250.targetTemp === 250 && OVENS.forno_casa_250.requiresFatAndSugar, `Forno casalingo 250°C richiede grassi/zuccheri`);
+  assert(OVENS.forno_elettrico_pro.targetTemp === 480 && !OVENS.forno_elettrico_pro.requiresFatAndSugar, `Forno pizza 480°C vieta zuccheri/olio`);
 
   console.log("\n🎉 TUTTI I TEST SCIENTIFICI SUPERATI CON SUCCESSO!");
 }

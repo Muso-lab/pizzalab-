@@ -238,6 +238,30 @@
               <span class="card-title">🌡️ 6. Termodinamica & Impastatrice (TFI)</span>
               <span class="card-subtitle">Controllo calore e temperatura acqua</span>
             </div>
+
+            <!-- Box Stima Prudenziale (Senza Termometro) -->
+            <div class="prudential-card">
+              <div class="prudential-header">
+                <div class="prudential-title">
+                  <span>🛡️ Modalità Stima Prudenziale (Senza Termometro)</span>
+                </div>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.825rem; font-weight: 600;">
+                  <input type="checkbox" id="prudentialToggle" style="accent-color: var(--accent); width: 16px; height: 16px;">
+                  Attiva Stima di Sicurezza
+                </label>
+              </div>
+              <div id="prudentialDetails" style="display: none; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;">
+                <p style="margin-bottom: 0.5rem;">
+                  Se non possiedi un termometro a sonda per misurare ambiente, farina o acqua, seleziona la stagione stimata. Il calcolatore applicherà un <strong>cuscinetto prudenziale del -10% sul lievito</strong> (evitando il collasso della maglia da sovralievitazione) e stimerà automaticamente le temperature:
+                </p>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-secondary btn-sm seasonal-btn" data-temp="18">❄️ Inverno (~18°C)</button>
+                  <button type="button" class="btn btn-secondary btn-sm seasonal-btn active" data-temp="20">🌸 Mezza Stagione (~20°C)</button>
+                  <button type="button" class="btn btn-secondary btn-sm seasonal-btn" data-temp="26">☀️ Estate (~26°C)</button>
+                </div>
+              </div>
+            </div>
+
             <div class="form-grid">
               <div class="form-group">
                 <label class="form-label" for="ambientTemp">Temperatura Ambiente <span id="ambientTempVal" class="val-badge">22 °C</span></label>
@@ -256,18 +280,20 @@
                 </div>
               </div>
 
-              <div class="form-group">
-                <label class="form-label" for="mixerTypeSelect">Metodo d'Impasto / Attrito</label>
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label" for="mixerTypeSelect">Tipologia Impastatrice / Metodo</label>
                 <select id="mixerTypeSelect" class="form-select">
-                  <option value="1">A mano (Attrito ~1°C)</option>
-                  <option value="5" selected>Impastatrice a spirale 1ª vel / Planetaria (Attrito ~5°C)</option>
-                  <option value="9">Impastatrice a spirale 2ª vel / Alta vel (Attrito ~9°C)</option>
-                  <option value="3">Braccia tuffanti (Attrito ~3°C)</option>
-                  <option value="2">Forcella (Attrito ~2°C)</option>
-                  <option value="custom">Personalizzato...</option>
+                  <option value="a_mano">👐 A mano (Attrito ~1°C)</option>
+                  <option value="forcella">🔱 Forcella Tradizionale Napoletana (Attrito ~2°C)</option>
+                  <option value="tuffanti">🤿 Braccia Tuffanti (Attrito ~3°C - Massima Ossigenazione)</option>
+                  <option value="spirale_1" selected>🌀 Impastatrice a Spirale - 1ª velocità (Attrito ~4°C)</option>
+                  <option value="spirale_2">⚡ Impastatrice a Spirale - 2ª vel. / Alta incordatura (Attrito ~9°C)</option>
+                  <option value="planetaria_bassa">🥣 Planetaria Casalinga - Gancio bassa vel. (Attrito ~6°C)</option>
+                  <option value="planetaria_alta">🔥 Planetaria Casalinga - Foglia/Media-Alta vel. (Attrito ~10°C)</option>
+                  <option value="custom">⚙️ Personalizzato...</option>
                 </select>
                 <div id="mixerTip" style="font-size: 0.8rem; color: var(--text-muted); background: var(--bg-input); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); border-left: 3px solid var(--accent); margin-top: 0.4rem; line-height: 1.4;">
-                  🌀 <strong>Spirale 1ª vel / Planetaria:</strong> Attrito moderato (~5°C). Ottima per incordare impasti tra 60% e 70%. Durata tipica d'impastamento: 10-14 minuti.
+                  🌀 <strong>Spirale 1ª vel:</strong> Attrito moderato (~4-5°C). Ottima per formare la maglia e incordare impasti tra 60% e 70%. Durata tipica: 10-14 minuti.
                 </div>
               </div>
 
@@ -286,6 +312,50 @@
                   <span class="input-unit">°C</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Card Forno & Parametri di Cottura -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🔥 7. Tipo di Forno & Parametri di Cottura</span>
+              <span class="card-subtitle">Temperature di riferimento e consigli dedicati</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ovenTypeSelect">Seleziona il tuo Forno</label>
+              <select id="ovenTypeSelect" class="form-select">
+                <option value="forno_casa_250" selected>🏠 Forno Elettrico Casalingo Standard (Max 250°C)</option>
+                <option value="forno_casa_pietra">🧱 Forno Casalingo con Pietra Refrattaria / Biscotto (275°C - 300°C)</option>
+                <option value="fornetto_elettrico">🍕 Fornetto Pizza a Conchiglia (es. Ferrari, Ariete, Spice) (390°C - 420°C)</option>
+                <option value="forno_elettrico_pro">⚡ Forno Elettrico Professionale Pizza (es. Effeuno, Ooni Volt) (450°C - 500°C)</option>
+                <option value="forno_gas_pizza">🔥 Forno a Gas da Esterno per Pizza (es. Ooni, Roccbox) (450°C - 500°C)</option>
+                <option value="forno_legna">🪵 Forno a Legna Tradizionale (450°C - 485°C)</option>
+                <option value="forno_teglia_pro">🟦 Forno Professionale Statico per Teglia Romana (280°C - 320°C)</option>
+              </select>
+            </div>
+
+            <div class="oven-specs-grid">
+              <div class="oven-spec-item">
+                <div class="oven-spec-label">Temp. Riferimento</div>
+                <div id="ovenTempSpec" class="oven-spec-val">230°C - 250°C</div>
+              </div>
+              <div class="oven-spec-item">
+                <div class="oven-spec-label">Tempo Cottura</div>
+                <div id="ovenTimeSpec" class="oven-spec-val">8 - 12 min</div>
+              </div>
+              <div class="oven-spec-item">
+                <div class="oven-spec-label">Preriscaldamento</div>
+                <div id="ovenPreheatSpec" class="oven-spec-val">35 min</div>
+              </div>
+            </div>
+
+            <div id="ovenSupportTip" style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.6rem;">
+              Supporto consigliato: <strong id="ovenSupportText" style="color: var(--text-main);">Teglia in ferro blu o leccarda da forno</strong>
+            </div>
+
+            <div id="ovenAdviceBox" class="advice-box" style="margin-top: 0.75rem; margin-bottom: 0;">
+              💡 <strong>Consiglio Forno Casalingo:</strong> A 250°C la cottura è prolungata: senza grassi (2-3% olio EVO) e zuccheri (1% malto o miele) la pizza si disidrata, rimanendo dura e biancastra.
             </div>
           </div>
 

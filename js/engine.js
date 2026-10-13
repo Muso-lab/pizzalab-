@@ -297,7 +297,9 @@
       targetTFI = 23,
       flourTemp = 20,
       friction = 5,
-      tapWaterTemp = 18
+      tapWaterTemp = 18,
+      isPrudentialMode = false,
+      ovenType = 'forno_casa_250'
     } = options;
 
     const targetDoughWeight = totalDoughWeight || (numBalls * ballWeight);
@@ -313,6 +315,13 @@
     });
 
     const yeastPctObj = calculateYeastPercentage(efu.totalEFU, saltPct, hydration, fatPct);
+
+    // Cuscinetto prudenziale lievito (-10% lievito commerciale per sicurezza contro sovrafermentazioni a T ignota)
+    if (isPrudentialMode) {
+      yeastPctObj.freshYeastPct = Math.round(yeastPctObj.freshYeastPct * 0.90 * 1000) / 1000;
+      yeastPctObj.idyPct = Math.round(yeastPctObj.idyPct * 0.90 * 1000) / 1000;
+      yeastPctObj.adyPct = Math.round(yeastPctObj.adyPct * 0.90 * 1000) / 1000;
+    }
 
     // 2. Determinazione percentuale lievito selezionato per Baker's Math
     let activeYeastPct = 0;
@@ -399,6 +408,16 @@
     // 5. Analisi Maturazione
     const maturation = analyzeMaturation(flourW, hoursRoomPuntata + hoursRoomAppretto, hoursFridge);
 
+    // 6. Analisi Forno & Consigli Cottura
+    const ovenInfo = OVENS[ovenType] || OVENS.forno_casa_250;
+    const ovenAdvice = [];
+    if (ovenType === 'forno_casa_250' && (fatPct < 1.5 || sugarPct < 0.5)) {
+      ovenAdvice.push("💡 Per forno casalingo standard (250°C), consigliato aggiungere 2-3% Olio EVO e 1% Zucchero/Malto: a 250°C la cottura è più lunga (8-12 min) e senza grassi/zuccheri la pizza perde troppa umidità risultando dura e pallida.");
+    }
+    if ((ovenType === 'forno_elettrico_pro' || ovenType === 'forno_gas_pizza' || ovenType === 'forno_legna') && sugarPct > 0) {
+      ovenAdvice.push("⚠️ Attenzione: nei forni da pizza ad altissima temperatura (>450°C) non inserire zuccheri né malto: carbonizzerebbero rapidamente bruciando la pizza in 40 secondi!");
+    }
+
     return {
       totalDough: targetDoughWeight,
       numBalls,
@@ -424,7 +443,11 @@
       sugarPct,
       efu,
       thermodynamics,
-      maturation
+      maturation,
+      isPrudentialMode,
+      ovenType,
+      ovenInfo,
+      ovenAdvice
     };
   }
 
@@ -579,8 +602,134 @@
     };
   }
 
+  // --- DIZIONARIO IMPASTATRICI & ATTRITI MECCANICI ---
+  const MIXERS = {
+    a_mano: {
+      name: "Impasto a mano",
+      friction: 1,
+      tip: "👐 <strong>Impasto a mano:</strong> Trasferimento termico minimo (~1°C dalle sole mani). Per idratazioni elevate (>65%), effettua pause di riposo di 15-20 min e pieghe di rinforzo (slap & fold)."
+    },
+    forcella: {
+      name: "Forcella Tradizionale",
+      friction: 2,
+      tip: "🔱 <strong>Forcella:</strong> Macchina classica da pizzeria napoletana. Bassa velocità, movimento lento che non scalda (~2°C) e non 'strappa' la maglia glutinica. Richiede 18-22 minuti."
+    },
+    tuffanti: {
+      name: "Braccia Tuffanti",
+      friction: 3,
+      tip: "🤿 <strong>Braccia Tuffanti:</strong> Il massimo per l'ossigenazione dell'impasto. Scalda pochissimo (~3°C), simula perfettamente il movimento umano delle braccia senza stressare le catene proteiche."
+    },
+    spirale_1: {
+      name: "Impastatrice a Spirale (1ª velocità - Bassa)",
+      friction: 4,
+      tip: "🌀 <strong>Spirale 1ª vel:</strong> Attrito moderato (~4-5°C). Ottima per formare la maglia e incordare impasti tra 60% e 70%. Durata tipica: 10-14 minuti."
+    },
+    spirale_2: {
+      name: "Impastatrice a Spirale (2ª velocità - Alta incordatura)",
+      friction: 9,
+      tip: "⚡ <strong>Spirale 2ª vel:</strong> Attrito marcato (~9-12°C). Indispensabile per idratazioni estreme (75-85% teglia/pinsa), inserendo l'acqua a filo. Scalda circa 1°C al minuto: richiede acqua a 3-4°C o ghiaccio tritato!"
+    },
+    planetaria_bassa: {
+      name: "Planetaria Casalinga (Bassa vel / Gancio)",
+      friction: 6,
+      tip: "🥣 <strong>Planetaria (Bassa vel):</strong> Attrito medio (~6°C). La ciotola fissa in inox e l'attrito radente scaldano l'impasto più di una spirale professionale. Non prolungare oltre 12-14 minuti."
+    },
+    planetaria_alta: {
+      name: "Planetaria Casalinga (Media-Alta vel / Foglia-Gancio)",
+      friction: 10,
+      tip: "🔥 <strong>Planetaria (Media-Alta vel):</strong> Attrito elevato (~10-12°C). Usata con foglia per incordare idratazioni alte prima di passare al gancio. Rischio di surriscaldare e stracciare il glutine: usa ciotola fredda e acqua di frigo a 4°C!"
+    },
+    custom: {
+      name: "Personalizzato...",
+      friction: 5,
+      tip: "⚙️ <strong>Attrito Personalizzato:</strong> Inserisci il surriscaldamento specifico della tua impastatrice rilevato col termometro."
+    }
+  };
+
+  // --- DIZIONARIO FORNI & TEMPERATURE DI RIFERIMENTO ---
+  const OVENS = {
+    forno_casa_250: {
+      name: "Forno Elettrico Casalingo Standard (Max 250°C)",
+      category: "Casalingo",
+      tempRange: "230°C - 250°C",
+      targetTemp: 250,
+      bakeTimeStr: "8 - 12 minuti",
+      preheatMinutes: 35,
+      support: "Teglia in ferro blu o leccarda da forno",
+      requiresFatAndSugar: true,
+      advice: "A 250°C la cottura è prolungata: senza grassi (2-3% olio EVO) e zuccheri (1% malto o miele) la pizza si disidrata, rimanendo dura e biancastra."
+    },
+    forno_casa_pietra: {
+      name: "Forno Casalingo con Pietra Refrattaria o Biscotto (275°C - 300°C)",
+      category: "Casalingo Avanzato",
+      tempRange: "275°C - 300°C",
+      targetTemp: 290,
+      bakeTimeStr: "4 - 6 minuti",
+      preheatMinutes: 50,
+      support: "Pietra refrattaria (posizionata sul ripiano più alto sotto il grill)",
+      requiresFatAndSugar: false,
+      advice: "Preriscalda la pietra per almeno 50 minuti per accumulare calore radiante. Accendi il grill al massimo negli ultimi 2-3 minuti di cottura per dorare il cornicione."
+    },
+    fornetto_elettrico: {
+      name: "Fornetto Pizza a Conchiglia (es. G3Ferrari, Ariete, Spice) (390°C - 420°C)",
+      category: "Semi-professionale",
+      tempRange: "390°C - 420°C",
+      targetTemp: 400,
+      bakeTimeStr: "3 - 4 minuti",
+      preheatMinutes: 25,
+      support: "Pietra refrattaria integrata o Biscotto Saputo",
+      requiresFatAndSugar: false,
+      advice: "Forte spinta dal basso. Evita l'aggiunta di zuccheri nell'impasto per non bruciare il fondo a contatto con la pietra rovente."
+    },
+    forno_elettrico_pro: {
+      name: "Forno Elettrico Professionale Pizza (es. Effeuno P134H, Ooni Volt) (450°C - 500°C)",
+      category: "Professionale",
+      tempRange: "450°C - 500°C",
+      targetTemp: 480,
+      bakeTimeStr: "60 - 90 secondi",
+      preheatMinutes: 45,
+      support: "Biscotto di Casapulla o argilla a bassa conducibilità",
+      requiresFatAndSugar: false,
+      advice: "Temperatura da vera pizzeria napoletana. Regola cielo a 460-480°C e platea a 400-420°C. Assolutamente ZERO olio e ZERO zuccheri nell'impasto!"
+    },
+    forno_gas_pizza: {
+      name: "Forno a Gas da Esterno (es. Ooni Koda, Roccbox, Gozney) (450°C - 500°C)",
+      category: "Esterno / Gas",
+      tempRange: "450°C - 500°C",
+      targetTemp: 480,
+      bakeTimeStr: "60 - 90 secondi",
+      preheatMinutes: 25,
+      support: "Piano in cordierite o biscotto",
+      requiresFatAndSugar: false,
+      advice: "La fiamma viva laterale richiede di ruotare la pizza di 90° ogni 20 secondi con un palino per una cottura uniforme del cornicione."
+    },
+    forno_legna: {
+      name: "Forno a Legna Tradizionale (450°C - 485°C)",
+      category: "Tradizionale",
+      tempRange: "450°C - 485°C",
+      targetTemp: 480,
+      bakeTimeStr: "60 - 90 secondi",
+      preheatMinutes: 90,
+      support: "Platea in mattoni refrattari / Biscotto sorrentino",
+      requiresFatAndSugar: false,
+      advice: "Il riferimento assoluto della pizza napoletana STG. Calore radiante della cupola ed essenze di faggio/rovere per un aroma inimitabile."
+    },
+    forno_teglia_pro: {
+      name: "Forno Statico Professionale per Teglia Romana (280°C - 320°C)",
+      category: "Teglia / Pala",
+      tempRange: "280°C - 320°C",
+      targetTemp: 300,
+      bakeTimeStr: "10 - 13 minuti",
+      preheatMinutes: 45,
+      support: "Teglia in ferro blu da 40x30 o 60x40",
+      requiresFatAndSugar: false,
+      advice: "Taratura consigliata: 75% calore al cielo e 25% alla platea. Spinta dal fondo nei primi 7 minuti per far sviluppare l'alveolatura verticale."
+    }
+  };
+
   /**
    * Generatore di Cronoprogramma Temporale a Ritroso (Timeline Planner)
+   * Corretto per eliminare step ridondanti quando hoursRoomPuntata = 0 e ordinamento garantito
    */
   function generateTimeline(options) {
     const {
@@ -590,8 +739,21 @@
       acclimationHours = 1, // tempo uscita frigo prima dello staglio
       hoursRoomAppretto = 5,
       isIndirect = false,
-      prefermentHours = 16
+      prefermentHours = 16,
+      ovenPreheatMinutes = 45,
+      ovenName = "Forno"
     } = options;
+
+    const STEP_ORDER = {
+      preferment: 1,
+      mixing: 2,
+      puntata: 3,
+      in_fridge: 4,
+      out_fridge: 5,
+      staglio: 6,
+      oven: 7,
+      bake: 8
+    };
 
     const steps = [];
     const bakeTime = new Date(bakeDate).getTime();
@@ -599,39 +761,45 @@
     // 1. Infornata
     steps.push({
       id: 'bake',
+      priority: STEP_ORDER.bake,
       time: new Date(bakeTime),
       label: 'Infornata e Cottura Pizza',
-      desc: 'Forno alla massima temperatura, stesura del panetto, farcitura rapida e cottura.',
+      desc: 'Forno a temperatura ottimale, stesura del panetto, farcitura e cottura.',
       duration: 'Cottura'
     });
 
-    // 2. Preriscaldamento forno (1h prima)
-    const ovenPreheatTime = bakeTime - (1 * 3600 * 1000);
+    // 2. Preriscaldamento forno
+    const actualPreheatMinutes = ovenPreheatMinutes || 45;
+    const ovenPreheatTime = bakeTime - (actualPreheatMinutes * 60 * 1000);
     steps.push({
       id: 'oven',
+      priority: STEP_ORDER.oven,
       time: new Date(ovenPreheatTime),
-      label: 'Accensione e Preriscaldamento Forno',
-      desc: 'Accendere il forno (o forno pizza con pietra refrattaria / biscotto) al massimo livello per raggiungere la temperatura target.',
-      duration: '1h prima'
+      label: `Accensione e Preriscaldamento (${ovenName})`,
+      desc: `Accendere il forno e portare camera e refrattaria a regime termico (${actualPreheatMinutes} min prima dell'infornata).`,
+      duration: `${actualPreheatMinutes} min prima`
     });
 
-    // 3. Staglio dei panetti
+    // 3. Staglio dei panetti (Inizio Appretto)
     const staglioTime = bakeTime - (hoursRoomAppretto * 3600 * 1000);
     steps.push({
       id: 'staglio',
+      priority: STEP_ORDER.staglio,
       time: new Date(staglioTime),
       label: 'Staglio e Formatura Panetti (Inizio Appretto)',
-      desc: `Divisione dell'impasto nei panetti del peso target, pirlatura stretta e messa a lievitare nei cassetti/contenitori ermetici a T.A. per ${hoursRoomAppretto} ore.`,
+      desc: `Divisione dell'impasto nei panetti del peso target, pirlatura stretta e messa a lievitare nei contenitori a T.A. per ${hoursRoomAppretto} ore.`,
       duration: `${hoursRoomAppretto}h di appretto`
     });
 
-    // 4. Estrazione dal frigo (se previsto frigo)
     let currentCursor = staglioTime;
+
+    // 4. Frigorifero (se previsto)
     if (hoursFridge > 0) {
       if (acclimationHours > 0) {
         const outFridgeTime = staglioTime - (acclimationHours * 3600 * 1000);
         steps.push({
           id: 'out_fridge',
+          priority: STEP_ORDER.out_fridge,
           time: new Date(outFridgeTime),
           label: 'Estrazione Impasto dal Frigorifero',
           desc: `Togliere la massa dal frigo e lasciarla a temperatura ambiente per ${acclimationHours}h per far rilassare la maglia glutinica prima dello staglio.`,
@@ -640,43 +808,58 @@
         currentCursor = outFridgeTime;
       }
 
-      // 5. Messa in frigorifero
       const inFridgeTime = currentCursor - (hoursFridge * 3600 * 1000);
       steps.push({
         id: 'in_fridge',
+        priority: STEP_ORDER.in_fridge,
         time: new Date(inFridgeTime),
         label: 'Messa in Cella / Frigorifero (4°C)',
-        desc: `Trasferire il contenitore ermetico leggermente oliato in frigo per la maturazione enzimatica controllata (${hoursFridge} ore).`,
+        desc: `Trasferire il contenitore ermetico in frigo per la maturazione enzimatica controllata (${hoursFridge} ore).`,
         duration: `${hoursFridge}h a 4°C`
       });
       currentCursor = inFridgeTime;
     }
 
-    // 6. Chiusura impasto e Puntata
-    const puntataStartTime = currentCursor - (hoursRoomPuntata * 3600 * 1000);
-    steps.push({
-      id: 'puntata',
-      time: new Date(puntataStartTime),
-      label: 'Chiusura Impasto e Inizio Puntata',
-      desc: `Misurare la TFI con termometro a sonda (target ~23°C). Dare un paio di pieghe di rinforzo e lasciar riposare la massa in massa a T.A. per ${hoursRoomPuntata} ore.`,
-      duration: `${hoursRoomPuntata}h di puntata`
-    });
+    // 5. Puntata a Temperatura Ambiente (SOLO se hoursRoomPuntata > 0)
+    if (hoursRoomPuntata > 0) {
+      const puntataStartTime = currentCursor - (hoursRoomPuntata * 3600 * 1000);
+      steps.push({
+        id: 'puntata',
+        priority: STEP_ORDER.puntata,
+        time: new Date(puntataStartTime),
+        label: 'Chiusura Impasto e Inizio Puntata a T.A.',
+        desc: `Misurare la TFI con termometro a sonda (target ~23°C). Dare pieghe di rinforzo e lasciar riposare la massa in blocco per ${hoursRoomPuntata} ore.`,
+        duration: `${hoursRoomPuntata}h di puntata`
+      });
+      currentCursor = puntataStartTime;
+    }
 
-    // 7. Preparazione e Impastamento (30 min prima)
-    const mixingTime = puntataStartTime - (30 * 60 * 1000);
+    // 6. Preparazione e Impastamento (30 min prima)
+    const mixingTime = currentCursor - (30 * 60 * 1000);
+    let mixingDesc = 'Pesatura ingredienti, calibrazione temperatura acqua e avvio impasto fino a completa incordatura.';
+    if (hoursRoomPuntata === 0) {
+      if (hoursFridge > 0) {
+        mixingDesc = 'Impasto e incordatura rapida. Senza puntata a T.A., la massa viene trasferita direttamente in frigo a 4°C (puntata a freddo).';
+      } else {
+        mixingDesc = 'Impasto e incordatura rapida. Si procede direttamente allo staglio immediato dei panetti (nessuna puntata).';
+      }
+    }
+
     steps.push({
       id: 'mixing',
+      priority: STEP_ORDER.mixing,
       time: new Date(mixingTime),
       label: 'Preparazione Ingredienti e Impastamento',
-      desc: 'Pesatura al decimo di grammo di farina, acqua calibrata (con eventuale ghiaccio), sale e lievito. Avvio impastatrice.',
+      desc: mixingDesc,
       duration: '30 min'
     });
 
-    // 8. Se metodo indiretto (Biga / Poolish)
+    // 7. Se metodo indiretto (Biga / Poolish)
     if (isIndirect) {
       const prefermentTime = mixingTime - (prefermentHours * 3600 * 1000);
       steps.push({
         id: 'preferment',
+        priority: STEP_ORDER.preferment,
         time: new Date(prefermentTime),
         label: 'Impasto Prefermento (Biga / Poolish)',
         desc: `Preparazione del prefermento e messa a riposo per ${prefermentHours} ore a temperatura idonea (18°C per biga).`,
@@ -684,8 +867,12 @@
       });
     }
 
-    // Ordina cronologicamente (dal più lontano nel tempo all'infornata)
-    steps.sort((a, b) => a.time.getTime() - b.time.getTime());
+    // Ordina cronologicamente con priorità secondaria garantita
+    steps.sort((a, b) => {
+      const diff = a.time.getTime() - b.time.getTime();
+      if (diff !== 0) return diff;
+      return a.priority - b.priority;
+    });
 
     // Formattazione stringhe data
     const formattedSteps = steps.map(s => {
@@ -841,6 +1028,8 @@
     calculatePrefermentPoolish,
     calculateTeglia,
     generateTimeline,
-    PRESETS
+    PRESETS,
+    MIXERS,
+    OVENS
   };
 }));

@@ -28,14 +28,26 @@ document.addEventListener('DOMContentLoaded', () => {
     flourPL: 0.55,
     ambientTemp: 22,
     flourTemp: 21,
-    friction: 5,
+    friction: 4,
     targetTFI: 23,
     tapWaterTemp: 18,
-    activePreset: 'napoletana_stg'
+    activePreset: 'napoletana_stg',
+    isPrudentialMode: false,
+    ovenType: 'forno_casa_250'
   };
 
   // --- SELETTORI DOM ---
   // Sliders e Inputs Diretti
+  const prudentialToggle = document.getElementById('prudentialToggle');
+  const prudentialDetails = document.getElementById('prudentialDetails');
+  const seasonalButtons = document.querySelectorAll('.seasonal-btn');
+
+  const ovenTypeSelect = document.getElementById('ovenTypeSelect');
+  const ovenTempSpec = document.getElementById('ovenTempSpec');
+  const ovenTimeSpec = document.getElementById('ovenTimeSpec');
+  const ovenPreheatSpec = document.getElementById('ovenPreheatSpec');
+  const ovenSupportText = document.getElementById('ovenSupportText');
+  const ovenAdviceBox = document.getElementById('ovenAdviceBox');
   const numBallsSlider = document.getElementById('numBalls');
   const numBallsInput = document.getElementById('numBallsInput');
   const numBallsVal = document.getElementById('numBallsVal');
@@ -286,27 +298,82 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const mixerTip = document.getElementById('mixerTip');
-  const mixerTips = {
-    "1": "👐 <strong>Impasto a mano:</strong> Trasferimento termico minimo (~1°C dalle mani). Per idratazioni elevate (>65%), effettua pause di 15 min e pieghe di rinforzo (slap & fold).",
-    "5": "🌀 <strong>Spirale 1ª vel / Planetaria:</strong> Attrito moderato (~5°C). Ottima per incordare impasti tra 60% e 70%. Durata tipica d'impastamento: 10-14 minuti.",
-    "9": "⚡ <strong>Spirale 2ª velocità (Alta incordatura):</strong> Attrito marcato (~9-12°C). Indispensabile per idratazioni estreme (75-85% teglia/pinsa), inserendo l'acqua a filo. Richiede acqua quasi gelata!",
-    "3": "🤿 <strong>Braccia Tuffanti:</strong> Il massimo per l'ossigenazione dell'impasto. Scalda pochissimo (~3°C), simula il movimento umano senza stressare le catene glutiniche.",
-    "2": "🔱 <strong>Forcella:</strong> Macchina tradizionale da pizzeria napoletana. Bassa velocità, attrito minimo (~2°C), non surriscalda. Richiede tempi più lunghi (18-22 minuti).",
-    "custom": "⚙️ <strong>Attrito Personalizzato:</strong> Inserisci il surriscaldamento specifico della tua impastatrice."
-  };
 
   mixerTypeSelect.addEventListener('change', () => {
-    if (mixerTypeSelect.value === 'custom') {
+    const val = mixerTypeSelect.value;
+    if (val === 'custom') {
       const customFriction = prompt("Inserisci l'attrito meccanico stimato in °C:", "5");
       state.friction = parseFloat(customFriction) || 5;
-    } else {
-      state.friction = parseFloat(mixerTypeSelect.value);
+    } else if (engine.MIXERS[val]) {
+      state.friction = engine.MIXERS[val].friction;
     }
-    if (mixerTip && mixerTips[mixerTypeSelect.value]) {
-      mixerTip.innerHTML = mixerTips[mixerTypeSelect.value];
+    if (mixerTip && engine.MIXERS[val]) {
+      mixerTip.innerHTML = engine.MIXERS[val].tip;
     }
     recalculateDirect();
   });
+
+  // Modalità Stima Prudenziale
+  if (prudentialToggle) {
+    prudentialToggle.addEventListener('change', () => {
+      state.isPrudentialMode = prudentialToggle.checked;
+      prudentialDetails.style.display = state.isPrudentialMode ? 'block' : 'none';
+      if (state.isPrudentialMode) {
+        state.flourTemp = Math.round((state.ambientTemp - 0.5) * 10) / 10;
+        flourTempInput.value = state.flourTemp;
+        state.tapWaterTemp = Math.min(22, Math.max(14, state.ambientTemp - 3));
+        tapWaterTempInput.value = state.tapWaterTemp;
+      }
+      recalculateDirect();
+    });
+  }
+
+  seasonalButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      seasonalButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const t = parseFloat(btn.dataset.temp);
+      state.ambientTemp = t;
+      ambientTempSlider.value = t;
+      ambientTempInput.value = t;
+      ambientTempVal.textContent = `${t} °C`;
+      state.flourTemp = Math.max(10, t - 1);
+      flourTempInput.value = state.flourTemp;
+      state.tapWaterTemp = Math.min(22, Math.max(14, t - 3));
+      tapWaterTempInput.value = state.tapWaterTemp;
+      recalculateDirect();
+    });
+  });
+
+  // Gestione Forno e Consigli di Cottura
+  function updateOvenDisplay() {
+    if (!ovenTypeSelect) return;
+    const ovenKey = ovenTypeSelect.value;
+    state.ovenType = ovenKey;
+    const oven = engine.OVENS[ovenKey] || engine.OVENS.forno_casa_250;
+    if (ovenTempSpec) ovenTempSpec.textContent = oven.tempRange;
+    if (ovenTimeSpec) ovenTimeSpec.textContent = oven.bakeTimeStr;
+    if (ovenPreheatSpec) ovenPreheatSpec.textContent = `${oven.preheatMinutes} min`;
+    if (ovenSupportText) ovenSupportText.textContent = oven.support;
+    
+    if (ovenAdviceBox) {
+      let adviceHtml = `💡 <strong>${oven.name}:</strong> ${oven.advice}`;
+      if (oven.requiresFatAndSugar && (state.fatPct < 1.5 || state.sugarPct < 0.5)) {
+        adviceHtml += `<br><span style="color: var(--accent); font-weight: 600; display: block; margin-top: 0.35rem;">👉 Suggerimento: a 250°C aggiungi 2-3% olio EVO e 1% malto o zucchero per evitare che l'impasto perda troppa acqua.</span>`;
+      } else if (!oven.requiresFatAndSugar && state.sugarPct > 0 && oven.targetTemp >= 450) {
+        adviceHtml += `<br><span style="color: var(--danger); font-weight: 600; display: block; margin-top: 0.35rem;">⚠️ Rischio bruciatura: a ${oven.targetTemp}°C gli zuccheri carbonizzano precocemente, azzera gli zuccheri!</span>`;
+      }
+      ovenAdviceBox.innerHTML = adviceHtml;
+    }
+  }
+
+  if (ovenTypeSelect) {
+    ovenTypeSelect.addEventListener('change', () => {
+      updateOvenDisplay();
+      recalculateDirect();
+      updateTimeline();
+    });
+  }
 
   targetTFIInput.addEventListener('input', () => {
     state.targetTFI = parseFloat(targetTFIInput.value) || 23;
@@ -339,10 +406,13 @@ document.addEventListener('DOMContentLoaded', () => {
       targetTFI: state.targetTFI,
       flourTemp: state.flourTemp,
       friction: state.friction,
-      tapWaterTemp: state.tapWaterTemp
+      tapWaterTemp: state.tapWaterTemp,
+      isPrudentialMode: state.isPrudentialMode,
+      ovenType: state.ovenType
     });
 
     currentCalculatedDough = res;
+    updateOvenDisplay();
 
     // Aggiorna Badge
     doughSummaryBadge.textContent = `${res.numBalls} panetti da ${res.ballWeight}g`;
@@ -798,13 +868,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const bakeTarget = new Date(`${dateStr}T${timeStr}`);
     const acclimation = parseFloat(timelineAcclimation.value) || 1;
 
+    const oven = engine.OVENS[state.ovenType] || engine.OVENS.forno_casa_250;
     const timeline = engine.generateTimeline({
       bakeDate: bakeTarget,
       hoursRoomPuntata: state.hoursRoomPuntata,
       hoursFridge: state.hoursFridge,
       acclimationHours: acclimation,
       hoursRoomAppretto: state.hoursRoomAppretto,
-      isIndirect: false
+      isIndirect: false,
+      ovenPreheatMinutes: oven.preheatMinutes,
+      ovenName: oven.name
     });
 
     let html = '';
