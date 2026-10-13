@@ -204,6 +204,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const revTimelineList = document.getElementById('revTimelineList');
   const revApplyToDirectBtn = document.getElementById('revApplyToDirectBtn');
   const revCopyRecipeBtn = document.getElementById('revCopyRecipeBtn');
+  const revPrudentialToggle = document.getElementById('revPrudentialToggle');
+  const revPrudentialDetails = document.getElementById('revPrudentialDetails');
+  const revSeasonalBtns = document.querySelectorAll('.rev-seasonal-btn');
+  const revTargetBakeDate = document.getElementById('revTargetBakeDate');
+  const revTargetBakeTime = document.getElementById('revTargetBakeTime');
+  const revAutolyseCheck = document.getElementById('revAutolyseCheck');
+  const revAutolyseAdvice = document.getElementById('revAutolyseAdvice');
+  const revFoldsCheck = document.getElementById('revFoldsCheck');
+  const revBigaCheck = document.getElementById('revBigaCheck');
+  const revProceduresList = document.getElementById('revProceduresList');
+  const revGoToTimelineBtn = document.getElementById('revGoToTimelineBtn');
+  const presetsStrip = document.querySelector('.presets-strip');
 
   let currentReverseResult = null;
 
@@ -222,6 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   targetBakeDate.value = tomorrow.toISOString().split('T')[0];
+  if (revTargetBakeDate) {
+    revTargetBakeDate.value = tomorrow.toISOString().split('T')[0];
+  }
 
   let currentCalculatedDough = null;
 
@@ -1015,6 +1030,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  let revManualTechniquesOverride = false;
+
   function recalculateReverse() {
     if (!revStyleSelect) return;
 
@@ -1027,6 +1044,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const numBalls = parseInt(revNumBalls?.value, 10) || 4;
     const ballWeight = parseFloat(revBallWeight?.value) || 260;
     const ambientTemp = parseFloat(revAmbientTemp?.value) || 21;
+    const isPrudentialMode = revPrudentialToggle ? revPrudentialToggle.checked : false;
+
+    let targetBakeDateObj = null;
+    if (revTargetBakeDate && revTargetBakeDate.value) {
+      const timeVal = revTargetBakeTime && revTargetBakeTime.value ? revTargetBakeTime.value : '20:00';
+      targetBakeDateObj = new Date(`${revTargetBakeDate.value}T${timeVal}:00`);
+    }
+
+    const useAutolyse = revManualTechniquesOverride ? (revAutolyseCheck ? revAutolyseCheck.checked : null) : null;
+    const useFolds = revManualTechniquesOverride ? (revFoldsCheck ? revFoldsCheck.checked : null) : null;
+    const useBiga = revBigaCheck ? revBigaCheck.checked : false;
 
     const res = engine.optimizeReversePlan({
       targetStyle,
@@ -1037,10 +1065,29 @@ document.addEventListener('DOMContentLoaded', () => {
       availableHours,
       numBalls,
       ballWeight,
-      ambientTemp
+      ambientTemp,
+      isPrudentialMode,
+      targetBakeDate: targetBakeDateObj,
+      useAutolyse,
+      useFolds,
+      useBiga
     });
 
     currentReverseResult = res;
+
+    // Sincronizza checkbox tecniche con le raccomandazioni se non modificate manualmente
+    if (!revManualTechniquesOverride) {
+      if (revAutolyseCheck) revAutolyseCheck.checked = res.recommendations.autolyseRecommended;
+      if (revFoldsCheck) revFoldsCheck.checked = res.recommendations.foldsRecommended;
+    }
+
+    if (revAutolyseAdvice) {
+      if (res.recommendations.autolyseRecommended) {
+        revAutolyseAdvice.innerHTML = `<span style="color: var(--accent); font-weight: 600;">✨ Consigliata:</span> idratazione ${res.parameters.hydration}% o farina tenace W ${res.flour.w}. Riserva ${res.autolyseWater}g d'acqua (60%).`;
+      } else {
+        revAutolyseAdvice.textContent = 'Facoltativa. Consigliata per farine forti con tempi brevi o idratazioni elevate.';
+      }
+    }
 
     // 1. Compatibilità Score
     const score = res.compatibilityScore;
@@ -1174,17 +1221,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Timeline Step-by-Step
     if (revTimelineList) {
       let timelineHtml = '';
-      res.timeline.forEach(step => {
-        timelineHtml += `
-          <li class="timeline-item ${step.isPast ? 'timeline-past' : ''}">
-            <div class="timeline-time">${step.timeStr}</div>
-            <span class="timeline-duration-badge">${step.duration}</span>
-            <div class="timeline-item-title">${step.label}</div>
-            <div class="timeline-item-desc">${step.desc}</div>
-          </li>
+      const steps = res.timeline.steps || res.timeline;
+      if (Array.isArray(steps)) {
+        steps.forEach(step => {
+          const displayTime = step.formattedTime || step.timeStr;
+          timelineHtml += `
+            <li class="timeline-item ${step.isPast ? 'timeline-past' : ''}">
+              <div class="timeline-time">${displayTime}</div>
+              <span class="timeline-duration-badge">${step.duration}</span>
+              <div class="timeline-item-title">${step.label}</div>
+              <div class="timeline-item-desc">${step.desc}</div>
+            </li>
+          `;
+        });
+      }
+      revTimelineList.innerHTML = timelineHtml;
+    }
+
+    // 7. Procedure Operative Dettagliate
+    if (revProceduresList && res.procedures) {
+      let procHtml = '';
+      res.procedures.forEach(proc => {
+        procHtml += `
+          <div class="proc-step-card">
+            <div class="proc-step-title">${proc.title}</div>
+            <div class="proc-step-desc">${proc.desc}</div>
+            ${proc.tip ? `<div class="proc-step-tip">💡 <strong>Consiglio del Maestro:</strong> ${proc.tip}</div>` : ''}
+          </div>
         `;
       });
-      revTimelineList.innerHTML = timelineHtml;
+      revProceduresList.innerHTML = procHtml;
     }
   }
 
@@ -1199,6 +1265,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (revRunBtn) revRunBtn.addEventListener('click', recalculateReverse);
 
     revStyleSelect.addEventListener('change', () => {
+      revManualTechniquesOverride = false;
       const def = STYLE_DEFAULTS[revStyleSelect.value];
       if (def) {
         if (revBallWeight) revBallWeight.value = def.weight;
@@ -1209,6 +1276,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (revFlourSelect) {
       revFlourSelect.addEventListener('change', () => {
+        revManualTechniquesOverride = false;
         updateFlourCard();
         recalculateReverse();
       });
@@ -1216,6 +1284,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (revCustomWInput) {
       revCustomWInput.addEventListener('input', () => {
+        revManualTechniquesOverride = false;
         updateFlourCard();
         recalculateReverse();
       });
@@ -1236,9 +1305,91 @@ document.addEventListener('DOMContentLoaded', () => {
     if (revBallWeight) revBallWeight.addEventListener('input', recalculateReverse);
     if (revAmbientTemp) revAmbientTemp.addEventListener('input', recalculateReverse);
 
+    // Stima prudenziale in reverse
+    if (revPrudentialToggle) {
+      revPrudentialToggle.addEventListener('change', () => {
+        if (revPrudentialDetails) {
+          revPrudentialDetails.style.display = revPrudentialToggle.checked ? 'block' : 'none';
+        }
+        recalculateReverse();
+      });
+    }
+
+    revSeasonalBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        revSeasonalBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const t = parseFloat(btn.dataset.temp);
+        if (revAmbientTemp) {
+          revAmbientTemp.value = t;
+        }
+        recalculateReverse();
+      });
+    });
+
+    // Data e Ora Infornata Target
+    if (revTargetBakeDate) revTargetBakeDate.addEventListener('change', recalculateReverse);
+    if (revTargetBakeTime) revTargetBakeTime.addEventListener('change', recalculateReverse);
+
+    // Tecniche Speciali Checkbox
+    if (revAutolyseCheck) {
+      revAutolyseCheck.addEventListener('change', () => {
+        revManualTechniquesOverride = true;
+        recalculateReverse();
+      });
+    }
+    if (revFoldsCheck) {
+      revFoldsCheck.addEventListener('change', () => {
+        revManualTechniquesOverride = true;
+        recalculateReverse();
+      });
+    }
+    if (revBigaCheck) {
+      revBigaCheck.addEventListener('change', () => {
+        revManualTechniquesOverride = true;
+        recalculateReverse();
+      });
+    }
+
+    // Cronoprogramma Esteso Button
+    if (revGoToTimelineBtn) {
+      revGoToTimelineBtn.addEventListener('click', () => {
+        if (!currentReverseResult) return;
+        const p = currentReverseResult.parameters;
+
+        state.numBalls = p.numBalls;
+        state.ballWeight = p.ballWeight;
+        state.totalDoughWeight = p.numBalls * p.ballWeight;
+        state.hydration = p.hydration;
+        state.saltPct = p.saltPct;
+        state.fatPct = p.fatPct;
+        state.sugarPct = p.sugarPct;
+        state.hoursRoomPuntata = p.hoursRoomPuntata;
+        state.hoursFridge = p.hoursFridge;
+        state.hoursRoomAppretto = p.hoursRoomAppretto;
+        state.flourW = p.flourW;
+        state.ambientTemp = p.ambientTemp;
+        state.ovenType = p.ovenType;
+        state.isPrudentialMode = p.isPrudentialMode;
+        if (p.mixerKey) {
+          state.friction = p.friction;
+          if (mixerTypeSelect) mixerTypeSelect.value = p.mixerKey;
+        }
+
+        if (revTargetBakeDate && targetBakeDate) targetBakeDate.value = revTargetBakeDate.value;
+        if (revTargetBakeTime && targetBakeTime) targetBakeTime.value = revTargetBakeTime.value;
+
+        recalculateDirect();
+        updateTimeline();
+        switchTab('tab-timeline');
+        showToast('Cronoprogramma trasferito nella vista completa!', '⏱️');
+      });
+    }
+
     // Quick pills ore
     revQuickPills.forEach(pill => {
       pill.addEventListener('click', () => {
+        revManualTechniquesOverride = false;
         const h = parseInt(pill.dataset.hours, 10);
         if (revHours) revHours.value = h;
         if (revHoursInput) revHoursInput.value = h;
@@ -1251,6 +1402,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (revHours) {
       revHours.addEventListener('input', () => {
+        revManualTechniquesOverride = false;
         const h = revHours.value;
         if (revHoursInput) revHoursInput.value = h;
         if (revHoursVal) revHoursVal.textContent = `${h} ore`;
@@ -1267,6 +1419,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (revHoursInput) {
       revHoursInput.addEventListener('input', () => {
+        revManualTechniquesOverride = false;
         const h = revHoursInput.value;
         if (revHours) revHours.value = h;
         if (revHoursVal) revHoursVal.textContent = `${h} ore`;
@@ -1300,6 +1453,11 @@ document.addEventListener('DOMContentLoaded', () => {
         state.flourW = p.flourW;
         state.ambientTemp = p.ambientTemp;
         state.ovenType = p.ovenType;
+        state.isPrudentialMode = p.isPrudentialMode;
+        if (prudentialToggle) {
+          prudentialToggle.checked = p.isPrudentialMode;
+          if (prudentialDetails) prudentialDetails.style.display = p.isPrudentialMode ? 'block' : 'none';
+        }
         if (p.mixerKey) {
           state.friction = p.friction;
           if (mixerTypeSelect) mixerTypeSelect.value = p.mixerKey;
@@ -1407,6 +1565,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- GESTIONE TABS ---
   function switchTab(tabId) {
+    if (presetsStrip) {
+      presetsStrip.style.display = (tabId === 'tab-direct') ? '' : 'none';
+    }
+
     tabButtons.forEach(btn => {
       if (btn.dataset.tab === tabId) {
         btn.classList.add('active');

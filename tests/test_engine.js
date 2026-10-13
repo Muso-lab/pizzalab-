@@ -248,6 +248,43 @@ function runTests() {
   assert(revB.recipe.fat === 0 && revB.recipe.sugar === 0, `Per forno pro a 480°C esclusi grassi e zuccheri`);
   assert(revB.compatibilityScore === 100, `Score perfetto a 48h con Caputo Cuoco W310`);
 
+  // TEST 12: Procedure Operative, Autolisi, Pieghe e Stima Prudenziale in Reverse Mode
+  console.log("\n--- Test 12: Tecniche Speciali (Autolisi, Pieghe, Biga) & Stima Prudenziale Reverse ---");
+  const revC = optimizeReversePlan({
+    targetStyle: 'teglia_romana',
+    flourKey: 'caputo_nuvola_super', // W 330
+    ovenKey: 'forno_teglia_pro',
+    mixerKey: 'spirale_2',
+    availableHours: 4, // tempo breve per farina forte -> deve consigliare autolisi!
+    numBalls: 2,
+    ballWeight: 550,
+    ambientTemp: 22,
+    isPrudentialMode: true,
+    useAutolyse: true,
+    useFolds: true
+  });
+
+  assert(revC.recommendations.autolyseRecommended === true, `Autolisi consigliata per farina W330 in sole 4 ore`);
+  assert(revC.activeTechniques.activeAutolyse === true, `Autolisi attivata`);
+  assert(revC.autolyseWater > 0 && revC.closingWater > 0, `Acqua ripartita tra autolisi (${revC.autolyseWater}g) e chiusura (${revC.closingWater}g)`);
+  assert(revC.procedures.length >= 4, `Generate procedure operative passo-passo (${revC.procedures.length} fasi)`);
+  assert(revC.procedures.some(p => p.title.includes("Autolisi")), `Procedura contiene fase di Autolisi`);
+  assert(revC.procedures.some(p => p.title.includes("Pieghe")), `Procedura contiene fase di Pieghe di Rinforzo`);
+  assert(revC.timeline.some(s => s.id === 'autolyse'), `Timeline include step dedicato all'autolisi`);
+  assert(revC.timeline.some(s => s.id === 'folds'), `Timeline include step dedicato alle pieghe`);
+
+  // Verifica metodo Biga
+  const revBiga = optimizeReversePlan({
+    targetStyle: 'napoletana_canotto',
+    flourKey: 'caputo_cuoco',
+    ovenKey: 'forno_elettrico_pro',
+    availableHours: 20,
+    useBiga: true
+  });
+  assert(revBiga.activeTechniques.activeBiga === true, `Biga attivata con successo`);
+  assert(revBiga.procedures.some(p => p.title.includes("Biga")), `Procedura include fase di impasto Biga`);
+  assert(revBiga.timeline.some(s => s.id === 'preferment'), `Timeline include step prefermento per la biga`);
+
   console.log("\n🎉 TUTTI I TEST SCIENTIFICI SUPERATI CON SUCCESSO!");
 }
 

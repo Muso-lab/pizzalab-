@@ -791,7 +791,11 @@
       numBalls = 4,
       ballWeight = 260,
       ambientTemp = 21,
-      targetBakeDate = null
+      targetBakeDate = null,
+      isPrudentialMode = false,
+      useAutolyse = null,
+      useFolds = null,
+      useBiga = false
     } = options;
 
     // 1. Riconoscimento Farina
@@ -819,7 +823,6 @@
     let hoursAppretto = 6;
     let strategyNotes = [];
     let compatibilityScore = 100;
-    let autolyseSuggested = false;
 
     if (availableHours <= 5) {
       // Lievitazione rapida a T.A.
@@ -829,7 +832,6 @@
       strategyNotes.push(`⚡ Lievitazione Express (${availableHours}h a T.A.): gestione diretta a temperatura ambiente senza passaggio in frigorifero.`);
       if (flour.w > 300) {
         compatibilityScore -= 20;
-        autolyseSuggested = true;
         strategyNotes.push(`⚠️ Farina molto forte (${flour.name} - W ${flour.w}) per sole ${availableHours} ore: consigliata autolisi di 45 minuti con il 60% dell'acqua per accelerare l'idrolisi enzimatica.`);
       }
     } else if (availableHours <= 10) {
@@ -892,7 +894,32 @@
       strategyNotes.push(`🔥 Adattamento Forno ad Alta Temperatura (${oven.targetTemp}°C): esclusi oli e zuccheri per garantire la vera maculatura napoletana senza bruciature.`);
     }
 
-    // 5. Calcolo della Ricetta Definitiva
+    // 5. Riconoscimento Tecniche Speciali e Modalità Consigliate
+    const autolyseRecommended = (flour.w >= 290 && availableHours <= 6) || (optimizedHydration >= 74);
+    const foldsRecommended = optimizedHydration >= 70;
+    const bigaRecommended = (flour.w >= 300 && availableHours >= 16 && availableHours <= 24);
+
+    const activeAutolyse = useAutolyse !== null ? Boolean(useAutolyse) : autolyseRecommended;
+    const activeFolds = useFolds !== null ? Boolean(useFolds) : foldsRecommended;
+    const activeBiga = Boolean(useBiga);
+
+    if (isPrudentialMode) {
+      strategyNotes.push(`🛡️ Stima Prudenziale attiva: applicato margine di sicurezza (-10% lievito) per prevenire sovralievitazioni.`);
+    }
+
+    if (activeAutolyse) {
+      strategyNotes.push(`🥣 Autolisi Preventiva inclusa (45 min): la farina viene idratata al 60% prima dell'impasto, sviluppando spontaneamente estensibilità e riducendo l'attrito meccanico.`);
+    }
+
+    if (activeFolds) {
+      strategyNotes.push(`🤲 Pieghe di Rinforzo incluse: 3 serie a intervalli di 20 min in puntata per strutturare l'idratazione elevata (${optimizedHydration}%).`);
+    }
+
+    if (activeBiga) {
+      strategyNotes.push(`🥖 Metodo Indiretto Biga attivo (16-18h a 18°C): consigliato con la farina W ${flour.w} per alveolatura e croccantezza superiore.`);
+    }
+
+    // 6. Calcolo della Ricetta Definitiva
     const flourTemp = Math.round((ambientTemp - 0.5) * 10) / 10;
     const directResult = calculateDirectDough({
       numBalls,
@@ -911,10 +938,94 @@
       targetTFI: 23,
       flourTemp,
       friction: mixer.friction,
-      ovenType: ovenKey
+      ovenType: ovenKey,
+      isPrudentialMode: Boolean(isPrudentialMode)
     });
 
-    // 6. Generazione Timeline dedicata
+    const autolyseWater = Math.round(directResult.flour * 0.60 * 10) / 10;
+    const closingWater = Math.max(0, Math.round((directResult.water - autolyseWater) * 10) / 10);
+
+    // 7. Generazione Procedure Operative Dettagliate
+    const procedures = [];
+    let stepNum = 1;
+
+    if (activeBiga) {
+      const bigaFlour = directResult.flour;
+      const bigaWater = Math.round(bigaFlour * 0.45 * 10) / 10;
+      const bigaYeast = Math.round(bigaFlour * 0.01 * 100) / 100;
+      const refreshWater = Math.max(0, Math.round((directResult.water - bigaWater) * 10) / 10);
+
+      procedures.push({
+        step: stepNum++,
+        title: "🌾 Fase 1: Impasto e Fermentazione Biga (16-18 ore prima)",
+        desc: `Unire tutta la farina (${bigaFlour.toFixed(1)}g), ${bigaWater}g di acqua (45%) e ${bigaYeast}g di lievito fresco (1%). Mescolare per soli 3-4 minuti: l'impasto deve rimanere slegato e grezzo, non compatto né incordato. Lasciare riposare a 18°C per 16-18 ore.`,
+        tip: "La temperatura ideale della biga finita deve essere attorno a 18°C. Non scaldarla!"
+      });
+
+      procedures.push({
+        step: stepNum++,
+        title: "⚙️ Fase 2: Rinfresco e Chiusura Impasto",
+        desc: `Spezzettare la biga nella ciotola dell'impastatrice. Aggiungere il lievito residuo (${(directResult.yeastGrams - bigaYeast > 0 ? (directResult.yeastGrams - bigaYeast).toFixed(2) : 0)}g) e una parte dell'acqua di rinfresco (${refreshWater}g totali). Iniziare ad impastare a 1ª velocità. A maglia formata, inserire il sale (${directResult.salt.toFixed(1)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
+        tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
+      });
+    } else {
+      if (activeAutolyse) {
+        procedures.push({
+          step: stepNum++,
+          title: "🥣 Fase 1: Autolisi Preventiva (45 minuti)",
+          desc: `Versare nella ciotola tutta la farina (${directResult.flour.toFixed(1)}g) e ${autolyseWater}g di acqua (60% idratazione di autolisi). Mescolare rapidamente per 2-3 minuti solo fino ad assorbire la farina, senza impastare a lungo e ASSOLUTAMENTE SENZA lievito né sale. Coprire e lasciare a riposo per 45 minuti a temperatura ambiente (${ambientTemp}°C).`,
+          tip: "L'autolisi rompe parzialmente le catene proteiche e gli amidi, rendendo la pasta incredibilmente estensibile e riducendo il tempo di impastamento finale."
+        });
+
+        procedures.push({
+          step: stepNum++,
+          title: "⚙️ Fase 2: Chiusura e Incordatura Finale",
+          desc: `Unire alla massa in autolisi il lievito (${directResult.yeastGrams.toFixed(2)}g LBF o ${(directResult.yeastGrams / 3).toFixed(2)}g IDY). Avviare l'impastatrice a velocità 1 inserendo a filo la restante acqua (${closingWater}g). Non appena la massa si raccoglie attorno al gancio/spirale, aggiungere il sale (${directResult.salt.toFixed(1)}g)${directResult.sugar > 0 ? ', il malto/zucchero (' + directResult.sugar.toFixed(1) + 'g)' : ''}${directResult.fat > 0 ? ' e infine l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}. Incordare fino a maglia liscia e velo sottile.`,
+          tip: `Temperatura acqua consigliata: ${directResult.thermodynamics.waterTemp.toFixed(1)}°C per chiusura perfetta a 23°C.`
+        });
+      } else {
+        procedures.push({
+          step: stepNum++,
+          title: "⚙️ Fase 1: Impastamento Diretto",
+          desc: `Versare tutta la farina (${directResult.flour.toFixed(1)}g) con il lievito (${directResult.yeastGrams.toFixed(2)}g LBF o ${(directResult.yeastGrams / 3).toFixed(2)}g IDY) e il 75% dell'acqua (${Math.round(directResult.water * 0.75)}g a ${directResult.thermodynamics.waterTemp.toFixed(1)}°C). Avviare l'impasto. A maglia abbozzata, aggiungere il sale (${directResult.salt.toFixed(1)}g) e la restante acqua a filo${directResult.fat > 0 ? ' e l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
+          tip: `Incordare senza surriscaldare: target finale 23°C (TFI).`
+        });
+      }
+
+      if (activeFolds && hoursPuntata > 0) {
+        procedures.push({
+          step: stepNum++,
+          title: "🤲 Fase Pieghe di Rinforzo",
+          desc: "Durante la prima ora di puntata, eseguire 3 serie di pieghe a tre (slap & fold sul piano o coil folds in ciotola) distanziate di 20 minuti l'una dall'altra. Questo passaggio asciuga l'impasto e conferisce tensione ed elasticità alla maglia glutinica.",
+          tip: "Inumidirsi leggermente le mani con acqua fresca per evitare che l'impasto si attacchi."
+        });
+      }
+
+      procedures.push({
+        step: stepNum++,
+        title: hoursFridge > 0 ? `🧊 Fase Puntata & Maturazione in Frigo (${hoursFridge}h a 4°C)` : `🏠 Fase Puntata a T.A. (${hoursPuntata}h)`,
+        desc: hoursFridge > 0
+          ? `Lasciare puntare la massa a T.A. per ${hoursPuntata} ore, poi trasferirla in contenitore ermetico oleato in frigo a 4°C per ${hoursFridge} ore per la maturazione enzimatica profonda.`
+          : `Lasciare riposare la massa in blocco coperta a ${ambientTemp}°C per ${hoursPuntata} ore.`,
+        tip: hoursFridge > 0 ? "Estrarre dal frigo circa 1 ora prima dello staglio per far tornare la massa a temperatura lavorabile." : "Non muovere la massa durante la puntata."
+      });
+
+      procedures.push({
+        step: stepNum++,
+        title: `⚖️ Fase Staglio e Appretto (${hoursAppretto}h a T.A.)`,
+        desc: `Porzionare l'impasto in ${numBalls} panetti da ${ballWeight}g ciascuno. Pirlare con decisione per creare una superficie tesa e liscia. Disporre nei cassetti o contenitori per lievitazione per ${hoursAppretto} ore a ${ambientTemp}°C.`,
+        tip: "Al momento della stesura i panetti devono essere soffici e cedevoli al tocco, senza ritirarsi."
+      });
+
+      procedures.push({
+        step: stepNum++,
+        title: `🔥 Fase Stesura e Cottura (${oven.name})`,
+        desc: `Preriscaldare il forno per ${oven.preheatMinutes} minuti (${oven.tempRange}). Allargare il panetto su semola rimacinata partendo dal centro verso il cornicione. Condire e infornare per ${oven.bakeTimeStr}.`,
+        tip: oven.advice
+      });
+    }
+
+    // 8. Generazione Timeline dedicata
     const bakeDate = targetBakeDate || new Date(Date.now() + (availableHours * 3600 * 1000));
     const timeline = generateTimeline({
       bakeDate,
@@ -922,7 +1033,12 @@
       hoursFridge,
       acclimationHours: hoursFridge > 0 ? 1 : 0,
       hoursRoomAppretto: hoursAppretto,
-      isIndirect: false,
+      isIndirect: activeBiga,
+      prefermentHours: 16,
+      useAutolyse: activeAutolyse,
+      autolyseMinutes: 45,
+      autolyseWaterGrams: autolyseWater,
+      useFolds: activeFolds,
       ovenPreheatMinutes: oven.preheatMinutes,
       ovenName: oven.name
     });
@@ -934,7 +1050,20 @@
       oven,
       mixer,
       availableHours,
-      autolyseSuggested,
+      autolyseSuggested: autolyseRecommended,
+      recommendations: {
+        autolyseRecommended,
+        foldsRecommended,
+        bigaRecommended
+      },
+      activeTechniques: {
+        activeAutolyse,
+        activeFolds,
+        activeBiga
+      },
+      autolyseWater,
+      closingWater,
+      procedures,
       strategyNotes,
       parameters: {
         numBalls,
@@ -950,10 +1079,15 @@
         friction: mixer.friction,
         ambientTemp,
         ovenType: ovenKey,
-        mixerKey
+        mixerKey,
+        isPrudentialMode: Boolean(isPrudentialMode),
+        useAutolyse: activeAutolyse,
+        useFolds: activeFolds,
+        useBiga: activeBiga
       },
       recipe: directResult,
-      timeline
+      timeline: timeline.steps || timeline,
+      rawTimeline: timeline
     };
   }
 
@@ -970,19 +1104,25 @@
       hoursRoomAppretto = 5,
       isIndirect = false,
       prefermentHours = 16,
+      useAutolyse = false,
+      autolyseMinutes = 45,
+      autolyseWaterGrams = null,
+      useFolds = false,
       ovenPreheatMinutes = 45,
       ovenName = "Forno"
     } = options;
 
     const STEP_ORDER = {
       preferment: 1,
-      mixing: 2,
-      puntata: 3,
-      in_fridge: 4,
-      out_fridge: 5,
-      staglio: 6,
-      oven: 7,
-      bake: 8
+      autolyse: 2,
+      mixing: 3,
+      folds: 4,
+      puntata: 5,
+      in_fridge: 6,
+      out_fridge: 7,
+      staglio: 8,
+      oven: 9,
+      bake: 10
     };
 
     const steps = [];
@@ -1051,8 +1191,9 @@
     }
 
     // 5. Puntata a Temperatura Ambiente (SOLO se hoursRoomPuntata > 0)
+    let puntataStartTime = currentCursor;
     if (hoursRoomPuntata > 0) {
-      const puntataStartTime = currentCursor - (hoursRoomPuntata * 3600 * 1000);
+      puntataStartTime = currentCursor - (hoursRoomPuntata * 3600 * 1000);
       steps.push({
         id: 'puntata',
         priority: STEP_ORDER.puntata,
@@ -1062,12 +1203,27 @@
         duration: `${hoursRoomPuntata}h di puntata`
       });
       currentCursor = puntataStartTime;
+
+      // Pieghe di rinforzo opzionali
+      if (useFolds) {
+        const foldsTime = puntataStartTime + (20 * 60 * 1000);
+        steps.push({
+          id: 'folds',
+          priority: STEP_ORDER.folds,
+          time: new Date(foldsTime),
+          label: '🤲 Pieghe di Rinforzo (3 serie ogni 20 min)',
+          desc: 'Eseguire 3 serie di pieghe a tre (slap & fold o coil folds in ciotola) distanziate di 20 minuti per rafforzare la maglia glutinica e dare verticalità.',
+          duration: '1h totale'
+        });
+      }
     }
 
     // 6. Preparazione e Impastamento (30 min prima)
     const mixingTime = currentCursor - (30 * 60 * 1000);
     let mixingDesc = 'Pesatura ingredienti, calibrazione temperatura acqua e avvio impasto fino a completa incordatura.';
-    if (hoursRoomPuntata === 0) {
+    if (useAutolyse) {
+      mixingDesc = 'Unione del lievito alla massa autolitica, inserimento acqua residua a filo, sale e chiusura incordatura.';
+    } else if (hoursRoomPuntata === 0) {
       if (hoursFridge > 0) {
         mixingDesc = 'Impasto e incordatura rapida. Senza puntata a T.A., la massa viene trasferita direttamente in frigo a 4°C (puntata a freddo).';
       } else {
@@ -1079,14 +1235,27 @@
       id: 'mixing',
       priority: STEP_ORDER.mixing,
       time: new Date(mixingTime),
-      label: 'Preparazione Ingredienti e Impastamento',
+      label: useAutolyse ? 'Chiusura Impasto post-Autolisi' : 'Preparazione Ingredienti e Impastamento',
       desc: mixingDesc,
       duration: '30 min'
     });
 
-    // 7. Se metodo indiretto (Biga / Poolish)
+    // 7. Autolisi Preventiva (se attiva)
+    if (useAutolyse) {
+      const autolyseTime = mixingTime - (autolyseMinutes * 60 * 1000);
+      steps.push({
+        id: 'autolyse',
+        priority: STEP_ORDER.autolyse,
+        time: new Date(autolyseTime),
+        label: `🥣 Inizio Autolisi Preventiva (${autolyseMinutes} min)`,
+        desc: `Mescolare grossolanamente tutta la farina con l'acqua di autolisi (${autolyseWaterGrams ? autolyseWaterGrams + 'g' : '60%'}), senza lievito né sale. Riposo coperto per ${autolyseMinutes} min a T.A.`,
+        duration: `${autolyseMinutes} min`
+      });
+    }
+
+    // 8. Se metodo indiretto (Biga / Poolish)
     if (isIndirect) {
-      const prefermentTime = mixingTime - (prefermentHours * 3600 * 1000);
+      const prefermentTime = (useAutolyse ? (mixingTime - (autolyseMinutes * 60 * 1000)) : mixingTime) - (prefermentHours * 3600 * 1000);
       steps.push({
         id: 'preferment',
         priority: STEP_ORDER.preferment,
@@ -1112,6 +1281,7 @@
       return {
         ...s,
         formattedTime: `${dayName} ore ${timeStr}`,
+        timeStr: `${dayName} ore ${timeStr}`,
         timestamp: d.toISOString()
       };
     });

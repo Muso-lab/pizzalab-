@@ -535,6 +535,40 @@
                 </div>
               </div>
             </div>
+
+            <!-- Data & Ora Infornata per Cronoprogramma -->
+            <div class="form-grid" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+              <div class="form-group">
+                <label class="form-label" for="revTargetBakeDate">Giorno di Infornata</label>
+                <input type="date" id="revTargetBakeDate" class="form-input">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="revTargetBakeTime">Ora di Infornata</label>
+                <input type="time" id="revTargetBakeTime" class="form-input" value="20:00">
+              </div>
+            </div>
+
+            <!-- Stima Prudenziale in Reverse -->
+            <div class="prudential-card" style="margin-top: 1rem;">
+              <div class="prudential-header">
+                <div class="prudential-title">🛡️ Stima Prudenziale (Temperatura non misurata)</div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="revPrudentialToggle">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div id="revPrudentialDetails" style="display: none; margin-top: 0.75rem; font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
+                Scegli il clima approssimativo della tua cucina:
+                <div class="btn-group" style="margin-top: 0.4rem; gap: 0.4rem; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-secondary btn-sm rev-seasonal-btn" data-temp="20">🌸 Primavera / Autunno (~20°C)</button>
+                  <button type="button" class="btn btn-secondary btn-sm rev-seasonal-btn" data-temp="27">☀️ Estate (~27°C)</button>
+                  <button type="button" class="btn btn-secondary btn-sm rev-seasonal-btn" data-temp="16">❄️ Inverno (~16°C)</button>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.78rem; color: var(--accent);">
+                  Margine di sicurezza applicato: <strong>-10% lievito</strong> per prevenire sovralievitazione.
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Card 2: Farina a Disposizione -->
@@ -629,6 +663,55 @@
             </button>
           </div>
 
+          <!-- Card 4: Tecniche Speciali & Metodi Consigliati -->
+          <div class="card" id="revTechniquesCard">
+            <div class="card-header">
+              <span class="card-title">⚙️ 4. Tecniche Speciali & Metodi Consigliati</span>
+              <span class="card-subtitle">Personalizza le fasi di lavorazione</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              <!-- Autolisi -->
+              <div class="technique-option-box" style="background: var(--bg-input); padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer;">
+                  <input type="checkbox" id="revAutolyseCheck" style="margin-top: 0.25rem;">
+                  <div>
+                    <strong style="color: var(--text-main);">🥣 Autolisi Preventiva (45 min con 60% acqua)</strong>
+                    <div id="revAutolyseAdvice" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                      Idrata la farina prima di unire lievito e sale. Consigliata per farine forti o tempi brevi per estendere la maglia glutinica e diminuire l'attrito termico.
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Pieghe di Rinforzo -->
+              <div class="technique-option-box" style="background: var(--bg-input); padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer;">
+                  <input type="checkbox" id="revFoldsCheck" style="margin-top: 0.25rem;" checked>
+                  <div>
+                    <strong style="color: var(--text-main);">🤲 Pieghe di Rinforzo a Tre (3 serie a intervalli di 20 min)</strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                      Fornisce struttura e spinta alveolare verso l'alto durante la prima ora di puntata (fondamentale per idratazioni elevate).
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Metodo Biga -->
+              <div class="technique-option-box" style="background: var(--bg-input); padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer;">
+                  <input type="checkbox" id="revBigaCheck" style="margin-top: 0.25rem;">
+                  <div>
+                    <strong style="color: var(--text-main);">🥖 Converti in Metodo Indiretto Biga (16-18h a 18°C)</strong>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                      Sfrutta il prefermento per massimizzare la croccantezza, gli aromi e la digeribilità con farine medio-forti ($W \ge 300$).
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Colonna Destra: Risultato Ottimizzato -->
@@ -700,12 +783,24 @@
             <!-- Cronoprogramma Rapido -->
             <div class="card-header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
               <span class="card-title">⏱️ Tabella di Marcia (Backward Timeline)</span>
-              <span class="card-subtitle">Orari esatti a ritroso</span>
+              <span class="card-subtitle">Orari esatti calcolati a ritroso per la tua infornata</span>
             </div>
             <div class="timeline-card" style="padding-left: 1.5rem;">
               <ul id="revTimelineList" class="timeline-list">
                 <!-- Popolato dinamicamente -->
               </ul>
+            </div>
+            <button type="button" id="revGoToTimelineBtn" class="btn btn-secondary btn-block" style="margin-top: 0.75rem;">
+              ⏱️ Apri nel Cronoprogramma Completo
+            </button>
+
+            <!-- Card Procedura Operativa Passo-Passo -->
+            <div class="card-header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
+              <span class="card-title">📋 Procedura Operativa Passo-Passo</span>
+              <span class="card-subtitle">Istruzioni tecniche calibrate sulla tua ricetta</span>
+            </div>
+            <div id="revProceduresList" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+              <!-- Popolato dinamicamente da app.js -->
             </div>
 
             <!-- Bottoni Azione -->
