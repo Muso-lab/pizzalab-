@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.PizzaLab" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">#e76f51</item>
+        <item name="colorPrimaryVariant">#d95d39</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="android:statusBarColor">#121418</item>
+    </style>
+
+    <style name="Theme.PizzaLab.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:statusBarColor">#121418</item>
+    </style>
+</resources>

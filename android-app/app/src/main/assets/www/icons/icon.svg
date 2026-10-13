@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="flameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7e40"/>
+      <stop offset="100%" stop-color="#e63946"/>
+    </linearGradient>
+    <linearGradient id="crustGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4a261"/>
+      <stop offset="100%" stop-color="#e76f51"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1f26"/>
+      <stop offset="100%" stop-color="#0f1115"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded App Icon -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" stroke="#ff7e40" stroke-width="8" stroke-opacity="0.3"/>
+  
+  <!-- Outer Glow -->
+  <circle cx="256" cy="256" r="180" fill="url(#flameGrad)" opacity="0.12" filter="blur(20px)"/>
+
+  <!-- Pizza Slice / Science Fusion -->
+  <g transform="translate(64, 48) scale(0.75)">
+    <!-- Pizza Slice Shape -->
+    <path d="M 256,40 L 440,380 A 240,240 0 0,1 72,380 Z" fill="url(#crustGrad)" stroke="#d95d39" stroke-width="8" stroke-linejoin="round"/>
+    
+    <!-- Cheese Melt Layer -->
+    <path d="M 256,85 L 405,365 A 195,195 0 0,1 107,365 Z" fill="#ffd166"/>
+    
+    <!-- Crust Rim Top -->
+    <path d="M 64,380 Q 256,440 448,380 Q 430,340 256,340 Q 82,340 64,380 Z" fill="#e76f51"/>
+    
+    <!-- Pepperoni / Scientific Atoms -->
+    <circle cx="256" cy="200" r="34" fill="#e63946"/>
+    <circle cx="264" cy="192" r="10" fill="#f26419" opacity="0.7"/>
+    
+    <circle cx="185" cy="300" r="32" fill="#e63946"/>
+    <circle cx="192" cy="294" r="9" fill="#f26419" opacity="0.7"/>
+    
+    <circle cx="325" cy="300" r="32" fill="#e63946"/>
+    <circle cx="332" cy="294" r="9" fill="#f26419" opacity="0.7"/>
+    
+    <!-- Basil Leaves -->
+    <path d="M 220,240 C 200,220 220,195 240,225 C 240,240 230,245 220,240 Z" fill="#2a9d8f"/>
+    <path d="M 290,245 C 310,225 290,200 270,230 C 270,245 280,250 290,245 Z" fill="#2a9d8f"/>
+  </g>
+
+  <!-- Orbital Scientific Ring -->
+  <ellipse cx="256" cy="290" rx="200" ry="75" fill="none" stroke="#38bdf8" stroke-width="6" stroke-dasharray="16 12" transform="rotate(-18, 256, 290)"/>
+  <circle cx="95" cy="325" r="12" fill="#38bdf8"/>
+  <circle cx="417" cy="255" r="12" fill="#38bdf8"/>
+</svg>

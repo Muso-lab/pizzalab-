@@ -1,0 +1,21 @@
+{
+  "name": "pizzalab-scientifico",
+  "version": "2.0.0",
+  "description": "Calcolatore scientifico per impasti pizza, cinetica fermentativa e reologia",
+  "main": "js/app.js",
+  "scripts": {
+    "test": "node tests/test_engine.js && node tests/test_pizzaiolo_audit.js",
+    "serve": "python -m http.server 8080",
+    "sync-android": "node scripts/sync_android_assets.js"
+  },
+  "keywords": [
+    "pizza",
+    "impasto",
+    "reologia",
+    "fermentazione",
+    "pwa",
+    "android"
+  ],
+  "author": "PizzaLab",
+  "license": "MIT"
+}
