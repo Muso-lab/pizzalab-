@@ -207,7 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentReverseResult = null;
 
-  // Azioni & Toast
+  // Azioni, Salvataggio Default & Toast
+  const saveDefaultsBtn = document.getElementById('saveDefaultsBtn');
+  const resetDefaultsBtn = document.getElementById('resetDefaultsBtn');
+  const saveEquipmentDirectBtn = document.getElementById('saveEquipmentDirectBtn');
+  const saveEquipmentReverseBtn = document.getElementById('saveEquipmentReverseBtn');
   const copyRecipeBtn = document.getElementById('copyRecipeBtn');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const printBtn = document.getElementById('printBtn');
@@ -1497,6 +1501,173 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // --- GESTIONE PREFERENZE PREDEFINITE DELL'UTENTE (LOCALSTORAGE) ---
+  function saveUserDefaults(fromTab = 'direct') {
+    let defaults = {};
+
+    if (fromTab === 'reverse' && currentReverseResult) {
+      const p = currentReverseResult.parameters;
+      defaults = {
+        ovenType: revOvenSelect.value,
+        mixerKey: revMixerSelect.value,
+        flourKey: revFlourSelect.value,
+        flourW: p.flourW,
+        numBalls: p.numBalls,
+        ballWeight: p.ballWeight,
+        ambientTemp: p.ambientTemp,
+        flourTemp: state.flourTemp,
+        tapWaterTemp: state.tapWaterTemp,
+        targetTFI: state.targetTFI,
+        yeastType: state.yeastType,
+        isPrudentialMode: state.isPrudentialMode
+      };
+      // Sincronizza anche il tab Diretto
+      state.ovenType = defaults.ovenType;
+      ovenTypeSelect.value = defaults.ovenType;
+      if (mixerTypeSelect) mixerTypeSelect.value = defaults.mixerKey;
+      state.numBalls = defaults.numBalls;
+      state.ballWeight = defaults.ballWeight;
+      numBallsSlider.value = defaults.numBalls;
+      numBallsInput.value = defaults.numBalls;
+      numBallsVal.textContent = defaults.numBalls;
+      ballWeightSlider.value = defaults.ballWeight;
+      ballWeightInput.value = defaults.ballWeight;
+      ballWeightVal.textContent = `${defaults.ballWeight} g`;
+      state.ambientTemp = defaults.ambientTemp;
+      ambientTempSlider.value = defaults.ambientTemp;
+      ambientTempInput.value = defaults.ambientTemp;
+      ambientTempVal.textContent = `${defaults.ambientTemp} °C`;
+      recalculateDirect();
+    } else {
+      defaults = {
+        ovenType: ovenTypeSelect.value,
+        mixerKey: mixerTypeSelect.value,
+        flourKey: revFlourSelect ? revFlourSelect.value : 'caputo_pizzeria',
+        flourW: state.flourW,
+        numBalls: state.numBalls,
+        ballWeight: state.ballWeight,
+        ambientTemp: state.ambientTemp,
+        flourTemp: state.flourTemp,
+        tapWaterTemp: state.tapWaterTemp,
+        targetTFI: state.targetTFI,
+        yeastType: state.yeastType,
+        isPrudentialMode: state.isPrudentialMode
+      };
+      // Sincronizza anche il tab Reverse
+      if (revOvenSelect) revOvenSelect.value = defaults.ovenType;
+      if (revMixerSelect) revMixerSelect.value = defaults.mixerKey;
+      if (revNumBalls) revNumBalls.value = defaults.numBalls;
+      if (revBallWeight) revBallWeight.value = defaults.ballWeight;
+      if (revAmbientTemp) revAmbientTemp.value = defaults.ambientTemp;
+      recalculateReverse();
+    }
+
+    localStorage.setItem('pizzalab_user_defaults', JSON.stringify(defaults));
+    if (resetDefaultsBtn) resetDefaultsBtn.style.display = 'inline-flex';
+    showToast('⭐ Forno, impastatrice e parametri salvati come predefiniti!', '💾');
+  }
+
+  function loadUserDefaults() {
+    const raw = localStorage.getItem('pizzalab_user_defaults');
+    if (!raw) return false;
+
+    try {
+      const d = JSON.parse(raw);
+      if (!d) return false;
+
+      // Aggiorna state
+      if (d.ovenType) state.ovenType = d.ovenType;
+      if (d.numBalls) state.numBalls = d.numBalls;
+      if (d.ballWeight) state.ballWeight = d.ballWeight;
+      state.totalDoughWeight = state.numBalls * state.ballWeight;
+      if (d.ambientTemp !== undefined) state.ambientTemp = d.ambientTemp;
+      if (d.flourTemp !== undefined) state.flourTemp = d.flourTemp;
+      if (d.tapWaterTemp !== undefined) state.tapWaterTemp = d.tapWaterTemp;
+      if (d.targetTFI !== undefined) state.targetTFI = d.targetTFI;
+      if (d.flourW !== undefined) state.flourW = d.flourW;
+      if (d.yeastType) state.yeastType = d.yeastType;
+      if (d.isPrudentialMode !== undefined) state.isPrudentialMode = d.isPrudentialMode;
+
+      // Sincronizza UI Diretto
+      if (ovenTypeSelect && d.ovenType) ovenTypeSelect.value = d.ovenType;
+      if (mixerTypeSelect && d.mixerKey) mixerTypeSelect.value = d.mixerKey;
+      if (numBallsSlider) {
+        numBallsSlider.value = state.numBalls;
+        numBallsInput.value = state.numBalls;
+        numBallsVal.textContent = state.numBalls;
+      }
+      if (ballWeightSlider) {
+        ballWeightSlider.value = state.ballWeight;
+        ballWeightInput.value = state.ballWeight;
+        ballWeightVal.textContent = `${state.ballWeight} g`;
+      }
+      if (totalDoughWeightInput) totalDoughWeightInput.value = state.totalDoughWeight;
+      if (ambientTempSlider) {
+        ambientTempSlider.value = state.ambientTemp;
+        ambientTempInput.value = state.ambientTemp;
+        ambientTempVal.textContent = `${state.ambientTemp} °C`;
+      }
+      if (flourTempInput) flourTempInput.value = state.flourTemp;
+      if (tapWaterTempInput) tapWaterTempInput.value = state.tapWaterTemp;
+      if (targetTFIInput) targetTFIInput.value = state.targetTFI;
+      if (flourWSlider) {
+        flourWSlider.value = state.flourW;
+        flourWInput.value = state.flourW;
+        flourWVal.textContent = `W ${state.flourW}`;
+      }
+      if (yeastTypeSelect && d.yeastType) yeastTypeSelect.value = d.yeastType;
+      if (prudentialToggle && d.isPrudentialMode !== undefined) {
+        prudentialToggle.checked = d.isPrudentialMode;
+        if (prudentialDetails) prudentialDetails.style.display = d.isPrudentialMode ? 'block' : 'none';
+      }
+
+      // Sincronizza UI Reverse
+      if (revOvenSelect && d.ovenType) revOvenSelect.value = d.ovenType;
+      if (revMixerSelect && d.mixerKey) revMixerSelect.value = d.mixerKey;
+      if (revFlourSelect && d.flourKey) {
+        revFlourSelect.value = d.flourKey;
+        updateFlourCard();
+      }
+      if (revNumBalls && d.numBalls) revNumBalls.value = d.numBalls;
+      if (revBallWeight && d.ballWeight) revBallWeight.value = d.ballWeight;
+      if (revAmbientTemp && d.ambientTemp) revAmbientTemp.value = d.ambientTemp;
+
+      if (resetDefaultsBtn) resetDefaultsBtn.style.display = 'inline-flex';
+      recalculateDirect();
+      return true;
+    } catch (e) {
+      console.warn("Errore caricamento preferenze utente:", e);
+      return false;
+    }
+  }
+
+  function resetUserDefaults() {
+    localStorage.removeItem('pizzalab_user_defaults');
+    if (resetDefaultsBtn) resetDefaultsBtn.style.display = 'none';
+    applyPreset('napoletana_stg');
+    if (revOvenSelect) revOvenSelect.value = 'forno_casa_250';
+    if (revMixerSelect) revMixerSelect.value = 'spirale_1';
+    if (revFlourSelect) {
+      revFlourSelect.value = 'caputo_pizzeria';
+      updateFlourCard();
+    }
+    recalculateReverse();
+    showToast('Valori di fabbrica ripristinati!', '🔄');
+  }
+
+  if (saveDefaultsBtn) {
+    saveDefaultsBtn.addEventListener('click', () => saveUserDefaults('direct'));
+  }
+  if (resetDefaultsBtn) {
+    resetDefaultsBtn.addEventListener('click', resetUserDefaults);
+  }
+  if (saveEquipmentDirectBtn) {
+    saveEquipmentDirectBtn.addEventListener('click', () => saveUserDefaults('direct'));
+  }
+  if (saveEquipmentReverseBtn) {
+    saveEquipmentReverseBtn.addEventListener('click', () => saveUserDefaults('reverse'));
+  }
+
   // --- TEMA CHIARO / SCURO ---
   themeToggleBtn.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -1516,10 +1687,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Avvio iniziale
-  recalculateDirect();
+  initReverseMode();
+  const defaultsLoaded = loadUserDefaults();
+  if (!defaultsLoaded) {
+    recalculateDirect();
+  }
   recalculateIndirect();
   recalculateTeglia();
   recalculateBlend();
   updateTimeline();
-  initReverseMode();
+  recalculateReverse();
 });

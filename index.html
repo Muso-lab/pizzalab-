@@ -33,6 +33,8 @@
       </nav>
 
       <div class="header-actions">
+        <button id="saveDefaultsBtn" class="btn btn-primary btn-sm" title="Salva attrezzatura e parametri correnti come predefiniti per le prossime volte">💾 Salva Standard</button>
+        <button id="resetDefaultsBtn" class="btn btn-secondary btn-sm" title="Ripristina valori originali di fabbrica" style="display: none;">🔄 Reset</button>
         <button id="themeToggleBtn" class="btn btn-secondary btn-sm" title="Cambia tema chiaro/scuro">🌓 Tema</button>
         <button id="printBtn" class="btn btn-secondary btn-sm" title="Stampa o salva in PDF">🖨️ Stampa</button>
       </div>
@@ -358,6 +360,10 @@
             <div id="ovenAdviceBox" class="advice-box" style="margin-top: 0.75rem; margin-bottom: 0;">
               💡 <strong>Consiglio Forno Casalingo:</strong> A 250°C la cottura è prolungata: senza grassi (2-3% olio EVO) e zuccheri (1% malto o miele) la pizza si disidrata, rimanendo dura e biancastra.
             </div>
+
+            <button type="button" id="saveEquipmentDirectBtn" class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" title="Memorizza forno, impastatrice e temperature correnti per le prossime volte">
+              ⭐ Salva Forno & Impastatrice come Miei Predefiniti
+            </button>
           </div>
 
         </div>
@@ -443,6 +449,7 @@
         </div>
 
       </div>
+    </div>
 
     <!-- ========================================== -->
     <!-- TAB REVERSE: OTTIMIZZATORE INTELLIGENTE    -->
@@ -616,6 +623,10 @@
             <div id="revOvenAdvice" class="advice-box" style="margin-top: 1rem; margin-bottom: 0;">
               💡 <span>Forno a 250°C: il calcolatore aggiungerà automaticamente olio EVO e malto per preservare morbidezza ed evitare che la crosta diventi secca o pallida.</span>
             </div>
+
+            <button type="button" id="saveEquipmentReverseBtn" class="btn btn-secondary btn-sm" style="margin-top: 0.75rem; width: 100%;" title="Memorizza forno, impastatrice e farina correnti per le prossime volte">
+              ⭐ Salva Forno & Impastatrice come Miei Predefiniti
+            </button>
           </div>
 
         </div>
