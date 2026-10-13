@@ -285,12 +285,25 @@ document.addEventListener('DOMContentLoaded', () => {
     recalculateDirect();
   });
 
+  const mixerTip = document.getElementById('mixerTip');
+  const mixerTips = {
+    "1": "👐 <strong>Impasto a mano:</strong> Trasferimento termico minimo (~1°C dalle mani). Per idratazioni elevate (>65%), effettua pause di 15 min e pieghe di rinforzo (slap & fold).",
+    "5": "🌀 <strong>Spirale 1ª vel / Planetaria:</strong> Attrito moderato (~5°C). Ottima per incordare impasti tra 60% e 70%. Durata tipica d'impastamento: 10-14 minuti.",
+    "9": "⚡ <strong>Spirale 2ª velocità (Alta incordatura):</strong> Attrito marcato (~9-12°C). Indispensabile per idratazioni estreme (75-85% teglia/pinsa), inserendo l'acqua a filo. Richiede acqua quasi gelata!",
+    "3": "🤿 <strong>Braccia Tuffanti:</strong> Il massimo per l'ossigenazione dell'impasto. Scalda pochissimo (~3°C), simula il movimento umano senza stressare le catene glutiniche.",
+    "2": "🔱 <strong>Forcella:</strong> Macchina tradizionale da pizzeria napoletana. Bassa velocità, attrito minimo (~2°C), non surriscalda. Richiede tempi più lunghi (18-22 minuti).",
+    "custom": "⚙️ <strong>Attrito Personalizzato:</strong> Inserisci il surriscaldamento specifico della tua impastatrice."
+  };
+
   mixerTypeSelect.addEventListener('change', () => {
     if (mixerTypeSelect.value === 'custom') {
       const customFriction = prompt("Inserisci l'attrito meccanico stimato in °C:", "5");
       state.friction = parseFloat(customFriction) || 5;
     } else {
       state.friction = parseFloat(mixerTypeSelect.value);
+    }
+    if (mixerTip && mixerTips[mixerTypeSelect.value]) {
+      mixerTip.innerHTML = mixerTips[mixerTypeSelect.value];
     }
     recalculateDirect();
   });
