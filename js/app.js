@@ -242,19 +242,126 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let currentCalculatedDough = null;
 
+  // --- SMART SCROLL-GUARD PER SLIDER SU TOUCH SCREEN ---
+  // Protezione intelligente automatica: se il movimento del dito è verticale la pagina scorre fluida
+  // e lo slider non cambia valore; si attiva solo con uno scorrimento orizzontale deciso o tocco diretto sul cursore.
+  function setupSliderScrollGuard(slider) {
+    if (!slider || slider._scrollGuardActive) return;
+    slider._scrollGuardActive = true;
+
+    slider._isTouching = false;
+    slider._isIntentionalSlide = false;
+    slider._isVerticalScroll = false;
+    let initialValue = slider.value;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    function getThumbCenter(s) {
+      const rect = s.getBoundingClientRect();
+      const min = parseFloat(s.min) || 0;
+      const max = parseFloat(s.max) || 100;
+      const val = parseFloat(s.value) || min;
+      const range = max - min || 1;
+      const ratio = Math.max(0, Math.min(1, (val - min) / range));
+      const thumbRadius = 13;
+      const available = Math.max(0, rect.width - (thumbRadius * 2));
+      return rect.left + thumbRadius + (ratio * available);
+    }
+
+    // Intercetta l'evento input in fase di capturing per bloccare i salti immediati su track non intenzionali
+    slider.addEventListener('input', (e) => {
+      if (slider._isTouching && !slider._isIntentionalSlide) {
+        e.stopImmediatePropagation();
+        slider.value = initialValue;
+      }
+    }, true);
+
+    slider.addEventListener('pointerdown', (e) => {
+      if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+
+      slider._isTouching = true;
+      slider._isVerticalScroll = false;
+      touchStartX = e.clientX;
+      touchStartY = e.clientY;
+      initialValue = slider.value;
+
+      const thumbX = getThumbCenter(slider);
+      const distFromThumb = Math.abs(e.clientX - thumbX);
+      const isNearThumb = distFromThumb <= 32;
+
+      if (isNearThumb) {
+        slider._isIntentionalSlide = true;
+      } else {
+        slider._isIntentionalSlide = false;
+        slider.value = initialValue;
+      }
+    }, { passive: true });
+
+    slider.addEventListener('pointermove', (e) => {
+      if (!slider._isTouching || (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen')) return;
+
+      const dx = Math.abs(e.clientX - touchStartX);
+      const dy = Math.abs(e.clientY - touchStartY);
+
+      if (dy > dx && dy > 7) {
+        // Swipe verticale prevalente: l'utente sta scorrendo la pagina!
+        slider._isVerticalScroll = true;
+        slider._isIntentionalSlide = false;
+        if (slider.value !== initialValue) {
+          slider.value = initialValue;
+        }
+      } else if (dx > dy && dx > 8) {
+        // Movimento orizzontale intenzionale: l'utente sta modificando lo slider!
+        slider._isIntentionalSlide = true;
+        slider._isVerticalScroll = false;
+      } else if (!slider._isIntentionalSlide) {
+        // Movimento iniziale minimo non ancora determinato: mantieni valore intatto
+        if (slider.value !== initialValue) {
+          slider.value = initialValue;
+        }
+      }
+    }, { passive: true });
+
+    function onPointerEnd(e) {
+      if (!slider._isTouching) return;
+      const wasIntentional = slider._isIntentionalSlide;
+      const wasVertical = slider._isVerticalScroll;
+
+      slider._isTouching = false;
+      slider._isIntentionalSlide = false;
+      slider._isVerticalScroll = false;
+
+      if (wasVertical || !wasIntentional) {
+        // Era uno scorrimento verticale o un tocco accidentale sulla barra: ripristina valore
+        if (slider.value !== initialValue) {
+          slider.value = initialValue;
+          slider.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+    }
+
+    slider.addEventListener('pointerup', onPointerEnd, { passive: true });
+    slider.addEventListener('pointercancel', onPointerEnd, { passive: true });
+  }
+
   // --- FUNZIONI DI SINCRONIZZAZIONE INPUT ---
   function bindSliderAndInput(slider, input, badge, suffix, onUpdate) {
+    if (!slider) return;
+    setupSliderScrollGuard(slider);
+
     slider.addEventListener('input', () => {
-      input.value = slider.value;
+      if (input) input.value = slider.value;
       if (badge) badge.textContent = `${slider.value} ${suffix}`.trim();
       onUpdate(parseFloat(slider.value));
     });
 
-    input.addEventListener('input', () => {
-      slider.value = input.value;
-      if (badge) badge.textContent = `${input.value} ${suffix}`.trim();
-      onUpdate(parseFloat(input.value));
-    });
+    if (input) {
+      input.addEventListener('input', () => {
+        slider.value = input.value;
+        if (badge) badge.textContent = `${input.value} ${suffix}`.trim();
+        onUpdate(parseFloat(input.value));
+      });
+    }
   }
 
   // Binding Inputs Impasto Diretto
@@ -1901,6 +2008,10 @@ document.addEventListener('DOMContentLoaded', () => {
   recalculateIndirect();
   recalculateTeglia();
   recalculateBlend();
+
+  // Protezione intelligente Scroll-Guard per tutti gli slider
+  document.querySelectorAll('.range-slider').forEach(setupSliderScrollGuard);
+
   updateTimeline();
   recalculateReverse();
 });

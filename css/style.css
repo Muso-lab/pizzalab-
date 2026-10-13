@@ -371,6 +371,7 @@ body {
   margin: 0;
   cursor: pointer;
   outline: none;
+  touch-action: pan-y;
 }
 
 .range-slider::-webkit-slider-runnable-track {
@@ -1354,6 +1355,7 @@ body {
 
   .range-slider {
     height: 42px;
+    touch-action: pan-y;
   }
 
   .range-slider::-webkit-slider-thumb {
