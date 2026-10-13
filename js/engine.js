@@ -727,6 +727,236 @@
     }
   };
 
+  // --- DATABASE FARINE COMMERCIALI & DATI REOLOGICI ---
+  const COMMERCIAL_FLOURS = {
+    // Caputo
+    caputo_pizzeria: { brand: "Caputo", name: "Caputo Pizzeria (Tipo 00)", w: 260, protein: 12.5, pl: 0.55, maxHydr: 68, category: "Media (W 260)" },
+    caputo_cuoco: { brand: "Caputo", name: "Caputo Cuoco / Chef (Tipo 00)", w: 310, protein: 13.0, pl: 0.55, maxHydr: 75, category: "Forte (W 310)" },
+    caputo_nuvola: { brand: "Caputo", name: "Caputo Nuvola (Tipo 0)", w: 270, protein: 12.5, pl: 0.55, maxHydr: 72, category: "Media (W 270)" },
+    caputo_nuvola_super: { brand: "Caputo", name: "Caputo Nuvola Super (Tipo 0)", w: 330, protein: 13.5, pl: 0.55, maxHydr: 80, category: "Forte (W 330)" },
+    caputo_manitoba: { brand: "Caputo", name: "Caputo Manitoba Oro (Tipo 0)", w: 380, protein: 14.5, pl: 0.65, maxHydr: 85, category: "Molto Forte (W 380)" },
+    caputo_classica: { brand: "Caputo", name: "Caputo Classica (Tipo 00)", w: 220, protein: 11.5, pl: 0.50, maxHydr: 62, category: "Debole (W 220)" },
+    
+    // Le 5 Stagioni
+    stagioni_napoletana: { brand: "Le 5 Stagioni", name: "5 Stagioni Pizza Napoletana", w: 300, protein: 13.0, pl: 0.55, maxHydr: 74, category: "Forte (W 300)" },
+    stagioni_superiore: { brand: "Le 5 Stagioni", name: "5 Stagioni Superiore", w: 330, protein: 13.0, pl: 0.55, maxHydr: 78, category: "Forte (W 330)" },
+    stagioni_manitoba: { brand: "Le 5 Stagioni", name: "5 Stagioni Manitoba", w: 390, protein: 14.5, pl: 0.65, maxHydr: 85, category: "Molto Forte (W 390)" },
+    
+    // Garofalo
+    garofalo_w260: { brand: "Garofalo", name: "Garofalo Tipo 0 W 260", w: 260, protein: 12.0, pl: 0.55, maxHydr: 70, category: "Media (W 260)" },
+    garofalo_w350: { brand: "Garofalo", name: "Garofalo Tipo 0 W 350", w: 350, protein: 14.0, pl: 0.60, maxHydr: 82, category: "Forte (W 350)" },
+    
+    // Barilla
+    barilla_tipo00: { brand: "Barilla", name: "Barilla Tipo 00 Classica", w: 190, protein: 10.5, pl: 0.50, maxHydr: 60, category: "Debole (W 190)" },
+    barilla_manitoba: { brand: "Barilla", name: "Barilla Manitoba Oro", w: 360, protein: 14.0, pl: 0.60, maxHydr: 80, category: "Forte (W 360)" },
+
+    // Spadoni
+    spadoni_pizza: { brand: "Molino Spadoni", name: "Spadoni Gran Mugnaio Pizza", w: 210, protein: 11.0, pl: 0.50, maxHydr: 62, category: "Debole (W 210)" },
+    spadoni_pulcinella: { brand: "Molino Spadoni", name: "Spadoni Pulcinella Tipo 0", w: 280, protein: 12.5, pl: 0.55, maxHydr: 72, category: "Media (W 280)" },
+    spadoni_manitoba: { brand: "Molino Spadoni", name: "Spadoni Manitoba d'America", w: 360, protein: 14.0, pl: 0.60, maxHydr: 82, category: "Forte (W 360)" },
+
+    // Casillo
+    casillo_pizza: { brand: "Molino Casillo", name: "Casillo Farina Pizza Tipo 0", w: 280, protein: 12.5, pl: 0.55, maxHydr: 72, category: "Media (W 280)" },
+    casillo_super: { brand: "Molino Casillo", name: "Casillo Super Pizza Tipo 0", w: 320, protein: 13.0, pl: 0.55, maxHydr: 76, category: "Forte (W 320)" },
+    casillo_manitoba: { brand: "Molino Casillo", name: "Casillo Manitoba Tipo 0", w: 380, protein: 14.5, pl: 0.65, maxHydr: 85, category: "Molto Forte (W 380)" },
+
+    // Divella
+    divella_pizza: { brand: "Divella", name: "Divella Pizza Tipo 00", w: 220, protein: 11.5, pl: 0.50, maxHydr: 63, category: "Debole (W 220)" },
+    divella_manitoba: { brand: "Divella", name: "Divella Manitoba", w: 350, protein: 14.0, pl: 0.60, maxHydr: 80, category: "Forte (W 350)" },
+
+    // Petra
+    petra_5037: { brand: "Petra (Molino Quaglia)", name: "Petra 5037 Pizza", w: 300, protein: 13.0, pl: 0.55, maxHydr: 75, category: "Forte (W 300)" },
+    petra_5063: { brand: "Petra (Molino Quaglia)", name: "Petra 5063 Special", w: 260, protein: 12.0, pl: 0.55, maxHydr: 70, category: "Media (W 260)" },
+
+    // Generiche
+    generic_debole: { brand: "Generica", name: "Farina Debole da Supermercato (W 180)", w: 180, protein: 10.0, pl: 0.50, maxHydr: 58, category: "Debole (W 180)" },
+    generic_media: { brand: "Generica", name: "Farina Media Standard (W 250)", w: 250, protein: 11.5, pl: 0.55, maxHydr: 68, category: "Media (W 250)" },
+    generic_forte: { brand: "Generica", name: "Farina Forte / Panettone (W 320)", w: 320, protein: 13.0, pl: 0.55, maxHydr: 76, category: "Forte (W 320)" },
+    generic_manitoba: { brand: "Generica", name: "Manitoba Commerciale (W 380)", w: 380, protein: 14.5, pl: 0.65, maxHydr: 85, category: "Molto Forte (W 380)" }
+  };
+
+  /**
+   * MODALITÀ REVERSE: Ottimizzatore Intelligente
+   * Calcola l'assetto perfetto (farina, idratazione, grassi, zuccheri, frigo/TA, lievito e TFI)
+   * in base a: stile desiderato + forno a disposizione + farina a disposizione + impastatrice + ore disponibili.
+   */
+  function optimizeReversePlan(options) {
+    const {
+      targetStyle = 'napoletana_stg',
+      flourKey = 'caputo_pizzeria',
+      customFlourW = 280,
+      ovenKey = 'forno_casa_250',
+      mixerKey = 'spirale_1',
+      availableHours = 8,
+      numBalls = 4,
+      ballWeight = 260,
+      ambientTemp = 21,
+      targetBakeDate = null
+    } = options;
+
+    // 1. Riconoscimento Farina
+    let flour = COMMERCIAL_FLOURS[flourKey];
+    if (!flour) {
+      flour = {
+        brand: "Personalizzata",
+        name: `Farina Personalizzata (W ${customFlourW})`,
+        w: customFlourW || 280,
+        protein: 12.0,
+        pl: 0.55,
+        maxHydr: Math.round(52 + ((customFlourW || 280) * 0.08)),
+        category: `W ${customFlourW || 280}`
+      };
+    }
+
+    // 2. Dati Forno, Impastatrice e Preset base
+    const oven = OVENS[ovenKey] || OVENS.forno_casa_250;
+    const mixer = MIXERS[mixerKey] || MIXERS.spirale_1;
+    const basePreset = PRESETS[targetStyle] || PRESETS.napoletana_stg;
+
+    // 3. Ripartizione Intelligente del Tempo (Puntata vs Frigo vs Appretto)
+    let hoursPuntata = 2;
+    let hoursFridge = 0;
+    let hoursAppretto = 6;
+    let strategyNotes = [];
+    let compatibilityScore = 100;
+    let autolyseSuggested = false;
+
+    if (availableHours <= 5) {
+      // Lievitazione rapida a T.A.
+      hoursFridge = 0;
+      hoursPuntata = 1;
+      hoursAppretto = Math.max(2, availableHours - hoursPuntata);
+      strategyNotes.push(`⚡ Lievitazione Express (${availableHours}h a T.A.): gestione diretta a temperatura ambiente senza passaggio in frigorifero.`);
+      if (flour.w > 300) {
+        compatibilityScore -= 20;
+        autolyseSuggested = true;
+        strategyNotes.push(`⚠️ Farina molto forte (${flour.name} - W ${flour.w}) per sole ${availableHours} ore: consigliata autolisi di 45 minuti con il 60% dell'acqua per accelerare l'idrolisi enzimatica.`);
+      }
+    } else if (availableHours <= 10) {
+      // Gestione classica a T.A. (tipo Napoletana da mattina per sera)
+      hoursFridge = 0;
+      hoursPuntata = Math.min(3, Math.max(1, Math.round(availableHours * 0.25)));
+      hoursAppretto = availableHours - hoursPuntata;
+      strategyNotes.push(`🕐 Lievitazione Giornaliera (${availableHours}h a T.A.): ideale per impastare al mattino e cuocere alla sera.`);
+      if (flour.w > 320) {
+        compatibilityScore -= 15;
+        strategyNotes.push(`💡 Farina W ${flour.w} ha un potenziale enzimatico più lungo: con ${availableHours}h la pizza sarà buona ma darà il massimo a 24-48h.`);
+      } else if (flour.w < 200) {
+        strategyNotes.push(`Farina debole W ${flour.w}: tempi ottimali per non oltrepassare la maturazione.`);
+      }
+    } else if (availableHours <= 20) {
+      // 12-20 ore
+      if (flour.w >= 280) {
+        hoursPuntata = 2;
+        hoursFridge = Math.max(0, availableHours - 6 - hoursPuntata);
+        hoursAppretto = availableHours - hoursPuntata - hoursFridge;
+        strategyNotes.push(`❄️ Gestione Mista Frigo/T.A.: ${hoursFridge}h a 4°C per rilassare il glutine della farina W ${flour.w}, seguite da ${hoursAppretto}h di appretto a temperatura ambiente.`);
+      } else {
+        hoursFridge = 0;
+        hoursPuntata = Math.round(availableHours * 0.3);
+        hoursAppretto = availableHours - hoursPuntata;
+        strategyNotes.push(`🏠 Lunga fermentazione a T.A. (${availableHours}h): calibrato dosaggio millimetrico di lievito per non sovralievitare.`);
+      }
+    } else {
+      // 24h, 48h, 72h
+      hoursPuntata = 2;
+      hoursAppretto = Math.min(6, Math.max(4, Math.round(availableHours * 0.12)));
+      hoursFridge = availableHours - hoursPuntata - hoursAppretto;
+      strategyNotes.push(`🧊 Maturazione Lunga Controllata a Freddo (${hoursFridge}h in frigo a 4°C + ${hoursAppretto}h di appretto a T.A.): massima digeribilità e scomposizione proteica.`);
+      if (flour.w < 260) {
+        compatibilityScore -= 30;
+        strategyNotes.push(`⚠️ Rischio collasso: la farina selezionata (W ${flour.w}) è debole per un tempo così prolungato (${availableHours}h). Si consiglia una farina con W almeno 300-340 o di ridurre i tempi.`);
+      }
+    }
+
+    // 4. Ottimizzazione Idratazione in funzione di Farina e Forno
+    let optimizedHydration = basePreset.hydration;
+    if (optimizedHydration > flour.maxHydr) {
+      optimizedHydration = flour.maxHydr;
+      strategyNotes.push(`💧 Idratazione regolata a ${optimizedHydration}%: limite di assorbimento ottimale per ${flour.name}.`);
+    }
+
+    let optimizedFatPct = basePreset.fatPct;
+    let optimizedSugarPct = basePreset.sugarPct;
+
+    if (oven.requiresFatAndSugar) {
+      if (optimizedFatPct < 2.0) optimizedFatPct = 2.5; // Olio EVO per trattenere umidità
+      if (optimizedSugarPct < 1.0) optimizedSugarPct = 1.0; // Malto / Zucchero per doratura a 250°C
+      if (targetStyle === 'napoletana_stg' || targetStyle === 'napoletana_canotto') {
+        optimizedHydration = Math.min(flour.maxHydr, Math.max(optimizedHydration, 65));
+        strategyNotes.push(`🔥 Adattamento Forno Casalingo (250°C): aggiunti 2.5% Olio EVO e 1% Malto e idratazione a ${optimizedHydration}% per compensare la cottura lenta ed evitare che la pizza diventi secca o pallida.`);
+      }
+    } else if (oven.targetTemp >= 450) {
+      optimizedFatPct = 0;
+      optimizedSugarPct = 0;
+      strategyNotes.push(`🔥 Adattamento Forno ad Alta Temperatura (${oven.targetTemp}°C): esclusi oli e zuccheri per garantire la vera maculatura napoletana senza bruciature.`);
+    }
+
+    // 5. Calcolo della Ricetta Definitiva
+    const flourTemp = Math.round((ambientTemp - 0.5) * 10) / 10;
+    const directResult = calculateDirectDough({
+      numBalls,
+      ballWeight,
+      hydration: optimizedHydration,
+      saltPct: basePreset.saltPct || 2.5,
+      fatPct: optimizedFatPct,
+      sugarPct: optimizedSugarPct,
+      ambientTemp,
+      hoursRoomPuntata: hoursPuntata,
+      hoursFridge,
+      fridgeTemp: 4,
+      hoursRoomAppretto: hoursAppretto,
+      flourW: flour.w,
+      yeastType: 'fresh',
+      targetTFI: 23,
+      flourTemp,
+      friction: mixer.friction,
+      ovenType: ovenKey
+    });
+
+    // 6. Generazione Timeline dedicata
+    const bakeDate = targetBakeDate || new Date(Date.now() + (availableHours * 3600 * 1000));
+    const timeline = generateTimeline({
+      bakeDate,
+      hoursRoomPuntata: hoursPuntata,
+      hoursFridge,
+      acclimationHours: hoursFridge > 0 ? 1 : 0,
+      hoursRoomAppretto: hoursAppretto,
+      isIndirect: false,
+      ovenPreheatMinutes: oven.preheatMinutes,
+      ovenName: oven.name
+    });
+
+    return {
+      compatibilityScore: Math.max(20, Math.min(100, compatibilityScore)),
+      styleName: basePreset.name,
+      flour,
+      oven,
+      mixer,
+      availableHours,
+      autolyseSuggested,
+      strategyNotes,
+      parameters: {
+        numBalls,
+        ballWeight,
+        hydration: optimizedHydration,
+        saltPct: basePreset.saltPct || 2.5,
+        fatPct: optimizedFatPct,
+        sugarPct: optimizedSugarPct,
+        hoursRoomPuntata: hoursPuntata,
+        hoursFridge,
+        hoursRoomAppretto: hoursAppretto,
+        flourW: flour.w,
+        friction: mixer.friction,
+        ambientTemp,
+        ovenType: ovenKey,
+        mixerKey
+      },
+      recipe: directResult,
+      timeline
+    };
+  }
+
   /**
    * Generatore di Cronoprogramma Temporale a Ritroso (Timeline Planner)
    * Corretto per eliminare step ridondanti quando hoursRoomPuntata = 0 e ordinamento garantito
@@ -1030,6 +1260,8 @@
     generateTimeline,
     PRESETS,
     MIXERS,
-    OVENS
+    OVENS,
+    COMMERCIAL_FLOURS,
+    optimizeReversePlan
   };
 }));

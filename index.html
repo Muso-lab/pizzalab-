@@ -24,6 +24,7 @@
 
       <nav class="tabs-nav">
         <button class="tab-btn active" data-tab="tab-direct">🍕 Impasto Diretto</button>
+        <button class="tab-btn" data-tab="tab-reverse">🧙 Modalità Reverse</button>
         <button class="tab-btn" data-tab="tab-indirect">🥖 Metodi Indiretti</button>
         <button class="tab-btn" data-tab="tab-teglia">📐 Calcolo Teglia</button>
         <button class="tab-btn" data-tab="tab-blend">🌾 Blend Farine</button>
@@ -439,6 +440,275 @@
             </div>
 
           </div>
+        </div>
+
+      </div>
+
+    <!-- ========================================== -->
+    <!-- TAB REVERSE: OTTIMIZZATORE INTELLIGENTE    -->
+    <!-- ========================================== -->
+    <div id="tab-reverse" class="tab-content">
+      
+      <!-- Banner Informativo Modalità Reverse -->
+      <div class="reverse-hero">
+        <div>
+          <div class="reverse-hero-title">🧙 Modalità Reverse: Ottimizzatore Intelligente</div>
+          <div class="reverse-hero-subtitle">
+            Indica cosa vuoi preparare, la farina e gli strumenti che hai in cucina: il motore scientifico calcolerà la formula perfetta per te.
+          </div>
+        </div>
+        <button id="revRunBtn" class="btn btn-primary">🔮 Ottimizza Ricetta</button>
+      </div>
+
+      <div class="calculator-grid">
+
+        <!-- Colonna Sinistra: Input Scenario -->
+        <div class="inputs-column">
+
+          <!-- Card 1: Stile Pizza e Ore Disponibili -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🎯 1. Stile Desiderato & Tempo a Disposizione</span>
+              <span class="card-subtitle">Cosa vuoi fare e quanto puoi aspettare</span>
+            </div>
+
+            <div class="form-grid" style="margin-bottom: 1.25rem;">
+              <div class="form-group" style="grid-column: 1 / -1;">
+                <label class="form-label" for="revStyleSelect">Stile di Pizza Desiderato</label>
+                <select id="revStyleSelect" class="form-select">
+                  <option value="napoletana_stg" selected>Napoletana Tradizionale STG (Cornicione morbido, 62-65% idro)</option>
+                  <option value="napoletana_canotto">Pizza Contemporanea / Canotto (Cornicione pronunciato, 70-75% idro)</option>
+                  <option value="teglia_romana">Teglia Romana ad Alta Idratazione (Alveolata e croccante, 78-82% idro)</option>
+                  <option value="tonda_romana">Tonda Romana Scrocchiarella (Bassa, stesa a mattarello o sottile)</option>
+                  <option value="pinsa_romana">Pinsa Romana (Mix croccante fuori, nuvola dentro)</option>
+                  <option value="new_york">New York Style (Sottile, pieghevole, con olio e zucchero)</option>
+                  <option value="focaccia_genovese">Focaccia Genovese Classica (Spessore 2cm, morbida e unta)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+              <label class="form-label">Tempo Totale a Disposizione: <span id="revHoursVal" class="val-badge">8 ore</span></label>
+              
+              <!-- Quick Pills -->
+              <div class="quick-pills-row">
+                <button type="button" class="quick-pill" data-hours="4">⚡ 4h Express</button>
+                <button type="button" class="quick-pill active" data-hours="8">🕒 8h Giornata</button>
+                <button type="button" class="quick-pill" data-hours="12">🌙 12h Giornata/Notte</button>
+                <button type="button" class="quick-pill" data-hours="24">❄️ 24h Frigo</button>
+                <button type="button" class="quick-pill" data-hours="48">🧊 48h Maturazione Fredda</button>
+              </div>
+
+              <input type="range" id="revHours" class="range-slider" min="2" max="72" value="8" step="1">
+              <div class="input-with-unit" style="margin-top: 0.5rem;">
+                <input type="number" id="revHoursInput" class="form-input" min="2" max="120" value="8">
+                <span class="input-unit">ore totali</span>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="revNumBalls">Numero Panetti</label>
+                <input type="number" id="revNumBalls" class="form-input" min="1" max="100" value="4">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="revBallWeight">Peso Singolo Panetto</label>
+                <div class="input-with-unit">
+                  <input type="number" id="revBallWeight" class="form-input" min="100" max="1500" value="260">
+                  <span class="input-unit">g</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="revAmbientTemp">Temperatura Ambiente Stimata</label>
+                <div class="input-with-unit">
+                  <input type="number" id="revAmbientTemp" class="form-input" min="10" max="38" step="0.5" value="21">
+                  <span class="input-unit">°C</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Farina a Disposizione -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🌾 2. Farina a Disposizione (Brand Commerciali)</span>
+              <span class="card-subtitle">Riconoscimento automatico W, proteine e limite assorbimento</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="revFlourSelect">Seleziona la tua Farina</label>
+              <select id="revFlourSelect" class="form-select">
+                <!-- Popolato dinamicamente da app.js -->
+              </select>
+            </div>
+
+            <div id="revCustomWGroup" class="form-group" style="display: none; margin-top: 1rem;">
+              <label class="form-label" for="revCustomWInput">Forza Farina Personalizzata (W)</label>
+              <div class="input-with-unit">
+                <input type="number" id="revCustomWInput" class="form-input" min="130" max="450" value="280">
+                <span class="input-unit">W</span>
+              </div>
+            </div>
+
+            <!-- Scheda Tecnica Dinamica Farina -->
+            <div id="revFlourCard" class="flour-spec-badge-grid">
+              <div class="flour-spec-item">
+                <div class="flour-spec-lbl">Forza</div>
+                <div id="revFlourWDisplay" class="flour-spec-val">W 260</div>
+              </div>
+              <div class="flour-spec-item">
+                <div class="flour-spec-lbl">Proteine</div>
+                <div id="revFlourProtDisplay" class="flour-spec-val">12.5%</div>
+              </div>
+              <div class="flour-spec-item">
+                <div class="flour-spec-lbl">P/L Indicativo</div>
+                <div id="revFlourPLDisplay" class="flour-spec-val">0.55</div>
+              </div>
+              <div class="flour-spec-item">
+                <div class="flour-spec-lbl">Max Assorb.</div>
+                <div id="revFlourHydrDisplay" class="flour-spec-val">68%</div>
+              </div>
+              <div class="flour-spec-item">
+                <div class="flour-spec-lbl">Categoria</div>
+                <div id="revFlourCatDisplay" class="flour-spec-val">Media</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: I Tuoi Strumenti (Forno & Impastatrice) -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🔥 3. Attrezzatura a Disposizione</span>
+              <span class="card-subtitle">Forno e impastatrice per calibrare temperatura e grassi</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="revOvenSelect">Forno a Disposizione</label>
+                <select id="revOvenSelect" class="form-select">
+                  <option value="forno_casa_250" selected>Forno di Casa Tradizionale (250°C)</option>
+                  <option value="forno_casa_pietra">Forno di Casa + Pietra / Biscotto (275°C - 300°C)</option>
+                  <option value="fornetto_elettrico">Fornetto Elettrico a Conchiglia (G3 Ferrari / Ariete - 390°C - 420°C)</option>
+                  <option value="forno_elettrico_pro">Forno Elettrico Professionale Pizza (Effeuno / Nanolotto - 450°C - 500°C)</option>
+                  <option value="forno_gas_pizza">Forno a Gas per Pizza (Ooni, Roccbox, Gozney - 450°C - 500°C)</option>
+                  <option value="forno_legna">Forno a Legna Tradizionale (450°C - 485°C)</option>
+                  <option value="forno_teglia_pro">Forno Statico Professionale Teglia (280°C - 320°C)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="revMixerSelect">Impastatrice / Metodo</label>
+                <select id="revMixerSelect" class="form-select">
+                  <option value="a_mano">A Mano (Nessun riscaldamento meccanico, +1°C)</option>
+                  <option value="spirale_1" selected>Spirale: Monovelocità (1ª vel, +4°C)</option>
+                  <option value="spirale_2">Spirale: Professionale 2 velocità (1ª + 2ª vel, +9°C)</option>
+                  <option value="planetaria_bassa">Planetaria Casalinga: Bassa vel. (vel. 1-2, +6°C)</option>
+                  <option value="planetaria_alta">Planetaria Casalinga: Media/Alta vel. (vel. 3-4, +10°C)</option>
+                  <option value="forcella">Forcella Tradizionale (+2°C)</option>
+                  <option value="tuffanti">Braccia Tuffanti (+3°C)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Dettaglio forno -->
+            <div id="revOvenAdvice" class="advice-box" style="margin-top: 1rem; margin-bottom: 0;">
+              💡 <span>Forno a 250°C: il calcolatore aggiungerà automaticamente olio EVO e malto per preservare morbidezza ed evitare che la crosta diventi secca o pallida.</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Colonna Destra: Risultato Ottimizzato -->
+        <div class="results-column">
+
+          <!-- Card Risultato Strategico -->
+          <div class="card recipe-table-card">
+            <div class="card-header">
+              <span class="card-title">✨ Verdetto Scientifico Ottimizzato</span>
+              <span class="card-subtitle">Formula bilanciata su misura per il tuo scenario</span>
+            </div>
+
+            <!-- Score di Compatibilità Scenario -->
+            <div class="score-badge-card">
+              <div id="revScoreCircle" class="score-circle">95%</div>
+              <div class="score-details">
+                <div id="revScoreTitle" class="score-details-title">Compatibilità Eccellente</div>
+                <div id="revScoreDesc" class="score-details-desc">Farina e tempi perfettamente in equilibrio reologico.</div>
+              </div>
+            </div>
+
+            <!-- Ripartizione Oraria Visiva -->
+            <div style="margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+              Ripartizione Tempi Ottimizzata:
+            </div>
+            <div class="time-breakdown-bar">
+              <div id="revTimeBarPuntata" class="time-segment-puntata" style="width: 25%;" title="Puntata T.A.">Puntata: 2h</div>
+              <div id="revTimeBarFridge" class="time-segment-fridge" style="width: 0%; display: none;" title="Frigorifero 4°C">Frigo: 0h</div>
+              <div id="revTimeBarAppretto" class="time-segment-appretto" style="width: 75%;" title="Appretto T.A.">Appretto: 6h</div>
+            </div>
+
+            <!-- Note Strategiche -->
+            <div style="margin-top: 1rem; margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+              Regolazioni & Adattamenti Scientifici Applicati:
+            </div>
+            <ul id="revStrategyList" class="rev-strategy-list">
+              <!-- Popolato dinamicamente -->
+            </ul>
+
+            <!-- Tabella Ingredienti Calcolati -->
+            <div style="margin-top: 1.25rem; margin-bottom: 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">
+              Dosaggi al Grammo (Percentuali su Farina):
+            </div>
+            <table class="recipe-table">
+              <thead>
+                <tr>
+                  <th>Ingrediente</th>
+                  <th>% Farina</th>
+                  <th style="text-align: right;">Grammi</th>
+                </tr>
+              </thead>
+              <tbody id="revRecipeTableBody">
+                <!-- Popolato dinamicamente -->
+              </tbody>
+            </table>
+
+            <!-- Termodinamica Acqua TFI -->
+            <div id="revThermoBox" class="thermo-box" style="margin-top: 1rem;">
+              <div class="thermo-icon">🌡️</div>
+              <div class="thermo-details">
+                <div class="thermo-title">Temperatura Acqua Consigliata (TFI)</div>
+                <div id="revWaterTempDisplay" class="thermo-value">16.5 °C</div>
+                <div id="revThermoSubtext" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
+                  Per chiusura a 23°C con l'attrito della tua impastatrice
+                </div>
+              </div>
+            </div>
+
+            <!-- Cronoprogramma Rapido -->
+            <div class="card-header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
+              <span class="card-title">⏱️ Tabella di Marcia (Backward Timeline)</span>
+              <span class="card-subtitle">Orari esatti a ritroso</span>
+            </div>
+            <div class="timeline-card" style="padding-left: 1.5rem;">
+              <ul id="revTimelineList" class="timeline-list">
+                <!-- Popolato dinamicamente -->
+              </ul>
+            </div>
+
+            <!-- Bottoni Azione -->
+            <div class="btn-group" style="margin-top: 1.5rem; flex-direction: column;">
+              <button id="revApplyToDirectBtn" class="btn btn-primary btn-block">
+                📥 Carica questa Ricetta nel Calcolatore Completo
+              </button>
+              <button id="revCopyRecipeBtn" class="btn btn-secondary btn-block">
+                📋 Copia Scheda Tecnica Ottimizzata
+              </button>
+            </div>
+
+          </div>
+
         </div>
 
       </div>

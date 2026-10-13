@@ -170,6 +170,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const timelineList = document.getElementById('timelineList');
   const goToTimelineBtn = document.getElementById('goToTimelineBtn');
 
+  // --- SELETTORI MODALITÀ REVERSE ---
+  const revStyleSelect = document.getElementById('revStyleSelect');
+  const revHours = document.getElementById('revHours');
+  const revHoursInput = document.getElementById('revHoursInput');
+  const revHoursVal = document.getElementById('revHoursVal');
+  const revQuickPills = document.querySelectorAll('.quick-pill');
+  const revNumBalls = document.getElementById('revNumBalls');
+  const revBallWeight = document.getElementById('revBallWeight');
+  const revAmbientTemp = document.getElementById('revAmbientTemp');
+  const revFlourSelect = document.getElementById('revFlourSelect');
+  const revCustomWGroup = document.getElementById('revCustomWGroup');
+  const revCustomWInput = document.getElementById('revCustomWInput');
+  const revFlourWDisplay = document.getElementById('revFlourWDisplay');
+  const revFlourProtDisplay = document.getElementById('revFlourProtDisplay');
+  const revFlourPLDisplay = document.getElementById('revFlourPLDisplay');
+  const revFlourHydrDisplay = document.getElementById('revFlourHydrDisplay');
+  const revFlourCatDisplay = document.getElementById('revFlourCatDisplay');
+  const revOvenSelect = document.getElementById('revOvenSelect');
+  const revMixerSelect = document.getElementById('revMixerSelect');
+  const revOvenAdvice = document.getElementById('revOvenAdvice');
+  const revRunBtn = document.getElementById('revRunBtn');
+  const revScoreCircle = document.getElementById('revScoreCircle');
+  const revScoreTitle = document.getElementById('revScoreTitle');
+  const revScoreDesc = document.getElementById('revScoreDesc');
+  const revTimeBarPuntata = document.getElementById('revTimeBarPuntata');
+  const revTimeBarFridge = document.getElementById('revTimeBarFridge');
+  const revTimeBarAppretto = document.getElementById('revTimeBarAppretto');
+  const revStrategyList = document.getElementById('revStrategyList');
+  const revRecipeTableBody = document.getElementById('revRecipeTableBody');
+  const revWaterTempDisplay = document.getElementById('revWaterTempDisplay');
+  const revThermoSubtext = document.getElementById('revThermoSubtext');
+  const revTimelineList = document.getElementById('revTimelineList');
+  const revApplyToDirectBtn = document.getElementById('revApplyToDirectBtn');
+  const revCopyRecipeBtn = document.getElementById('revCopyRecipeBtn');
+
+  let currentReverseResult = null;
+
   // Azioni & Toast
   const copyRecipeBtn = document.getElementById('copyRecipeBtn');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -905,6 +942,465 @@ document.addEventListener('DOMContentLoaded', () => {
     switchTab('tab-timeline');
   });
 
+  // --- LOGICA MODALITÀ REVERSE (WIZARD INTELLIGENTE) ---
+  const STYLE_DEFAULTS = {
+    napoletana_stg: { weight: 260, count: 4 },
+    napoletana_canotto: { weight: 270, count: 4 },
+    teglia_romana: { weight: 550, count: 2 },
+    tonda_romana: { weight: 170, count: 4 },
+    pinsa_romana: { weight: 320, count: 4 },
+    new_york: { weight: 350, count: 3 },
+    focaccia_genovese: { weight: 600, count: 2 }
+  };
+
+  function populateReverseFlours() {
+    if (!revFlourSelect) return;
+    const flours = engine.COMMERCIAL_FLOURS;
+    if (!flours) return;
+
+    const brands = {};
+    for (const [key, f] of Object.entries(flours)) {
+      if (!brands[f.brand]) brands[f.brand] = [];
+      brands[f.brand].push({ key, ...f });
+    }
+
+    let html = '';
+    for (const [brandName, list] of Object.entries(brands)) {
+      html += `<optgroup label="${brandName}">`;
+      list.forEach(item => {
+        html += `<option value="${item.key}" ${item.key === 'caputo_pizzeria' ? 'selected' : ''}>${item.name} (W ${item.w})</option>`;
+      });
+      html += `</optgroup>`;
+    }
+    html += `<optgroup label="Personalizzata">
+      <option value="custom">✏️ Inserisci W Manuale Personalizzato</option>
+    </optgroup>`;
+
+    revFlourSelect.innerHTML = html;
+  }
+
+  function updateFlourCard() {
+    if (!revFlourSelect) return;
+    const val = revFlourSelect.value;
+    if (val === 'custom') {
+      if (revCustomWGroup) revCustomWGroup.style.display = 'block';
+      const customW = parseInt(revCustomWInput.value, 10) || 280;
+      if (revFlourWDisplay) revFlourWDisplay.textContent = `W ${customW}`;
+      if (revFlourProtDisplay) revFlourProtDisplay.textContent = `~${(10 + (customW * 0.012)).toFixed(1)}%`;
+      if (revFlourPLDisplay) revFlourPLDisplay.textContent = '0.55';
+      if (revFlourHydrDisplay) revFlourHydrDisplay.textContent = `~${Math.round(52 + (customW * 0.08))}%`;
+      if (revFlourCatDisplay) revFlourCatDisplay.textContent = customW >= 300 ? 'Forte' : (customW >= 240 ? 'Media' : 'Debole');
+    } else {
+      if (revCustomWGroup) revCustomWGroup.style.display = 'none';
+      const f = engine.COMMERCIAL_FLOURS[val];
+      if (f) {
+        if (revFlourWDisplay) revFlourWDisplay.textContent = `W ${f.w}`;
+        if (revFlourProtDisplay) revFlourProtDisplay.textContent = `${f.protein}%`;
+        if (revFlourPLDisplay) revFlourPLDisplay.textContent = f.pl.toFixed(2);
+        if (revFlourHydrDisplay) revFlourHydrDisplay.textContent = `${f.maxHydr}%`;
+        if (revFlourCatDisplay) revFlourCatDisplay.textContent = f.category;
+      }
+    }
+  }
+
+  function updateReverseOvenAdvice() {
+    if (!revOvenSelect || !revOvenAdvice) return;
+    const oven = engine.OVENS[revOvenSelect.value];
+    if (oven) {
+      revOvenAdvice.innerHTML = `💡 <span><strong>${oven.name}:</strong> ${oven.advice} ${oven.requiresFatAndSugar ? '(Aggiunti olio e zuccheri per compensare la cottura prolungata ed evitare secchezza)' : ''}</span>`;
+    }
+  }
+
+  function recalculateReverse() {
+    if (!revStyleSelect) return;
+
+    const targetStyle = revStyleSelect.value;
+    const flourKey = revFlourSelect ? revFlourSelect.value : 'caputo_pizzeria';
+    const customFlourW = parseInt(revCustomWInput?.value, 10) || 280;
+    const ovenKey = revOvenSelect ? revOvenSelect.value : 'forno_casa_250';
+    const mixerKey = revMixerSelect ? revMixerSelect.value : 'spirale_1';
+    const availableHours = parseFloat(revHours?.value) || 8;
+    const numBalls = parseInt(revNumBalls?.value, 10) || 4;
+    const ballWeight = parseFloat(revBallWeight?.value) || 260;
+    const ambientTemp = parseFloat(revAmbientTemp?.value) || 21;
+
+    const res = engine.optimizeReversePlan({
+      targetStyle,
+      flourKey,
+      customFlourW,
+      ovenKey,
+      mixerKey,
+      availableHours,
+      numBalls,
+      ballWeight,
+      ambientTemp
+    });
+
+    currentReverseResult = res;
+
+    // 1. Compatibilità Score
+    const score = res.compatibilityScore;
+    if (revScoreCircle) {
+      revScoreCircle.textContent = `${score}%`;
+      revScoreCircle.className = 'score-circle';
+      if (score >= 90) {
+        if (revScoreTitle) revScoreTitle.textContent = `Compatibilità Eccellente (${score}%)`;
+        if (revScoreDesc) revScoreDesc.textContent = 'Farina, tempi di maturazione e forno sono in perfetto equilibrio reologico.';
+      } else if (score >= 75) {
+        revScoreCircle.classList.add('score-warning');
+        if (revScoreTitle) revScoreTitle.textContent = `Buona Compatibilità (${score}%)`;
+        if (revScoreDesc) revScoreDesc.textContent = 'La combinazione funziona bene grazie agli adattamenti scientifici applicati.';
+      } else {
+        revScoreCircle.classList.add('score-danger');
+        if (revScoreTitle) revScoreTitle.textContent = `Attenzione Reologica (${score}%)`;
+        if (revScoreDesc) revScoreDesc.textContent = 'La farina o i tempi selezionati richiedono accortezze particolari (vedi note sotto).';
+      }
+    }
+
+    // 2. Visual Time Breakdown Bar
+    const totalH = res.parameters.hoursRoomPuntata + res.parameters.hoursFridge + res.parameters.hoursRoomAppretto;
+    const safeTotal = totalH > 0 ? totalH : 1;
+    const pctPuntata = Math.max(10, Math.round((res.parameters.hoursRoomPuntata / safeTotal) * 100));
+    const pctFridge = res.parameters.hoursFridge > 0 ? Math.round((res.parameters.hoursFridge / safeTotal) * 100) : 0;
+    const pctAppretto = Math.max(10, 100 - pctPuntata - pctFridge);
+
+    if (revTimeBarPuntata) {
+      revTimeBarPuntata.style.width = `${pctPuntata}%`;
+      revTimeBarPuntata.textContent = `Puntata: ${res.parameters.hoursRoomPuntata}h`;
+    }
+    if (revTimeBarFridge) {
+      if (res.parameters.hoursFridge > 0) {
+        revTimeBarFridge.style.display = 'block';
+        revTimeBarFridge.style.width = `${pctFridge}%`;
+        revTimeBarFridge.textContent = `Frigo: ${res.parameters.hoursFridge}h`;
+      } else {
+        revTimeBarFridge.style.display = 'none';
+        revTimeBarFridge.style.width = '0%';
+      }
+    }
+    if (revTimeBarAppretto) {
+      revTimeBarAppretto.style.width = `${pctAppretto}%`;
+      revTimeBarAppretto.textContent = `Appretto: ${res.parameters.hoursRoomAppretto}h`;
+    }
+
+    // 3. Note Strategiche
+    if (revStrategyList) {
+      let stratHtml = '';
+      res.strategyNotes.forEach(note => {
+        const isAlert = note.includes('⚠️');
+        stratHtml += `<li class="rev-strategy-item ${isAlert ? 'alert' : ''}">${note}</li>`;
+      });
+      revStrategyList.innerHTML = stratHtml;
+    }
+
+    // 4. Tabella Ingredienti
+    if (revRecipeTableBody) {
+      const recipe = res.recipe;
+      let tableHtml = `
+        <tr>
+          <td class="ing-name">🌾 Farina (${res.flour.name} - W ${res.flour.w})</td>
+          <td class="ing-pct">100.0 %</td>
+          <td class="ing-weight">${recipe.flour.toFixed(1)} g</td>
+        </tr>
+        <tr>
+          <td class="ing-name">💧 Acqua (Idratazione calibrata)</td>
+          <td class="ing-pct">${recipe.hydration.toFixed(1)} %</td>
+          <td class="ing-weight">${recipe.water.toFixed(1)} g</td>
+        </tr>
+        <tr>
+          <td class="ing-name">🧂 Sale Marino</td>
+          <td class="ing-pct">${recipe.saltPct.toFixed(1)} %</td>
+          <td class="ing-weight">${recipe.salt.toFixed(1)} g</td>
+        </tr>
+      `;
+
+      if (recipe.fat > 0) {
+        tableHtml += `
+          <tr>
+            <td class="ing-name">🫒 Olio Extravergine d'Oliva</td>
+            <td class="ing-pct">${recipe.fatPct.toFixed(1)} %</td>
+            <td class="ing-weight">${recipe.fat.toFixed(1)} g</td>
+          </tr>
+        `;
+      }
+
+      if (recipe.sugar > 0) {
+        tableHtml += `
+          <tr>
+            <td class="ing-name">🍯 Malto Diastasico / Zucchero</td>
+            <td class="ing-pct">${recipe.sugarPct.toFixed(1)} %</td>
+            <td class="ing-weight">${recipe.sugar.toFixed(1)} g</td>
+          </tr>
+        `;
+      }
+
+      tableHtml += `
+        <tr>
+          <td class="ing-name">🍞 Lievito di Birra Fresco (LBF)</td>
+          <td class="ing-pct">${recipe.yeastPct.toFixed(3)} %</td>
+          <td class="ing-weight">${recipe.yeastGrams.toFixed(2)} g</td>
+        </tr>
+        <tr style="opacity: 0.75; font-size: 0.85rem;">
+          <td class="ing-name" style="padding-left: 1.5rem;">↳ <em>oppure Lievito Secco (IDY)</em></td>
+          <td class="ing-pct">${(recipe.yeastPct / 3).toFixed(3)} %</td>
+          <td class="ing-weight">${(recipe.yeastGrams / 3).toFixed(2)} g</td>
+        </tr>
+        <tr class="recipe-total-row">
+          <td><strong>⚖️ Totale Impasto (${res.parameters.numBalls} panetti da ${res.parameters.ballWeight}g)</strong></td>
+          <td></td>
+          <td class="ing-weight" style="color: var(--accent);">${Math.round(recipe.totalDough)} g</td>
+        </tr>
+      `;
+      revRecipeTableBody.innerHTML = tableHtml;
+    }
+
+    // 5. Termodinamica TFI
+    if (revWaterTempDisplay) {
+      const thermo = res.recipe.thermodynamics;
+      revWaterTempDisplay.textContent = `${thermo.waterTemp.toFixed(1)} °C`;
+      if (revThermoSubtext) {
+        if (thermo.needsIce) {
+          revThermoSubtext.innerHTML = `⚠️ <strong>Attrito elevato!</strong> Usa <strong>${thermo.iceGrams}g</strong> di ghiaccio tritato + <strong>${thermo.liquidWaterGrams}g</strong> di acqua fredda da frigo.`;
+        } else {
+          revThermoSubtext.textContent = `Acqua a ${thermo.waterTemp.toFixed(1)}°C per chiusura a 23°C con ${res.mixer.name}.`;
+        }
+      }
+    }
+
+    // 6. Timeline Step-by-Step
+    if (revTimelineList) {
+      let timelineHtml = '';
+      res.timeline.forEach(step => {
+        timelineHtml += `
+          <li class="timeline-item ${step.isPast ? 'timeline-past' : ''}">
+            <div class="timeline-time">${step.timeStr}</div>
+            <span class="timeline-duration-badge">${step.duration}</span>
+            <div class="timeline-item-title">${step.label}</div>
+            <div class="timeline-item-desc">${step.desc}</div>
+          </li>
+        `;
+      });
+      revTimelineList.innerHTML = timelineHtml;
+    }
+  }
+
+  function initReverseMode() {
+    if (!revStyleSelect) return;
+
+    populateReverseFlours();
+    updateFlourCard();
+    updateReverseOvenAdvice();
+
+    // Event listeners
+    if (revRunBtn) revRunBtn.addEventListener('click', recalculateReverse);
+
+    revStyleSelect.addEventListener('change', () => {
+      const def = STYLE_DEFAULTS[revStyleSelect.value];
+      if (def) {
+        if (revBallWeight) revBallWeight.value = def.weight;
+        if (revNumBalls) revNumBalls.value = def.count;
+      }
+      recalculateReverse();
+    });
+
+    if (revFlourSelect) {
+      revFlourSelect.addEventListener('change', () => {
+        updateFlourCard();
+        recalculateReverse();
+      });
+    }
+
+    if (revCustomWInput) {
+      revCustomWInput.addEventListener('input', () => {
+        updateFlourCard();
+        recalculateReverse();
+      });
+    }
+
+    if (revOvenSelect) {
+      revOvenSelect.addEventListener('change', () => {
+        updateReverseOvenAdvice();
+        recalculateReverse();
+      });
+    }
+
+    if (revMixerSelect) {
+      revMixerSelect.addEventListener('change', recalculateReverse);
+    }
+
+    if (revNumBalls) revNumBalls.addEventListener('input', recalculateReverse);
+    if (revBallWeight) revBallWeight.addEventListener('input', recalculateReverse);
+    if (revAmbientTemp) revAmbientTemp.addEventListener('input', recalculateReverse);
+
+    // Quick pills ore
+    revQuickPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const h = parseInt(pill.dataset.hours, 10);
+        if (revHours) revHours.value = h;
+        if (revHoursInput) revHoursInput.value = h;
+        if (revHoursVal) revHoursVal.textContent = `${h} ore`;
+        revQuickPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        recalculateReverse();
+      });
+    });
+
+    if (revHours) {
+      revHours.addEventListener('input', () => {
+        const h = revHours.value;
+        if (revHoursInput) revHoursInput.value = h;
+        if (revHoursVal) revHoursVal.textContent = `${h} ore`;
+        revQuickPills.forEach(p => {
+          if (parseInt(p.dataset.hours, 10) === parseInt(h, 10)) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+        recalculateReverse();
+      });
+    }
+
+    if (revHoursInput) {
+      revHoursInput.addEventListener('input', () => {
+        const h = revHoursInput.value;
+        if (revHours) revHours.value = h;
+        if (revHoursVal) revHoursVal.textContent = `${h} ore`;
+        revQuickPills.forEach(p => {
+          if (parseInt(p.dataset.hours, 10) === parseInt(h, 10)) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+        recalculateReverse();
+      });
+    }
+
+    // Carica ricetta nel calcolatore principale
+    if (revApplyToDirectBtn) {
+      revApplyToDirectBtn.addEventListener('click', () => {
+        if (!currentReverseResult) return;
+        const p = currentReverseResult.parameters;
+
+        state.numBalls = p.numBalls;
+        state.ballWeight = p.ballWeight;
+        state.totalDoughWeight = p.numBalls * p.ballWeight;
+        state.hydration = p.hydration;
+        state.saltPct = p.saltPct;
+        state.fatPct = p.fatPct;
+        state.sugarPct = p.sugarPct;
+        state.hoursRoomPuntata = p.hoursRoomPuntata;
+        state.hoursFridge = p.hoursFridge;
+        state.hoursRoomAppretto = p.hoursRoomAppretto;
+        state.flourW = p.flourW;
+        state.ambientTemp = p.ambientTemp;
+        state.ovenType = p.ovenType;
+        if (p.mixerKey) {
+          state.friction = p.friction;
+          if (mixerTypeSelect) mixerTypeSelect.value = p.mixerKey;
+        }
+
+        // Sincronizza UI calcolatore diretto
+        numBallsSlider.value = p.numBalls;
+        numBallsInput.value = p.numBalls;
+        numBallsVal.textContent = p.numBalls;
+
+        ballWeightSlider.value = p.ballWeight;
+        ballWeightInput.value = p.ballWeight;
+        ballWeightVal.textContent = `${p.ballWeight} g`;
+
+        totalDoughWeightInput.value = state.totalDoughWeight;
+
+        hydrationSlider.value = p.hydration;
+        hydrationInput.value = p.hydration;
+        hydrationVal.textContent = `${p.hydration} %`;
+
+        saltPctSlider.value = p.saltPct;
+        saltPctInput.value = p.saltPct;
+        saltPctVal.textContent = `${p.saltPct} %`;
+
+        fatPctSlider.value = p.fatPct;
+        fatPctInput.value = p.fatPct;
+        fatPctVal.textContent = `${p.fatPct} %`;
+
+        sugarPctSlider.value = p.sugarPct;
+        sugarPctInput.value = p.sugarPct;
+        sugarPctVal.textContent = `${p.sugarPct} %`;
+
+        hoursRoomPuntataSlider.value = p.hoursRoomPuntata;
+        hoursRoomPuntataInput.value = p.hoursRoomPuntata;
+        hoursRoomPuntataVal.textContent = `${p.hoursRoomPuntata} h`;
+
+        hoursFridgeSlider.value = p.hoursFridge;
+        hoursFridgeInput.value = p.hoursFridge;
+        hoursFridgeVal.textContent = `${p.hoursFridge} h`;
+
+        hoursRoomApprettoSlider.value = p.hoursRoomAppretto;
+        hoursRoomApprettoInput.value = p.hoursRoomAppretto;
+        hoursRoomApprettoVal.textContent = `${p.hoursRoomAppretto} h`;
+
+        flourWSlider.value = p.flourW;
+        flourWInput.value = p.flourW;
+        flourWVal.textContent = `W ${p.flourW}`;
+
+        ambientTempSlider.value = p.ambientTemp;
+        ambientTempInput.value = p.ambientTemp;
+        ambientTempVal.textContent = `${p.ambientTemp} °C`;
+
+        ovenTypeSelect.value = p.ovenType;
+
+        recalculateDirect();
+        switchTab('tab-direct');
+        showToast('Parametri ottimizzati trasferiti nel Calcolatore Diretto!', '🧙');
+      });
+    }
+
+    // Copia scheda tecnica ottimizzata
+    if (revCopyRecipeBtn) {
+      revCopyRecipeBtn.addEventListener('click', () => {
+        if (!currentReverseResult) return;
+        const res = currentReverseResult;
+        const recipe = res.recipe;
+        const thermo = recipe.thermodynamics;
+
+        let text = `🍕 RICETTA OTTIMIZZATA (MODALITÀ REVERSE) - PizzaLab\n`;
+        text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+        text += `Stile: ${res.styleName}\n`;
+        text += `Farina: ${res.flour.name} (W ${res.flour.w}, Proteine ${res.flour.protein}%)\n`;
+        text += `Forno: ${res.oven.name}\n`;
+        text += `Impastatrice: ${res.mixer.name}\n`;
+        text += `Tempo Totale: ${res.availableHours} ore (Compatibilità: ${res.compatibilityScore}%)\n\n`;
+        text += `⚖️ INGREDIENTI (${res.parameters.numBalls} panetti da ${res.parameters.ballWeight}g - Totale ${Math.round(recipe.totalDough)}g):\n`;
+        text += `• Farina: ${recipe.flour.toFixed(1)}g (100%)\n`;
+        text += `• Acqua: ${recipe.water.toFixed(1)}g (${recipe.hydration}%)\n`;
+        text += `• Sale: ${recipe.salt.toFixed(1)}g (${recipe.saltPct}%)\n`;
+        if (recipe.fat > 0) text += `• Olio EVO: ${recipe.fat.toFixed(1)}g (${recipe.fatPct}%)\n`;
+        if (recipe.sugar > 0) text += `• Malto/Zucchero: ${recipe.sugar.toFixed(1)}g (${recipe.sugarPct}%)\n`;
+        text += `• Lievito Fresco LBF: ${recipe.yeastGrams.toFixed(2)}g (${recipe.yeastPct.toFixed(3)}%)\n`;
+        text += `  (oppure Lievito Secco IDY: ${(recipe.yeastGrams / 3).toFixed(2)}g)\n\n`;
+        text += `🌡️ TEMPERATURA ACQUA TFI: ${thermo.waterTemp.toFixed(1)}°C\n\n`;
+        text += `📋 ADATTAMENTI SCIENTIFICI:\n`;
+        res.strategyNotes.forEach(n => { text += `• ${n}\n`; });
+        text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Scheda Reverse copiata con successo!', '📋');
+        }).catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast('Scheda copiata negli appunti!', '📋');
+        });
+      });
+    }
+
+    recalculateReverse();
+  }
+
   // --- GESTIONE TABS ---
   function switchTab(tabId) {
     tabButtons.forEach(btn => {
@@ -923,6 +1419,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    if (tabId === 'tab-reverse') recalculateReverse();
     if (tabId === 'tab-indirect') recalculateIndirect();
     if (tabId === 'tab-teglia') recalculateTeglia();
     if (tabId === 'tab-blend') recalculateBlend();
@@ -1024,4 +1521,5 @@ document.addEventListener('DOMContentLoaded', () => {
   recalculateTeglia();
   recalculateBlend();
   updateTimeline();
+  initReverseMode();
 });

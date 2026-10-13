@@ -208,12 +208,45 @@ function runTests() {
 
   // TEST 10: Differenziazione Planetaria vs Spirale & Forni
   console.log("\n--- Test 10: Differenziazione Planetaria vs Spirale & Forni ---");
-  const { MIXERS, OVENS } = require('../js/engine.js');
+  const { MIXERS, OVENS, COMMERCIAL_FLOURS, optimizeReversePlan } = require('../js/engine.js');
   assert(MIXERS.planetaria_alta.friction === 10, `Planetaria ad alta velocità ha attrito elevato (10°C)`);
   assert(MIXERS.spirale_1.friction === 4, `Spirale 1ª vel ha attrito moderato (4°C)`);
   assert(MIXERS.a_mano.friction === 1, `A mano ha attrito minimo (1°C)`);
   assert(OVENS.forno_casa_250.targetTemp === 250 && OVENS.forno_casa_250.requiresFatAndSugar, `Forno casalingo 250°C richiede grassi/zuccheri`);
   assert(OVENS.forno_elettrico_pro.targetTemp === 480 && !OVENS.forno_elettrico_pro.requiresFatAndSugar, `Forno pizza 480°C vieta zuccheri/olio`);
+
+  // TEST 11: Modalità Reverse (Ottimizzazione Scientifica a Ritroso)
+  console.log("\n--- Test 11: Modalità Reverse Optimizer ---");
+  // Caso A: Napoletana con 8 ore, forno casa 250°C e Caputo Pizzeria
+  const revA = optimizeReversePlan({
+    targetStyle: 'napoletana_stg',
+    flourKey: 'caputo_pizzeria',
+    ovenKey: 'forno_casa_250',
+    mixerKey: 'planetaria_bassa',
+    availableHours: 8,
+    numBalls: 4,
+    ballWeight: 260,
+    ambientTemp: 22
+  });
+  assert(revA.flour.w === 260, `Farina commerciale Caputo Pizzeria riconosciuta con W 260`);
+  assert(revA.parameters.hoursFridge === 0, `Con 8 ore gestione interamente a T.A. (0h frigo)`);
+  assert(revA.recipe.fat > 0 && revA.recipe.sugar > 0, `Per forno a 250°C aggiunti automaticamente olio e zucchero/malto`);
+  assert(revA.compatibilityScore >= 90, `Alto score di compatibilità (8h + W260): ${revA.compatibilityScore}%`);
+
+  // Caso B: 48 ore con farina forte e forno pizza 480°C
+  const revB = optimizeReversePlan({
+    targetStyle: 'napoletana_canotto',
+    flourKey: 'caputo_cuoco',
+    ovenKey: 'forno_elettrico_pro',
+    mixerKey: 'spirale_2',
+    availableHours: 48,
+    numBalls: 6,
+    ballWeight: 270,
+    ambientTemp: 21
+  });
+  assert(revB.parameters.hoursFridge > 30, `Con 48 ore attivata lunga maturazione in frigo (${revB.parameters.hoursFridge}h)`);
+  assert(revB.recipe.fat === 0 && revB.recipe.sugar === 0, `Per forno pro a 480°C esclusi grassi e zuccheri`);
+  assert(revB.compatibilityScore === 100, `Score perfetto a 48h con Caputo Cuoco W310`);
 
   console.log("\n🎉 TUTTI I TEST SCIENTIFICI SUPERATI CON SUCCESSO!");
 }
