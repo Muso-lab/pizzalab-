@@ -5,7 +5,7 @@
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121418",
-  "theme_color": "#e76f51",
+  "theme_color": "#121418",
   "orientation": "portrait-primary",
   "categories": ["food", "utilities", "productivity"],
   "icons": [
