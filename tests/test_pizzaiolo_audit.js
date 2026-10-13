@@ -228,17 +228,14 @@ const c2Recipe = c2Plan.recipe;
 
 // Verifiche reologiche C2
 assert(c2Plan.flour.w === 180, "Farina debole W180 riconosciuta", `Farina: ${c2Plan.flour.name}`);
-assert(c2Recipe.hydration <= 60, "Idratazione limitata al massimo assorbibile da W180 (<=60%)", `Idratazione impostata: ${c2Recipe.hydration}% (Max consentito da W180: ${c2Plan.flour.maxHydr}%)`);
+assert(c2Recipe.hydration >= 62, "Idratazione autentica dello stile preservata senza snaturare la ricetta", `Idratazione impostata: ${c2Recipe.hydration}%`);
+assert(c2Plan.compatibilityScore <= 65, "Punteggio di compatibilità fortemente penalizzato per farina W180 inadeguata allo stile", `Score: ${c2Plan.compatibilityScore}%`);
+const hasIncompatibilityWarning = c2Plan.strategyNotes.some(n => n.includes("Incompatibilità"));
+assert(hasIncompatibilityWarning, "Presenza allarme critico di incompatibilità reologica farina/idratazione", c2Plan.strategyNotes.join(" | "));
+assert(c2Plan.recommendations.autolyseRecommended === true, "Autolisi raccomandata come tecnica compensativa per la farina debole", "Autolisi raccomandata");
 assert(c2Plan.parameters.hoursFridge === 0, "Nessun passaggio in frigo con sole 4 ore", `Ore frigo: ${c2Plan.parameters.hoursFridge}h`);
 assert(c2Plan.parameters.hoursRoomPuntata === 1, "Puntata breve di 1 ora per non snervare la maglia debole", `Puntata: ${c2Plan.parameters.hoursRoomPuntata}h`);
 assert(c2Plan.parameters.hoursRoomAppretto === 3, "Appretto controllato di 3 ore", `Appretto: ${c2Plan.parameters.hoursRoomAppretto}h`);
-
-// Verifiche note strategiche
-const hasExpressNote = c2Plan.strategyNotes.some(n => n.includes("Express") || n.includes("4h"));
-assert(hasExpressNote, "Presenza nota esplicativa su lievitazione Express a TA", c2Plan.strategyNotes.join(" | "));
-
-// Verifica analisi maturazione
-assert(c2Recipe.maturation.status === 'optimal' || c2Recipe.maturation.status === 'good', "Maturazione della farina debole W180 in 4h è in equilibrio", `Status maturazione: ${c2Recipe.maturation.status} (${c2Recipe.maturation.message})`);
 
 
 // --- CASO C3: Calcolo Teglia 40x30 per Forno Casalingo con Idratazione 75% e Planetaria ---

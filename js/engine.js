@@ -873,9 +873,14 @@
 
     // 4. Ottimizzazione Idratazione in funzione di Farina e Forno
     let optimizedHydration = basePreset.hydration;
-    if (optimizedHydration > flour.maxHydr) {
-      optimizedHydration = flour.maxHydr;
-      strategyNotes.push(`💧 Idratazione regolata a ${optimizedHydration}%: limite di assorbimento ottimale per ${flour.name}.`);
+    const styleTargetHydration = basePreset.hydration;
+    const isFlourTooWeakForStyle = styleTargetHydration > flour.maxHydr;
+
+    if (isFlourTooWeakForStyle) {
+      // Preserviamo l'idratazione autentica dello stile per non snaturare la ricetta,
+      // ma penalizziamo severamente la compatibilità ed emettiamo un'allerta reologica inequivocabile.
+      compatibilityScore -= 35;
+      strategyNotes.push(`⚠️ Incompatibilità Reologica Farina/Stile: La vera ${basePreset.name} esige ${styleTargetHydration}% di idratazione per l'alveolatura tipica. Tuttavia la farina ${flour.name} (W ${flour.w}) regge fisiologicamente solo fino a ~${flour.maxHydr}%. Con il ${styleTargetHydration}% l'impasto risulterà eccessivamente bagnato, colloso e cederà in lievitazione/stesura. 👉 Per questo stile DEVI usare una farina con W almeno 300-340. Se vuoi comunque forzare la preparazione, attiva l'Autolisi preventiva e Pieghe multiple a intervalli ravvicinati per stimolare la tenuta meccanica.`);
     }
 
     let optimizedFatPct = basePreset.fatPct;
@@ -884,9 +889,12 @@
     if (oven.requiresFatAndSugar) {
       if (optimizedFatPct < 2.0) optimizedFatPct = 2.5; // Olio EVO per trattenere umidità
       if (optimizedSugarPct < 1.0) optimizedSugarPct = 1.0; // Malto / Zucchero per doratura a 250°C
-      if (targetStyle === 'napoletana_stg' || targetStyle === 'napoletana_canotto') {
-        optimizedHydration = Math.min(flour.maxHydr, Math.max(optimizedHydration, 65));
-        strategyNotes.push(`🔥 Adattamento Forno Casalingo (250°C): aggiunti 2.5% Olio EVO e 1% Malto e idratazione a ${optimizedHydration}% per compensare la cottura lenta ed evitare che la pizza diventi secca o pallida.`);
+      if (targetStyle === 'napoletana_stg') {
+        // Per STG classica in forno casa 250°C un lieve aumento al 65% previene l'effetto secco
+        optimizedHydration = Math.max(optimizedHydration, 65);
+        strategyNotes.push(`🔥 Adattamento Forno Casalingo (250°C): aggiunti 2.5% Olio EVO, 1% Malto e idratazione a ${optimizedHydration}% per compensare la cottura lenta ed evitare che la pizza diventi secca o pallida.`);
+      } else {
+        strategyNotes.push(`🔥 Adattamento Forno Casalingo (250°C): aggiunti 2.5% Olio EVO e 1% Malto per compensare la cottura prolungata senza asciugare l'impasto.`);
       }
     } else if (oven.targetTemp >= 450) {
       optimizedFatPct = 0;
@@ -895,13 +903,18 @@
     }
 
     // 5. Riconoscimento Tecniche Speciali e Modalità Consigliate
-    const autolyseRecommended = (flour.w >= 290 && availableHours <= 6) || (optimizedHydration >= 74);
-    const foldsRecommended = optimizedHydration >= 70;
+    // Se la farina è debole ma l'idratazione è alta, forziamo autolisi e pieghe come tecniche compensative
+    const autolyseRecommended = (flour.w >= 290 && availableHours <= 6) || (optimizedHydration >= 72) || isFlourTooWeakForStyle;
+    const foldsRecommended = (optimizedHydration >= 68) || isFlourTooWeakForStyle;
     const bigaRecommended = (flour.w >= 300 && availableHours >= 16 && availableHours <= 24);
 
     const activeAutolyse = useAutolyse !== null ? Boolean(useAutolyse) : autolyseRecommended;
     const activeFolds = useFolds !== null ? Boolean(useFolds) : foldsRecommended;
     const activeBiga = Boolean(useBiga);
+
+    if (isFlourTooWeakForStyle && (activeAutolyse || activeFolds)) {
+      strategyNotes.push(`🛠️ Tecniche Compensative Consigliate: Autolisi preventiva e pieghe di rinforzo suggerite per aiutare la farina debole a reggere l'idratazione elevata del ${styleTargetHydration}%.`);
+    }
 
     if (isPrudentialMode) {
       strategyNotes.push(`🛡️ Stima Prudenziale attiva: applicato margine di sicurezza (-10% lievito) per prevenire sovralievitazioni.`);

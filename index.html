@@ -2,9 +2,16 @@
 <html lang="it" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>PizzaLab Scientifico - Calcolatore Professionale Impasti Pizza</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <meta name="theme-color" content="#e76f51">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PizzaLab">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -33,7 +40,8 @@
       </nav>
 
       <div class="header-actions">
-        <button id="saveDefaultsBtn" class="btn btn-primary btn-sm" title="Salva attrezzatura e parametri correnti come predefiniti per le prossime volte">💾 Salva Standard</button>
+        <button id="installAppBtn" class="btn btn-primary btn-sm" title="Installa l'app PizzaLab sul tuo smartphone" style="display: none;">📱 Installa</button>
+        <button id="saveDefaultsBtn" class="btn btn-secondary btn-sm" title="Salva attrezzatura e parametri correnti come predefiniti per le prossime volte">💾 Salva Standard</button>
         <button id="resetDefaultsBtn" class="btn btn-secondary btn-sm" title="Ripristina valori originali di fabbrica" style="display: none;">🔄 Reset</button>
         <button id="themeToggleBtn" class="btn btn-secondary btn-sm" title="Cambia tema chiaro/scuro">🌓 Tema</button>
         <button id="printBtn" class="btn btn-secondary btn-sm" title="Stampa o salva in PDF">🖨️ Stampa</button>
@@ -443,6 +451,24 @@
                 <button id="goToTimelineBtn" class="btn btn-secondary btn-block">⏱️ Crea Cronoprogramma</button>
               </div>
 
+              <!-- SLOT PUBBLICITARIO RESPONSIVE (Google AdSense / AdMob / Sponsor) -->
+              <div class="ad-banner-slot">
+                <div class="ad-badge">📢 Partner Sponsor</div>
+                <div class="ad-content-box">
+                  <!-- SEGNAPOSTO: Inserisci qui il tuo codice AdMob / Google AdSense -->
+                  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="YYYYYYYYYY" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
+                  <div class="ad-placeholder-graphic">
+                    <span class="ad-icon">🔥</span>
+                    <div class="ad-text-wrap">
+                      <div class="ad-headline">Forni Professionali per Pizza a Casa</div>
+                      <div class="ad-subtext">Cottura autentica a 500°C in 60 secondi con pietra biscotto campana.</div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm ad-cta-btn" onclick="alert('Spazio Pubblicitario: predisposto per Google AdMob, AdSense o affiliazioni per monetizzare la tua webapp!')">Scopri</button>
+                  </div>
+                </div>
+                <div class="ad-subinfo">Spazio pubblicitario conforme a Google AdSense / AdMob (Banner 320x50 / 300x250)</div>
+              </div>
+
             </div>
 
           </div>
@@ -811,6 +837,22 @@
               <button id="revCopyRecipeBtn" class="btn btn-secondary btn-block">
                 📋 Copia Scheda Tecnica Ottimizzata
               </button>
+            </div>
+
+            <!-- SLOT PUBBLICITARIO RESPONSIVE REVERSE -->
+            <div class="ad-banner-slot">
+              <div class="ad-badge">📢 Sponsor Ufficiale</div>
+              <div class="ad-content-box">
+                <div class="ad-placeholder-graphic">
+                  <span class="ad-icon">🌾</span>
+                  <div class="ad-text-wrap">
+                    <div class="ad-headline">Farine Professionali Certificate</div>
+                    <div class="ad-subtext">Caputo, 5 Stagioni, Molino Grassi con schede alveografiche e W garantito.</div>
+                  </div>
+                  <button type="button" class="btn btn-primary btn-sm ad-cta-btn" onclick="alert('Spazio Pubblicitario: predisposto per Google AdMob, AdSense o sponsor locali!')">Scopri</button>
+                </div>
+              </div>
+              <div class="ad-subinfo">Spazio pubblicitario conforme a Google AdSense / AdMob</div>
             </div>
 
           </div>
@@ -1198,6 +1240,38 @@
     </div>
 
   </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION (Visible only on mobile devices <= 768px) -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-btn active" data-tab="tab-direct">
+      <span class="mobile-nav-icon">🍕</span>
+      <span class="mobile-nav-label">Diretto</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="tab-reverse">
+      <span class="mobile-nav-icon">🧙</span>
+      <span class="mobile-nav-label">Reverse</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="tab-indirect">
+      <span class="mobile-nav-icon">🥖</span>
+      <span class="mobile-nav-label">Biga</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="tab-teglia">
+      <span class="mobile-nav-icon">📐</span>
+      <span class="mobile-nav-label">Teglia</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="tab-blend">
+      <span class="mobile-nav-icon">🌾</span>
+      <span class="mobile-nav-label">Farine</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="tab-timeline">
+      <span class="mobile-nav-icon">⏱️</span>
+      <span class="mobile-nav-label">Timeline</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="tab-science">
+      <span class="mobile-nav-icon">🧪</span>
+      <span class="mobile-nav-label">Teoria</span>
+    </button>
+  </nav>
 
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="toast">

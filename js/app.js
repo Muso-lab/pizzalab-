@@ -119,10 +119,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const maturationProgress = document.getElementById('maturationProgress');
   const maturationDesc = document.getElementById('maturationDesc');
 
-  // Tabs
+  // Tabs & Navigation (Desktop & Mobile)
   const tabButtons = document.querySelectorAll('.tab-btn');
+  const mobileNavButtons = document.querySelectorAll('.mobile-nav-btn');
   const tabContents = document.querySelectorAll('.tab-content');
   const presetPills = document.querySelectorAll('.preset-pill');
+  const installAppBtn = document.getElementById('installAppBtn');
 
   // Metodi Indiretti
   const prefermentTypeSelect = document.getElementById('prefermentTypeSelect');
@@ -1563,27 +1565,28 @@ document.addEventListener('DOMContentLoaded', () => {
     recalculateReverse();
   }
 
-  // --- GESTIONE TABS ---
+  // --- GESTIONE TABS (DESKTOP & MOBILE) ---
   function switchTab(tabId) {
     if (presetsStrip) {
       presetsStrip.style.display = (tabId === 'tab-direct') ? '' : 'none';
     }
 
     tabButtons.forEach(btn => {
-      if (btn.dataset.tab === tabId) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
+      btn.classList.toggle('active', btn.dataset.tab === tabId);
+    });
+
+    mobileNavButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tabId);
     });
 
     tabContents.forEach(content => {
-      if (content.id === tabId) {
-        content.classList.add('active');
-      } else {
-        content.classList.remove('active');
-      }
+      content.classList.toggle('active', content.id === tabId);
     });
+
+    // Su mobile scorri delicatamente in cima per un feeling da app nativa
+    if (window.innerWidth <= 768) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     if (tabId === 'tab-reverse') recalculateReverse();
     if (tabId === 'tab-indirect') recalculateIndirect();
@@ -1597,6 +1600,47 @@ document.addEventListener('DOMContentLoaded', () => {
       switchTab(btn.dataset.tab);
     });
   });
+
+  mobileNavButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchTab(btn.dataset.tab);
+    });
+  });
+
+  // --- REGISTRAZIONE PWA & SERVICE WORKER ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').then((reg) => {
+        console.log('PizzaLab PWA Service Worker attivo:', reg.scope);
+      }).catch((err) => {
+        console.warn('PizzaLab Service Worker non registrato:', err);
+      });
+    });
+  }
+
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (installAppBtn) installAppBtn.style.display = 'inline-flex';
+  });
+
+  if (installAppBtn) {
+    installAppBtn.addEventListener('click', () => {
+      if (!deferredInstallPrompt) {
+        showToast('Su iOS: tocca "Condividi" nel browser e scegli "Aggiungi a schermata Home" 📲', '💡');
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      deferredInstallPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          showToast('App PizzaLab installata sulla schermata Home!', '📱');
+        }
+        deferredInstallPrompt = null;
+        installAppBtn.style.display = 'none';
+      });
+    });
+  }
 
   // --- TOAST NOTIFICATION ---
   function showToast(message, icon = '📋') {

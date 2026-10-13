@@ -1119,7 +1119,7 @@ body {
     background: #ffffff !important;
     color: #000000 !important;
   }
-  .header, .presets-strip, .tabs-nav, .btn-group, .form-grid, .range-slider, .theme-toggle {
+  .header, .presets-strip, .tabs-nav, .mobile-bottom-nav, .ad-banner-slot, .btn-group, .form-grid, .range-slider, .theme-toggle {
     display: none !important;
   }
   .main-content {
@@ -1144,3 +1144,208 @@ body {
     background: #fafafa !important;
   }
 }
+
+/* ========================================== */
+/* AD BANNER COMPONENT (Monetizzazione AdSense)*/
+/* ========================================== */
+.ad-banner-slot {
+  background: var(--bg-surface);
+  border: 1px dashed rgba(244, 162, 97, 0.4);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin: 1.25rem 0;
+  position: relative;
+  text-align: center;
+}
+
+.ad-badge {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.5px;
+}
+
+.ad-content-box {
+  margin-top: 0.25rem;
+}
+
+.ad-placeholder-graphic {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+}
+
+.ad-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.ad-text-wrap {
+  text-align: left;
+  flex: 1;
+}
+
+.ad-headline {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.ad-subtext {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.ad-cta-btn {
+  flex-shrink: 0;
+}
+
+.ad-subinfo {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-top: 0.35rem;
+}
+
+/* ========================================== */
+/* MOBILE BOTTOM NAVIGATION & APP OPTIMIZATIONS*/
+/* ========================================== */
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Hides top desktop tab navigation */
+  .tabs-nav {
+    display: none !important;
+  }
+
+  /* Padding bottom to avoid content covered by fixed bottom navigation */
+  body {
+    padding-bottom: 76px;
+  }
+
+  .main-content {
+    padding: 0 0.85rem;
+    margin: 0.85rem auto;
+  }
+
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .header-container {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  /* Touch-friendly inputs: prevent auto-zoom in Safari iOS */
+  .form-input, .form-select {
+    font-size: 16px !important;
+    min-height: 44px;
+  }
+
+  .range-slider {
+    height: 38px;
+  }
+
+  .range-slider::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Bottom Navigation Bar */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+    z-index: 999;
+    align-items: stretch;
+    justify-content: space-around;
+    padding: 0.2rem 0.15rem calc(0.2rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .mobile-nav-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0.25rem 0;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .mobile-nav-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--accent);
+  }
+
+  .mobile-nav-btn.active .mobile-nav-icon {
+    transform: scale(1.15);
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  /* Sticky Toast above bottom nav on mobile */
+  .toast {
+    bottom: 80px;
+    right: 1rem;
+    left: 1rem;
+    justify-content: center;
+  }
+
+  .reverse-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .score-badge-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
