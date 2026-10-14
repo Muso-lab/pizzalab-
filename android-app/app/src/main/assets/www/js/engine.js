@@ -997,7 +997,7 @@
         procedures.push({
           step: stepNum++,
           title: "❄️ Fase 1: Impasto Biga Fredda & Start Fermentativo a T.A. (2 ore)",
-          desc: `Unire tutta la farina (${bigaFlour.toFixed(1)}g), ${bigaWater}g di acqua (45%) e ${bigaYeast}g di lievito fresco (1.2% per biga fredda da frigo). Impastare per soli 3-4 minuti a velocità 1: l'impasto deve rimanere slegato, grezzo e asciutto (target 18-20°C). Lasciare riposare per 2 ore a temperatura ambiente (${ambientTemp}°C) in ciotola coperta per attivare la moltiplicazione dei lieviti prima del freddo.`,
+          desc: `Unire tutta la farina (${Math.round(bigaFlour)}g), ${Math.round(bigaWater)}g di acqua (45%) e ${Math.max(1, Math.round(bigaYeast))}g di lievito fresco (1.2% per biga fredda da frigo). Impastare per soli 3-4 minuti a velocità 1: l'impasto deve rimanere slegato, grezzo e asciutto (target 18-20°C). Lasciare riposare per 2 ore a temperatura ambiente (${ambientTemp}°C) in ciotola coperta per attivare la moltiplicazione dei lieviti prima del freddo.`,
           tip: "Non incordare la biga! Deve sembrare un agglomerato di briciole asciutte."
         });
 
@@ -1018,21 +1018,21 @@
         procedures.push({
           step: stepNum++,
           title: "⚙️ Fase 4: Rinfresco e Chiusura Impasto",
-          desc: `Spezzettare la biga acclimatata nella vasca dell'impastatrice. Aggiungere il malto, l'eventuale farina residua e il 70% dell'acqua di rinfresco (${refreshWater}g totali). Iniziare ad impastare a velocità sostenuta. A maglia formata, inserire il sale (${directResult.salt.toFixed(1)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
+          desc: `Spezzettare la biga acclimatata nella vasca dell'impastatrice. Aggiungere il malto, l'eventuale farina residua e il 70% dell'acqua di rinfresco (${Math.round(refreshWater)}g totali). Iniziare ad impastare a velocità sostenuta. A maglia formata, inserire il sale (${Math.round(directResult.salt)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + Math.round(directResult.fat) + 'g)' : ''}.`,
           tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
         });
       } else {
         procedures.push({
           step: stepNum++,
           title: "🌾 Fase 1: Impasto e Fermentazione Biga (16-18 ore prima)",
-          desc: `Unire tutta la farina (${bigaFlour.toFixed(1)}g), ${bigaWater}g di acqua (45%) e ${bigaYeast}g di lievito fresco (1%). Mescolare per soli 3-4 minuti: l'impasto deve rimanere slegato e grezzo, non compatto né incordato. Lasciare riposare a 18°C per 16-18 ore.`,
+          desc: `Unire tutta la farina (${Math.round(bigaFlour)}g), ${Math.round(bigaWater)}g di acqua (45%) e ${Math.max(1, Math.round(bigaYeast))}g di lievito fresco (1%). Mescolare per soli 3-4 minuti: l'impasto deve rimanere slegato e grezzo, non compatto né incordato. Lasciare riposare a 18°C per 16-18 ore.`,
           tip: "La temperatura ideale della biga finita deve essere attorno a 18°C. Non scaldarla!"
         });
 
         procedures.push({
           step: stepNum++,
           title: "⚙️ Fase 2: Rinfresco e Chiusura Impasto",
-          desc: `Spezzettare la biga nella ciotola dell'impastatrice. Aggiungere il lievito residuo (${(directResult.yeastGrams - bigaYeast > 0 ? (directResult.yeastGrams - bigaYeast).toFixed(2) : 0)}g) e una parte dell'acqua di rinfresco (${refreshWater}g totali). Iniziare ad impastare a 1ª velocità. A maglia formata, inserire il sale (${directResult.salt.toFixed(1)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
+          desc: `Spezzettare la biga nella ciotola dell'impastatrice. Aggiungere l'eventuale lievito residuo (${Math.max(0, Math.round(directResult.yeastGrams - bigaYeast))}g) e una parte dell'acqua di rinfresco (${Math.round(refreshWater)}g totali). Iniziare ad impastare a 1ª velocità. A maglia formata, inserire il sale (${Math.round(directResult.salt)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + Math.round(directResult.fat) + 'g)' : ''}.`,
           tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
         });
       }
@@ -1041,21 +1041,21 @@
         procedures.push({
           step: stepNum++,
           title: "🥣 Fase 1: Autolisi Preventiva (45 minuti)",
-          desc: `Versare nella ciotola tutta la farina (${directResult.flour.toFixed(1)}g) e ${autolyseWater}g di acqua (60% idratazione di autolisi). Mescolare rapidamente per 2-3 minuti solo fino ad assorbire la farina, senza impastare a lungo e ASSOLUTAMENTE SENZA lievito né sale. Coprire e lasciare a riposo per 45 minuti a temperatura ambiente (${ambientTemp}°C).`,
+          desc: `Versare nella ciotola tutta la farina (${Math.round(directResult.flour)}g) e ${Math.round(autolyseWater)}g di acqua (60% idratazione di autolisi). Mescolare rapidamente per 2-3 minuti solo fino ad assorbire la farina, senza impastare a lungo e ASSOLUTAMENTE SENZA lievito né sale. Coprire e lasciare a riposo per 45 minuti a temperatura ambiente (${ambientTemp}°C).`,
           tip: "L'autolisi rompe parzialmente le catene proteiche e gli amidi, rendendo la pasta incredibilmente estensibile e riducendo il tempo di impastamento finale."
         });
 
         procedures.push({
           step: stepNum++,
           title: "⚙️ Fase 2: Chiusura e Incordatura Finale",
-          desc: `Unire alla massa in autolisi il lievito (${directResult.yeastGrams.toFixed(2)}g LBF o ${(directResult.yeastGrams / 3).toFixed(2)}g IDY). Avviare l'impastatrice a velocità 1 inserendo a filo la restante acqua (${closingWater}g). Non appena la massa si raccoglie attorno al gancio/spirale, aggiungere il sale (${directResult.salt.toFixed(1)}g)${directResult.sugar > 0 ? ', il malto/zucchero (' + directResult.sugar.toFixed(1) + 'g)' : ''}${directResult.fat > 0 ? ' e infine l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}. Incordare fino a maglia liscia e velo sottile.`,
+          desc: `Unire alla massa in autolisi il lievito (${Math.max(1, Math.round(directResult.yeastGrams))}g LBF o ${Math.max(1, Math.round(directResult.yeastGrams / 3))}g IDY). Avviare l'impastatrice a velocità 1 inserendo a filo la restante acqua (${Math.round(closingWater)}g). Non appena la massa si raccoglie attorno al gancio/spirale, aggiungere il sale (${Math.round(directResult.salt)}g)${directResult.sugar > 0 ? ', il malto/zucchero (' + Math.round(directResult.sugar) + 'g)' : ''}${directResult.fat > 0 ? ' e infine l\'olio EVO (' + Math.round(directResult.fat) + 'g)' : ''}. Incordare fino a maglia liscia e velo sottile.`,
           tip: `Temperatura acqua consigliata: ${directResult.thermodynamics.waterTemp.toFixed(1)}°C per chiusura perfetta a 23°C.`
         });
       } else {
         procedures.push({
           step: stepNum++,
           title: "⚙️ Fase 1: Impastamento Diretto",
-          desc: `Versare tutta la farina (${directResult.flour.toFixed(1)}g) con il lievito (${directResult.yeastGrams.toFixed(2)}g LBF o ${(directResult.yeastGrams / 3).toFixed(2)}g IDY) e il 75% dell'acqua (${Math.round(directResult.water * 0.75)}g a ${directResult.thermodynamics.waterTemp.toFixed(1)}°C). Avviare l'impasto. A maglia abbozzata, aggiungere il sale (${directResult.salt.toFixed(1)}g) e la restante acqua a filo${directResult.fat > 0 ? ' e l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
+          desc: `Versare tutta la farina (${Math.round(directResult.flour)}g) con il lievito (${Math.max(1, Math.round(directResult.yeastGrams))}g LBF o ${Math.max(1, Math.round(directResult.yeastGrams / 3))}g IDY) e il 75% dell'acqua (${Math.round(directResult.water * 0.75)}g a ${directResult.thermodynamics.waterTemp.toFixed(1)}°C). Avviare l'impasto. A maglia abbozzata, aggiungere il sale (${Math.round(directResult.salt)}g) e la restante acqua a filo${directResult.fat > 0 ? ' e l\'olio EVO (' + Math.round(directResult.fat) + 'g)' : ''}.`,
           tip: `Incordare senza surriscaldare: target finale 23°C (TFI).`
         });
       }

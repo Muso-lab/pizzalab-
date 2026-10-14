@@ -625,12 +625,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Tabella Ingredienti
     let rowsHtml = '';
 
+    // Helper formattazione pesi per bilance da cucina (interi, senza decimali superflui)
+    const formatGrams = (g) => `${Math.round(g)} g`;
+    const formatYeastDisplay = (g) => {
+      const rounded = Math.round(g);
+      if (rounded < 1 && g > 0) return '1 g (pizzico)';
+      return `${Math.max(1, rounded)} g`;
+    };
+
     // Farina
     rowsHtml += `
       <tr>
         <td class="ing-name">🌾 Farina (W ${state.flourW})</td>
         <td class="ing-pct">100.0 %</td>
-        <td class="ing-weight">${res.flour.toFixed(1)} g</td>
+        <td class="ing-weight">${formatGrams(res.flour)}</td>
       </tr>
     `;
 
@@ -639,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <tr>
         <td class="ing-name">💧 Acqua</td>
         <td class="ing-pct">${res.hydration.toFixed(1)} %</td>
-        <td class="ing-weight">${res.water.toFixed(1)} g</td>
+        <td class="ing-weight">${formatGrams(res.water)}</td>
       </tr>
     `;
 
@@ -648,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <tr>
         <td class="ing-name">🧂 Sale Marino</td>
         <td class="ing-pct">${res.saltPct.toFixed(1)} %</td>
-        <td class="ing-weight">${res.salt.toFixed(1)} g</td>
+        <td class="ing-weight">${formatGrams(res.salt)}</td>
       </tr>
     `;
 
@@ -658,7 +666,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🫒 Olio EVO / Grassi</td>
           <td class="ing-pct">${res.fatPct.toFixed(1)} %</td>
-          <td class="ing-weight">${res.fat.toFixed(1)} g</td>
+          <td class="ing-weight">${formatGrams(res.fat)}</td>
         </tr>
       `;
     }
@@ -669,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🍯 Malto Diastatico / Zucchero</td>
           <td class="ing-pct">${res.sugarPct.toFixed(1)} %</td>
-          <td class="ing-weight">${res.sugar.toFixed(1)} g</td>
+          <td class="ing-weight">${formatGrams(res.sugar)}</td>
         </tr>
       `;
     }
@@ -680,7 +688,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🧫 Lievito di Birra Fresco (LBF)</td>
           <td class="ing-pct">${res.yeastPct.toFixed(3)} %</td>
-          <td class="ing-weight">${res.yeastGrams.toFixed(2)} g</td>
+          <td class="ing-weight">${formatYeastDisplay(res.yeastGrams)}</td>
         </tr>
       `;
     } else if (state.yeastType === 'dry') {
@@ -688,7 +696,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🧫 Lievito Secco Istantaneo (IDY)</td>
           <td class="ing-pct">${res.yeastPct.toFixed(3)} %</td>
-          <td class="ing-weight">${res.yeastGrams.toFixed(2)} g</td>
+          <td class="ing-weight">${formatYeastDisplay(res.yeastGrams)}</td>
         </tr>
       `;
     } else if (state.yeastType === 'ady') {
@@ -696,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🧫 Lievito Secco Attivo (ADY)</td>
           <td class="ing-pct">${res.yeastPct.toFixed(3)} %</td>
-          <td class="ing-weight">${res.yeastGrams.toFixed(2)} g</td>
+          <td class="ing-weight">${formatYeastDisplay(res.yeastGrams)}</td>
         </tr>
       `;
     } else if (state.yeastType === 'licoli') {
@@ -704,7 +712,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🏺 Li.Co.Li (Idr. 100%)</td>
           <td class="ing-pct">${res.yeastPct.toFixed(1)} %</td>
-          <td class="ing-weight">${res.licoliGrams.toFixed(1)} g</td>
+          <td class="ing-weight">${formatGrams(res.licoliGrams)}</td>
         </tr>
       `;
     } else if (state.yeastType === 'madre') {
@@ -712,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🏺 Pasta Madre Solida (Idr. 50%)</td>
           <td class="ing-pct">${res.yeastPct.toFixed(1)} %</td>
-          <td class="ing-weight">${res.pastaMadreGrams.toFixed(1)} g</td>
+          <td class="ing-weight">${formatGrams(res.pastaMadreGrams)}</td>
         </tr>
       `;
     }
@@ -881,19 +889,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Render Stage 1 (Biga)
       prefStage1Body.innerHTML = `
-        <tr><td>${flourLabel}</td><td class="ing-weight">${res.biga.flour} g</td></tr>
-        <tr><td>💧 Acqua (${res.biga.hydration}%)</td><td class="ing-weight">${res.biga.water} g</td></tr>
-        <tr><td>${yeastLabel}</td><td class="ing-weight">${res.biga.yeastFresh} g</td></tr>
-        <tr><td><em>(oppure Lievito Secco a granuli)</em></td><td class="ing-weight"><em>${res.biga.yeastDry} g</em></td></tr>
+        <tr><td>${flourLabel}</td><td class="ing-weight">${Math.round(res.biga.flour)} g</td></tr>
+        <tr><td>💧 Acqua (${res.biga.hydration}%)</td><td class="ing-weight">${Math.round(res.biga.water)} g</td></tr>
+        <tr><td>${yeastLabel}</td><td class="ing-weight">${Math.max(1, Math.round(res.biga.yeastFresh))} g</td></tr>
+        <tr><td><em>(oppure Lievito Secco a granuli)</em></td><td class="ing-weight"><em>${Math.max(1, Math.round(res.biga.yeastDry))} g</em></td></tr>
       `;
       prefStage1Instructions.textContent = res.biga.instructions;
 
       // Render Stage 2 (Rinfresco)
       prefStage2Body.innerHTML = `
-        <tr><td>🌾 Farina Rimanente</td><td class="ing-weight">${res.refreshment.flour} g</td></tr>
-        <tr><td>💧 Acqua Rimanente (Molto Fredda)</td><td class="ing-weight">${res.refreshment.water} g</td></tr>
-        <tr><td>🧂 Sale Marino</td><td class="ing-weight">${res.refreshment.salt} g</td></tr>
-        <tr><td>🍯 Malto Diastatico (Opzionale)</td><td class="ing-weight">${res.maltGrams} g</td></tr>
+        <tr><td>🌾 Farina Rimanente</td><td class="ing-weight">${Math.round(res.refreshment.flour)} g</td></tr>
+        <tr><td>💧 Acqua Rimanente (Molto Fredda)</td><td class="ing-weight">${Math.round(res.refreshment.water)} g</td></tr>
+        <tr><td>🧂 Sale Marino</td><td class="ing-weight">${Math.round(res.refreshment.salt)} g</td></tr>
+        <tr><td>🍯 Malto Diastatico (Opzionale)</td><td class="ing-weight">${Math.round(res.maltGrams)} g</td></tr>
       `;
       prefStage2Instructions.textContent = res.refreshment.instructions;
 
@@ -914,18 +922,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Render Stage 1 (Poolish)
       prefStage1Body.innerHTML = `
-        <tr><td>🌾 Farina Poolish</td><td class="ing-weight">${res.poolish.flour} g</td></tr>
-        <tr><td>💧 Acqua Poolish (100%)</td><td class="ing-weight">${res.poolish.water} g</td></tr>
-        <tr><td>🧫 Lievito Fresco (${res.poolish.hours}h)</td><td class="ing-weight">${res.poolish.yeastFresh} g</td></tr>
-        <tr><td><em>(oppure Lievito Secco IDY)</em></td><td class="ing-weight"><em>${res.poolish.yeastDry} g</em></td></tr>
+        <tr><td>🌾 Farina Poolish</td><td class="ing-weight">${Math.round(res.poolish.flour)} g</td></tr>
+        <tr><td>💧 Acqua Poolish (100%)</td><td class="ing-weight">${Math.round(res.poolish.water)} g</td></tr>
+        <tr><td>🧫 Lievito Fresco (${res.poolish.hours}h)</td><td class="ing-weight">${Math.max(1, Math.round(res.poolish.yeastFresh))} g</td></tr>
+        <tr><td><em>(oppure Lievito Secco IDY)</em></td><td class="ing-weight"><em>${Math.max(1, Math.round(res.poolish.yeastDry))} g</em></td></tr>
       `;
       prefStage1Instructions.textContent = res.poolish.instructions;
 
       // Render Stage 2 (Rinfresco)
       prefStage2Body.innerHTML = `
-        <tr><td>🌾 Farina Rimanente</td><td class="ing-weight">${res.refreshment.flour} g</td></tr>
-        <tr><td>💧 Acqua Rimanente</td><td class="ing-weight">${res.refreshment.water} g</td></tr>
-        <tr><td>🧂 Sale Marino</td><td class="ing-weight">${res.refreshment.salt} g</td></tr>
+        <tr><td>🌾 Farina Rimanente</td><td class="ing-weight">${Math.round(res.refreshment.flour)} g</td></tr>
+        <tr><td>💧 Acqua Rimanente</td><td class="ing-weight">${Math.round(res.refreshment.water)} g</td></tr>
+        <tr><td>🧂 Sale Marino</td><td class="ing-weight">${Math.round(res.refreshment.salt)} g</td></tr>
       `;
       prefStage2Instructions.textContent = res.refreshment.instructions;
     }
@@ -1301,21 +1309,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Tabella Ingredienti
     if (revRecipeTableBody) {
       const recipe = res.recipe;
+      const formatGrams = (g) => `${Math.round(g)} g`;
+      const formatYeastDisplay = (g) => {
+        const rounded = Math.round(g);
+        if (rounded < 1 && g > 0) return '1 g (pizzico)';
+        return `${Math.max(1, rounded)} g`;
+      };
+
       let tableHtml = `
         <tr>
           <td class="ing-name">🌾 Farina (${res.flour.name} - W ${res.flour.w})</td>
           <td class="ing-pct">100.0 %</td>
-          <td class="ing-weight">${recipe.flour.toFixed(1)} g</td>
+          <td class="ing-weight">${formatGrams(recipe.flour)}</td>
         </tr>
         <tr>
           <td class="ing-name">💧 Acqua (Idratazione calibrata)</td>
           <td class="ing-pct">${recipe.hydration.toFixed(1)} %</td>
-          <td class="ing-weight">${recipe.water.toFixed(1)} g</td>
+          <td class="ing-weight">${formatGrams(recipe.water)}</td>
         </tr>
         <tr>
           <td class="ing-name">🧂 Sale Marino</td>
           <td class="ing-pct">${recipe.saltPct.toFixed(1)} %</td>
-          <td class="ing-weight">${recipe.salt.toFixed(1)} g</td>
+          <td class="ing-weight">${formatGrams(recipe.salt)}</td>
         </tr>
       `;
 
@@ -1324,7 +1339,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr>
             <td class="ing-name">🫒 Olio Extravergine d'Oliva</td>
             <td class="ing-pct">${recipe.fatPct.toFixed(1)} %</td>
-            <td class="ing-weight">${recipe.fat.toFixed(1)} g</td>
+            <td class="ing-weight">${formatGrams(recipe.fat)}</td>
           </tr>
         `;
       }
@@ -1334,7 +1349,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr>
             <td class="ing-name">🍯 Malto Diastasico / Zucchero</td>
             <td class="ing-pct">${recipe.sugarPct.toFixed(1)} %</td>
-            <td class="ing-weight">${recipe.sugar.toFixed(1)} g</td>
+            <td class="ing-weight">${formatGrams(recipe.sugar)}</td>
           </tr>
         `;
       }
@@ -1343,12 +1358,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr>
           <td class="ing-name">🍞 Lievito di Birra Fresco (LBF)</td>
           <td class="ing-pct">${recipe.yeastPct.toFixed(3)} %</td>
-          <td class="ing-weight">${recipe.yeastGrams.toFixed(2)} g</td>
+          <td class="ing-weight">${formatYeastDisplay(recipe.yeastGrams)}</td>
         </tr>
         <tr style="opacity: 0.75; font-size: 0.85rem;">
           <td class="ing-name" style="padding-left: 1.5rem;">↳ <em>oppure Lievito Secco (IDY)</em></td>
           <td class="ing-pct">${(recipe.yeastPct / 3).toFixed(3)} %</td>
-          <td class="ing-weight">${(recipe.yeastGrams / 3).toFixed(2)} g</td>
+          <td class="ing-weight">${formatYeastDisplay(recipe.yeastGrams / 3)}</td>
         </tr>
         <tr class="recipe-total-row">
           <td><strong>⚖️ Totale Impasto (${res.parameters.numBalls} panetti da ${res.parameters.ballWeight}g)</strong></td>
@@ -1687,14 +1702,17 @@ document.addEventListener('DOMContentLoaded', () => {
         text += `Forno: ${res.oven.name}\n`;
         text += `Impastatrice: ${res.mixer.name}\n`;
         text += `Tempo Totale: ${res.availableHours} ore (Compatibilità: ${res.compatibilityScore}%)\n\n`;
+        const yeastFreshStr = Math.round(recipe.yeastGrams) < 1 && recipe.yeastGrams > 0 ? '1g (pizzico)' : `${Math.max(1, Math.round(recipe.yeastGrams))}g`;
+        const yeastDryStr = Math.round(recipe.yeastGrams / 3) < 1 && recipe.yeastGrams > 0 ? '1g (punta cucchiaino)' : `${Math.max(1, Math.round(recipe.yeastGrams / 3))}g`;
+
         text += `⚖️ INGREDIENTI (${res.parameters.numBalls} panetti da ${res.parameters.ballWeight}g - Totale ${Math.round(recipe.totalDough)}g):\n`;
-        text += `• Farina: ${recipe.flour.toFixed(1)}g (100%)\n`;
-        text += `• Acqua: ${recipe.water.toFixed(1)}g (${recipe.hydration}%)\n`;
-        text += `• Sale: ${recipe.salt.toFixed(1)}g (${recipe.saltPct}%)\n`;
-        if (recipe.fat > 0) text += `• Olio EVO: ${recipe.fat.toFixed(1)}g (${recipe.fatPct}%)\n`;
-        if (recipe.sugar > 0) text += `• Malto/Zucchero: ${recipe.sugar.toFixed(1)}g (${recipe.sugarPct}%)\n`;
-        text += `• Lievito Fresco LBF: ${recipe.yeastGrams.toFixed(2)}g (${recipe.yeastPct.toFixed(3)}%)\n`;
-        text += `  (oppure Lievito Secco IDY: ${(recipe.yeastGrams / 3).toFixed(2)}g)\n\n`;
+        text += `• Farina: ${Math.round(recipe.flour)}g (100%)\n`;
+        text += `• Acqua: ${Math.round(recipe.water)}g (${Math.round(recipe.hydration)}%)\n`;
+        text += `• Sale: ${Math.round(recipe.salt)}g (${recipe.saltPct.toFixed(1)}%)\n`;
+        if (recipe.fat > 0) text += `• Olio EVO: ${Math.round(recipe.fat)}g (${recipe.fatPct.toFixed(1)}%)\n`;
+        if (recipe.sugar > 0) text += `• Malto/Zucchero: ${Math.round(recipe.sugar)}g (${recipe.sugarPct.toFixed(1)}%)\n`;
+        text += `• Lievito Fresco LBF: ${yeastFreshStr} (${recipe.yeastPct.toFixed(2)}%)\n`;
+        text += `  (oppure Lievito Secco IDY: ${yeastDryStr})\n\n`;
         text += `🌡️ TEMPERATURA ACQUA TFI: ${thermo.waterTemp.toFixed(1)}°C\n\n`;
         text += `📋 ADATTAMENTI SCIENTIFICI:\n`;
         res.strategyNotes.forEach(n => { text += `• ${n}\n`; });
@@ -1923,21 +1941,24 @@ document.addEventListener('DOMContentLoaded', () => {
     text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     text += `Stile: ${engine.PRESETS[state.activePreset]?.name || 'Personalizzato'}\n`;
     text += `Panetti: ${res.numBalls} da ${res.ballWeight}g (Totale ${Math.round(res.totalDough)}g)\n\n`;
+    const yeastFreshText = Math.round(res.yeastGrams) < 1 && res.yeastGrams > 0 ? '1g (pizzico)' : `${Math.max(1, Math.round(res.yeastGrams))}g`;
+    const yeastDryText = Math.round(res.yeastGrams) < 1 && res.yeastGrams > 0 ? '1g (punta cucchiaino)' : `${Math.max(1, Math.round(res.yeastGrams))}g`;
+
     text += `⚖️ INGREDIENTI:\n`;
-    text += `• Farina (W ${state.flourW}): ${res.flour.toFixed(1)}g (100%)\n`;
-    text += `• Acqua: ${res.water.toFixed(1)}g (${res.hydration}%)\n`;
-    text += `• Sale: ${res.salt.toFixed(1)}g (${res.saltPct}%)\n`;
-    if (res.fat > 0) text += `• Olio EVO/Grassi: ${res.fat.toFixed(1)}g (${res.fatPct}%)\n`;
-    if (res.sugar > 0) text += `• Malto/Zucchero: ${res.sugar.toFixed(1)}g (${res.sugarPct}%)\n`;
+    text += `• Farina (W ${state.flourW}): ${Math.round(res.flour)}g (100%)\n`;
+    text += `• Acqua: ${Math.round(res.water)}g (${Math.round(res.hydration)}%)\n`;
+    text += `• Sale: ${Math.round(res.salt)}g (${res.saltPct.toFixed(1)}%)\n`;
+    if (res.fat > 0) text += `• Olio EVO/Grassi: ${Math.round(res.fat)}g (${res.fatPct.toFixed(1)}%)\n`;
+    if (res.sugar > 0) text += `• Malto/Zucchero: ${Math.round(res.sugar)}g (${res.sugarPct.toFixed(1)}%)\n`;
 
     if (state.yeastType === 'fresh') {
-      text += `• Lievito Fresco LBF: ${res.yeastGrams.toFixed(2)}g (${res.yeastPct.toFixed(3)}%)\n`;
+      text += `• Lievito Fresco LBF: ${yeastFreshText} (${res.yeastPct.toFixed(2)}%)\n`;
     } else if (state.yeastType === 'dry') {
-      text += `• Lievito Secco IDY: ${res.yeastGrams.toFixed(2)}g (${res.yeastPct.toFixed(3)}%)\n`;
+      text += `• Lievito Secco IDY: ${yeastDryText} (${res.yeastPct.toFixed(2)}%)\n`;
     } else if (state.yeastType === 'licoli') {
-      text += `• Li.Co.Li (Idr. 100%): ${res.licoliGrams.toFixed(1)}g (${res.yeastPct}%)\n`;
+      text += `• Li.Co.Li (Idr. 100%): ${Math.round(res.licoliGrams)}g (${res.yeastPct}%)\n`;
     } else if (state.yeastType === 'madre') {
-      text += `• Pasta Madre (Idr. 50%): ${res.pastaMadreGrams.toFixed(1)}g (${res.yeastPct}%)\n`;
+      text += `• Pasta Madre (Idr. 50%): ${Math.round(res.pastaMadreGrams)}g (${res.yeastPct}%)\n`;
     }
 
     text += `\n🌡️ TERMODINAMICA TFI:\n`;
