@@ -1,10 +1,10 @@
 /**
- * PizzaLab Scientifico - Service Worker (v4)
+ * PizzaLab Scientifico - Service Worker (v5)
  * Garantisce funzionamento 100% offline su dispositivi mobili e desktop (PWA).
  * Gestione cache resiliente, stale-while-revalidate e compatibilità completa Chrome Android / GitHub Pages.
  */
 
-const CACHE_NAME = 'pizzalab-v4-cache';
+const CACHE_NAME = 'pizzalab-v5-cache';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

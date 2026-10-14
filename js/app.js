@@ -2235,16 +2235,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } catch (_) {}
 
-  // --- GESTIONE SPLASH SCREEN ---
+  // --- GESTIONE SPLASH SCREEN (Sicuro, non blocca mai l'interfaccia) ---
   const splashScreen = document.getElementById('splashScreen');
   if (splashScreen) {
     const hideSplash = () => {
       splashScreen.classList.add('fade-out');
+      splashScreen.style.pointerEvents = 'none';
       setTimeout(() => {
-        splashScreen.style.display = 'none';
-      }, 450);
+        if (splashScreen.parentNode) {
+          splashScreen.remove();
+        }
+      }, 350);
     };
-    setTimeout(hideSplash, 650);
+    setTimeout(hideSplash, 250);
+    // Timeout di massima sicurezza: dopo 700ms rimuove forzatamente dal DOM
+    setTimeout(() => {
+      const el = document.getElementById('splashScreen');
+      if (el && el.parentNode) {
+        el.remove();
+      }
+    }, 700);
   }
 
   // --- GESTIONE QUICK TIP BANNER ---
@@ -2292,11 +2302,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!onboardingModal) return;
     updateTutorialSlide(1);
     onboardingModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   }
 
   function closeTutorial() {
     if (!onboardingModal) return;
     onboardingModal.style.display = 'none';
+    document.body.style.overflow = '';
     if (dontShowTutorialAgain && dontShowTutorialAgain.checked) {
       localStorage.setItem('pizzalab_tutorial_seen', 'true');
     }
@@ -2310,6 +2322,19 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('Ottimo! Buon impasto con PizzaLab Pro! 🍕', '🚀');
     });
   }
+
+  // Chiusura al click fuori dal popup per non bloccare mai la navigazione
+  if (onboardingModal) {
+    onboardingModal.addEventListener('click', (e) => {
+      if (e.target === onboardingModal) closeTutorial();
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && onboardingModal && onboardingModal.style.display === 'flex') {
+      closeTutorial();
+    }
+  });
 
   if (nextSlideBtn) {
     nextSlideBtn.addEventListener('click', () => {
@@ -2329,8 +2354,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Mostra automaticamente il tutorial solo al primissimo avvio
-  if (!localStorage.getItem('pizzalab_tutorial_seen')) {
-    setTimeout(openTutorial, 800);
-  }
+  // NOTA: il tutorial si apre unicamente su richiesta dell'utente tramite il tasto "❓ Guida" in alto,
+  // evitando qualsiasi apertura automatica improvvisa che potrebbe coprire i tasti o confondere l'interazione.
 });
