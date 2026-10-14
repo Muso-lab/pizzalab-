@@ -2234,4 +2234,103 @@ document.addEventListener('DOMContentLoaded', () => {
       switchTab(tabParam);
     }
   } catch (_) {}
+
+  // --- GESTIONE SPLASH SCREEN ---
+  const splashScreen = document.getElementById('splashScreen');
+  if (splashScreen) {
+    const hideSplash = () => {
+      splashScreen.classList.add('fade-out');
+      setTimeout(() => {
+        splashScreen.style.display = 'none';
+      }, 450);
+    };
+    setTimeout(hideSplash, 650);
+  }
+
+  // --- GESTIONE QUICK TIP BANNER ---
+  const quickTipBanner = document.getElementById('quickTipBanner');
+  const closeQuickTipBtn = document.getElementById('closeQuickTipBtn');
+  if (quickTipBanner && closeQuickTipBtn) {
+    if (localStorage.getItem('pizzalab_tip_dismissed') === 'true') {
+      quickTipBanner.style.display = 'none';
+    }
+    closeQuickTipBtn.addEventListener('click', () => {
+      quickTipBanner.style.display = 'none';
+      localStorage.setItem('pizzalab_tip_dismissed', 'true');
+    });
+  }
+
+  // --- GESTIONE TUTORIAL & ONBOARDING CAROUSEL ---
+  const onboardingModal = document.getElementById('onboardingModal');
+  const tutorialBtn = document.getElementById('tutorialBtn');
+  const closeOnboardingBtn = document.getElementById('closeOnboardingBtn');
+  const prevSlideBtn = document.getElementById('prevSlideBtn');
+  const nextSlideBtn = document.getElementById('nextSlideBtn');
+  const finishOnboardingBtn = document.getElementById('finishOnboardingBtn');
+  const dontShowTutorialAgain = document.getElementById('dontShowTutorialAgain');
+  const tutorialSlides = document.querySelectorAll('.onboarding-slide');
+  const carouselDots = document.querySelectorAll('.carousel-dots .dot');
+
+  let currentTutorialSlide = 1;
+  const totalTutorialSlides = tutorialSlides.length;
+
+  function updateTutorialSlide(slideNum) {
+    currentTutorialSlide = Math.max(1, Math.min(slideNum, totalTutorialSlides));
+    tutorialSlides.forEach((slide) => {
+      slide.classList.toggle('active', parseInt(slide.dataset.slide, 10) === currentTutorialSlide);
+    });
+    carouselDots.forEach((dot) => {
+      dot.classList.toggle('active', parseInt(dot.dataset.go, 10) === currentTutorialSlide);
+    });
+
+    if (prevSlideBtn) prevSlideBtn.style.display = currentTutorialSlide > 1 ? 'inline-flex' : 'none';
+    if (nextSlideBtn) nextSlideBtn.style.display = currentTutorialSlide < totalTutorialSlides ? 'inline-flex' : 'none';
+    if (finishOnboardingBtn) finishOnboardingBtn.style.display = currentTutorialSlide === totalTutorialSlides ? 'inline-flex' : 'none';
+  }
+
+  function openTutorial() {
+    if (!onboardingModal) return;
+    updateTutorialSlide(1);
+    onboardingModal.style.display = 'flex';
+  }
+
+  function closeTutorial() {
+    if (!onboardingModal) return;
+    onboardingModal.style.display = 'none';
+    if (dontShowTutorialAgain && dontShowTutorialAgain.checked) {
+      localStorage.setItem('pizzalab_tutorial_seen', 'true');
+    }
+  }
+
+  if (tutorialBtn) tutorialBtn.addEventListener('click', openTutorial);
+  if (closeOnboardingBtn) closeOnboardingBtn.addEventListener('click', closeTutorial);
+  if (finishOnboardingBtn) {
+    finishOnboardingBtn.addEventListener('click', () => {
+      closeTutorial();
+      showToast('Ottimo! Buon impasto con PizzaLab Pro! 🍕', '🚀');
+    });
+  }
+
+  if (nextSlideBtn) {
+    nextSlideBtn.addEventListener('click', () => {
+      updateTutorialSlide(currentTutorialSlide + 1);
+    });
+  }
+  if (prevSlideBtn) {
+    prevSlideBtn.addEventListener('click', () => {
+      updateTutorialSlide(currentTutorialSlide - 1);
+    });
+  }
+
+  carouselDots.forEach((dot) => {
+    dot.addEventListener('click', () => {
+      const target = parseInt(dot.dataset.go, 10);
+      if (!isNaN(target)) updateTutorialSlide(target);
+    });
+  });
+
+  // Mostra automaticamente il tutorial solo al primissimo avvio
+  if (!localStorage.getItem('pizzalab_tutorial_seen')) {
+    setTimeout(openTutorial, 800);
+  }
 });

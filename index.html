@@ -23,6 +23,22 @@
 </head>
 <body>
 
+  <!-- APP SPLASH SCREEN -->
+  <div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+      <div class="splash-icon-wrap">
+        <img src="icons/icon-192.png" alt="PizzaLab Logo" class="splash-logo" width="96" height="96">
+        <div class="splash-pulse"></div>
+      </div>
+      <h1 class="splash-title">PizzaLab Scientifico</h1>
+      <p class="splash-tagline">Scientific Dough Kinetics & Thermodynamics</p>
+      <div class="splash-loader">
+        <div class="splash-loader-bar"></div>
+      </div>
+      <span class="splash-version">v2.1 Pro • Android & Web Edition</span>
+    </div>
+  </div>
+
   <!-- HEADER -->
   <header class="header">
     <div class="header-container">
@@ -45,6 +61,7 @@
       </nav>
 
       <div class="header-actions">
+        <button id="tutorialBtn" class="btn btn-secondary btn-sm" title="Apri Guida Rapida e Tutorial">❓ Guida</button>
         <button id="installAppBtn" class="btn btn-primary btn-sm" title="Installa l'app PizzaLab sul tuo smartphone" style="display: none;">📱 Installa</button>
         <button id="saveDefaultsBtn" class="btn btn-secondary btn-sm" title="Salva attrezzatura e parametri correnti come predefiniti per le prossime volte">💾 Salva Standard</button>
         <button id="resetDefaultsBtn" class="btn btn-secondary btn-sm" title="Ripristina valori originali di fabbrica" style="display: none;">🔄 Reset</button>
@@ -71,6 +88,15 @@
 
   <!-- MAIN APP CONTAINER -->
   <main class="main-content">
+
+    <!-- QUICK TIP BANNER -->
+    <div id="quickTipBanner" class="quick-tip-banner">
+      <div class="quick-tip-content">
+        <span class="tip-icon">💡</span>
+        <span class="tip-text"><strong>Consiglio Pizzaiolo:</strong> Conosci già l'orario in cui vuoi infornare? Prova la <strong>Modalità Reverse 🧙</strong>: programma le fasi all'indietro e adatta la ricetta alla temperatura del tuo forno!</span>
+      </div>
+      <button id="closeQuickTipBtn" class="tip-close-btn" title="Chiudi consiglio" aria-label="Chiudi">✕</button>
+    </div>
 
     <!-- ========================================== -->
     <!-- TAB 1: CALCOLATORE DIRETTO                 -->
@@ -1391,6 +1417,101 @@
 
       <div class="modal-footer">
         <button id="modalGotItBtn" class="btn btn-primary btn-block">Ho capito 👍</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TUTORIAL & ONBOARDING MODAL -->
+  <div id="onboardingModal" class="modal-overlay" style="display: none;">
+    <div class="modal-card onboarding-card">
+      <div class="onboarding-header">
+        <div class="onboarding-badge">📖 Guida Rapida</div>
+        <button id="closeOnboardingBtn" class="modal-close-btn" aria-label="Chiudi guida">✕</button>
+      </div>
+
+      <!-- SLIDES CAROUSEL -->
+      <div class="onboarding-slides">
+        <!-- Slide 1 -->
+        <div class="onboarding-slide active" data-slide="1">
+          <div class="onboarding-icon">🍕</div>
+          <h3>Scegli la tua Strategia di Impasto</h3>
+          <p>PizzaLab calcola la reologia esatta per ogni scenario con precisione scientifica:</p>
+          <div class="onboarding-features-list">
+            <div class="feat-item">
+              <span class="feat-badge">Impasto Diretto</span>
+              <span>Regola idratazione, farina W, temperature e ottieni il lievito esatto al grammo.</span>
+            </div>
+            <div class="feat-item">
+              <span class="feat-badge">Modalità Reverse 🧙</span>
+              <span>Parti dall'orario di cena e dalla tua farina: il motore adatta la ricetta al tuo forno.</span>
+            </div>
+            <div class="feat-item">
+              <span class="feat-badge">Biga & Prefermenti 🥖</span>
+              <span>Biga classica (18°C) o <strong>Biga Fredda da Frigo (4°C)</strong> per alveolature estreme.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="onboarding-slide" data-slide="2">
+          <div class="onboarding-icon">🌡️</div>
+          <h3>Termodinamica TFI & Ghiaccio</h3>
+          <p>Il fattore critico per non rovinare la maglia è la <strong>temperatura di chiusura (23°C)</strong>:</p>
+          <div class="onboarding-features-list">
+            <div class="feat-item">
+              <span class="feat-badge">Attrito Meccanico</span>
+              <span>Spirale, planetaria o a mano scaldano diversamente la massa durante l'incordatura.</span>
+            </div>
+            <div class="feat-item">
+              <span class="feat-badge">Formula T_acqua</span>
+              <span>Calcola esattamente a quanti °C deve essere l'acqua da inserire.</span>
+            </div>
+            <div class="feat-item">
+              <span class="feat-badge">Fabbisogno Ghiaccio</span>
+              <span>In estate o con macchine veloci, ti indica esattamente quanti grammi di ghiaccio tritato usare.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="onboarding-slide" data-slide="3">
+          <div class="onboarding-icon">⚖️</div>
+          <h3>Pesi Interi & Ergonomia Mobile</h3>
+          <p>Pensato per l'uso pratico in cucina con smartphone e bilancia:</p>
+          <div class="onboarding-features-list">
+            <div class="feat-item">
+              <span class="feat-badge">Zero Decimali</span>
+              <span>Tutti i pesi sono numeri interi arrotondati per le normali bilance da cucina (minimo 1g per il lievito).</span>
+            </div>
+            <div class="feat-item">
+              <span class="feat-badge">Smart Scroll-Guard</span>
+              <span>Scorri la pagina con il pollice in totale tranquillità: gli slider non si sposteranno accidentalmente!</span>
+            </div>
+            <div class="feat-item">
+              <span class="feat-badge">Adattamento Forno</span>
+              <span>Se usi un forno di casa a 250°C, vengono aggiunti automaticamente olio e malto per non seccare la pizza.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CAROUSEL CONTROLS & FOOTER -->
+      <div class="onboarding-footer">
+        <div class="carousel-dots">
+          <span class="dot active" data-go="1"></span>
+          <span class="dot" data-go="2"></span>
+          <span class="dot" data-go="3"></span>
+        </div>
+        <div class="onboarding-buttons">
+          <button id="prevSlideBtn" class="btn btn-secondary btn-sm" style="display: none;">◀ Indietro</button>
+          <button id="nextSlideBtn" class="btn btn-primary btn-sm">Avanti ▶</button>
+          <button id="finishOnboardingBtn" class="btn btn-primary btn-sm" style="display: none;">Inizia a Impastare! 🚀</button>
+        </div>
+      </div>
+      <div class="onboarding-dismiss-wrap">
+        <label class="onboarding-dismiss-label">
+          <input type="checkbox" id="dontShowTutorialAgain"> Non mostrare più automaticamente all'avvio
+        </label>
       </div>
     </div>
   </div>

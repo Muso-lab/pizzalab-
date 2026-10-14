@@ -10,6 +10,11 @@
     <style name="Theme.PizzaLab.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">#121418</item>
+        <item name="android:statusBarColor">#0f141c</item>
+        <item name="android:navigationBarColor">#0f141c</item>
+    </style>
+
+    <style name="Theme.PizzaLab.Starting" parent="Theme.PizzaLab.NoActionBar">
+        <item name="android:windowBackground">@drawable/ic_splash_icon</item>
     </style>
 </resources>
