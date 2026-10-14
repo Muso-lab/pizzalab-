@@ -40,14 +40,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Previene qualsiasi sovrapposizione con la barra di stato, notch e navigation bar
+        // Previene qualsiasi sovrapposizione con la barra di stato / notch superiore
+        // Il fondo rimane a 0 per ancorare saldamente il banner AdMob al bordo inferiore come nella v2.0.1
         View root = findViewById(R.id.rootLayout);
         if (root != null) {
             ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
                 Insets insets = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
                 );
-                v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+                v.setPadding(0, insets.top, 0, 0);
                 return windowInsets;
             });
             ViewCompat.requestApplyInsets(root);
@@ -63,10 +64,12 @@ public class MainActivity extends AppCompatActivity {
         webView = findViewById(R.id.webView);
         adView = findViewById(R.id.adView);
 
-        // Inizializzazione SDK Google Mobile Ads (AdMob)
+        // Inizializzazione SDK Google Mobile Ads (AdMob) su UI thread
         MobileAds.initialize(this, initializationStatus -> {
-            loadBannerAd();
-            loadInterstitialAd();
+            runOnUiThread(() -> {
+                loadBannerAd();
+                loadInterstitialAd();
+            });
         });
 
         // Configurazione WebView
@@ -103,8 +106,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                // Se offline o nessun annuncio disponibile, nascondi per non occupare spazio
-                adView.setVisibility(View.GONE);
+                // Ritenta dopo 15 secondi in caso di temporaneo no-fill o ritardo di rete
+                adView.postDelayed(() -> {
+                    if (!isFinishing() && !isDestroyed()) {
+                        AdRequest retryRequest = new AdRequest.Builder().build();
+                        adView.loadAd(retryRequest);
+                    }
+                }, 15000);
             }
         });
         adView.loadAd(adRequest);
