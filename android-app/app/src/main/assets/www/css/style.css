@@ -53,6 +53,27 @@
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
   --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+  --font-base: 16px;
+}
+
+html {
+  font-size: var(--font-base);
+}
+
+html[data-font-size="small"] {
+  --font-base: 14.5px;
+}
+
+html[data-font-size="normal"] {
+  --font-base: 16px;
+}
+
+html[data-font-size="large"] {
+  --font-base: 18px;
+}
+
+html[data-font-size="xlarge"] {
+  --font-base: 20px;
 }
 
 /* Reset & Base */
@@ -1304,7 +1325,7 @@ body {
 
   /* Padding bottom to avoid content covered by fixed bottom navigation */
   body {
-    padding-bottom: 76px;
+    padding-bottom: 84px;
   }
 
   .main-content {
@@ -1376,17 +1397,17 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 66px;
     background: var(--bg-card);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-color);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
     z-index: 999;
     align-items: stretch;
     justify-content: space-around;
-    padding: 2px 4px;
-    padding-bottom: max(2px, env(safe-area-inset-bottom, 0px));
+    padding: 3px 4px;
+    padding-bottom: max(3px, env(safe-area-inset-bottom, 0px));
   }
 
   .mobile-nav-btn {
@@ -1394,32 +1415,33 @@ body {
     min-width: 0;
     background: transparent;
     border: none;
-    color: var(--text-muted);
+    color: #cbd5e1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 3px;
     cursor: pointer;
     font-family: inherit;
-    padding: 3px 1px;
+    padding: 4px 1px;
     border-radius: var(--radius-sm);
     transition: all 0.15s ease;
     -webkit-tap-highlight-color: transparent;
   }
 
   .mobile-nav-icon {
-    font-size: 1.2rem;
-    line-height: 1;
+    font-size: 1.45rem;
+    line-height: 1.1;
   }
 
   .mobile-nav-label {
-    font-size: 0.65rem;
-    font-weight: 600;
+    font-size: 0.74rem;
+    font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    letter-spacing: 0.1px;
   }
 
   .mobile-nav-btn.active {
@@ -1429,6 +1451,11 @@ body {
   .mobile-nav-btn.active .mobile-nav-icon {
     transform: scale(1.15);
     transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .mobile-nav-btn.active .mobile-nav-label {
+    color: #ffffff;
+    font-weight: 800;
   }
 
   /* Sticky Toast above bottom nav on mobile */

@@ -463,13 +463,20 @@
       totalSugarPct = 0,
       bigaFlourPct = 100, // % di farina totale da inserire nella biga (es. 100% o 50%)
       bigaHydration = 45, // tipicamente 44-50%
-      bigaYeastPct = 1.0,  // tipicamente 1% di LBF su farina biga (per 16-18h a 18°C)
+      bigaYeastPct = null, // se null: 1.0% per standard (18°C), 1.2% per cold (4°C)
+      bigaType = 'standard', // 'standard' (16-18h a 18°C) oppure 'cold' (Biga Fredda da frigo: 2h TA + 24-48h frigo a 4°C + 1-2h acclimatamento)
+      coldHours = 24,       // ore in frigorifero per biga fredda
       maltPct = 0.5        // estratto di malto diastatico opzionale nel rinfresco
     } = options;
 
+    const isCold = bigaType === 'cold';
+    const effectiveBigaYeastPct = (bigaYeastPct !== null && bigaYeastPct !== undefined)
+      ? bigaYeastPct
+      : (isCold ? 1.2 : 1.0);
+
     const bigaFlour = Math.round(totalFlour * (bigaFlourPct / 100));
     const bigaWater = Math.round(bigaFlour * (bigaHydration / 100));
-    const bigaYeastFresh = Math.round(bigaFlour * (bigaYeastPct / 100) * 10) / 10;
+    const bigaYeastFresh = Math.round(bigaFlour * (effectiveBigaYeastPct / 100) * 10) / 10;
     const bigaYeastDry = Math.round((bigaYeastFresh / 3) * 10) / 10;
 
     const totalWater = Math.round(totalFlour * (totalHydration / 100));
@@ -484,6 +491,14 @@
 
     const totalDough = totalFlour + totalWater + totalSalt + totalFat + totalSugar + bigaYeastFresh + maltGrams;
 
+    const bigaInstructions = isCold
+      ? `Impastare brevemente a spirale (o a mano) per 3-4 minuti: l'impasto deve risultare grezzo, slegato e asciutto, senza formare maglia glutinica (temperatura finale ottimale: 18-20°C). Lasciare riposare 1-2 ore a temperatura ambiente per lo Start Fermentativo dei lieviti, quindi sigillare in mastello ermetico e riporre in frigorifero a 4°C per ${coldHours} ore. Estrarre dal frigorifero 1-2 ore prima del rinfresco per acclimatare la massa (target 16-18°C al cuore).`
+      : "Impastare brevemente a spirale (o a mano) per 3-4 minuti senza formare maglia glutinica ('grezza e slegata'). Temperatura finale biga ottimale: 18-20°C. Riposo: 16-18 ore a 18°C.";
+
+    const refreshInstructions = isCold
+      ? "Spezzettare la biga fredda (acclimatata a 16-18°C) nella vasca dell'impastatrice. Aggiungere la restante farina, il malto e il 70% dell'acqua fredda di rinfresco. Incordare a velocità sostenuta (chiusura ad alta idratazione). A maglia formata, inserire il sale e l'acqua restante a filo fino al completo assorbimento."
+      : "Spezzettare la biga nella vasca. Aggiungere la restante farina, l'eventuale malto e il 70% dell'acqua rimasta. Incordare a velocità sostenuta, quindi inserire il sale e l'acqua a filo fino al completo assorbimento.";
+
     return {
       totalDough,
       totalFlour,
@@ -492,6 +507,8 @@
       totalFat,
       totalSugar,
       maltGrams,
+      bigaType: isCold ? 'cold' : 'standard',
+      coldHours: isCold ? coldHours : 0,
       biga: {
         flour: bigaFlour,
         water: bigaWater,
@@ -499,7 +516,7 @@
         yeastDry: bigaYeastDry,
         hydration: bigaHydration,
         flourPct: bigaFlourPct,
-        instructions: "Impastare brevemente a spirale (o a mano) per 3-4 minuti senza formare maglia glutinica ('grezza e slegata'). Temperatura finale biga ottimale: 18-20°C. Riposo: 16-18 ore a 18°C."
+        instructions: bigaInstructions
       },
       refreshment: {
         flour: refreshFlour,
@@ -508,7 +525,7 @@
         fat: totalFat,
         sugar: totalSugar,
         malt: maltGrams,
-        instructions: "Spezzettare la biga nella vasca. Aggiungere la restante farina, l'eventuale malto e il 70% dell'acqua rimasta. Incordare a velocità sostenuta, quindi inserire il sale e l'acqua a filo fino al completo assorbimento."
+        instructions: refreshInstructions
       }
     };
   }
@@ -906,11 +923,12 @@
     // Se la farina è debole ma l'idratazione è alta, forziamo autolisi e pieghe come tecniche compensative
     const autolyseRecommended = (flour.w >= 290 && availableHours <= 6) || (optimizedHydration >= 72) || isFlourTooWeakForStyle;
     const foldsRecommended = (optimizedHydration >= 68) || isFlourTooWeakForStyle;
-    const bigaRecommended = (flour.w >= 300 && availableHours >= 16 && availableHours <= 24);
+    const bigaRecommended = (flour.w >= 300 && availableHours >= 16);
 
     const activeAutolyse = useAutolyse !== null ? Boolean(useAutolyse) : autolyseRecommended;
     const activeFolds = useFolds !== null ? Boolean(useFolds) : foldsRecommended;
     const activeBiga = Boolean(useBiga);
+    const isColdBiga = activeBiga && (availableHours >= 24);
 
     if (isFlourTooWeakForStyle && (activeAutolyse || activeFolds)) {
       strategyNotes.push(`🛠️ Tecniche Compensative Consigliate: Autolisi preventiva e pieghe di rinforzo suggerite per aiutare la farina debole a reggere l'idratazione elevata del ${styleTargetHydration}%.`);
@@ -929,7 +947,11 @@
     }
 
     if (activeBiga) {
-      strategyNotes.push(`🥖 Metodo Indiretto Biga attivo (16-18h a 18°C): consigliato con la farina W ${flour.w} per alveolatura e croccantezza superiore.`);
+      if (isColdBiga) {
+        strategyNotes.push(`❄️ Metodo Indiretto Biga Fredda (4°C) attivo: ideale per maturazioni lunghe (${availableHours}h disponibili) con farina forte W ${flour.w}. Include 2h di avvio a T.A. + maturazione in frigo a 4°C + 2h di acclimatamento prima del rinfresco.`);
+      } else {
+        strategyNotes.push(`🥖 Metodo Indiretto Biga attivo (16-18h a 18°C): consigliato con la farina W ${flour.w} per alveolatura e croccantezza superiore.`);
+      }
     }
 
     // 6. Calcolo della Ricetta Definitiva
@@ -965,22 +987,55 @@
     if (activeBiga) {
       const bigaFlour = directResult.flour;
       const bigaWater = Math.round(bigaFlour * 0.45 * 10) / 10;
-      const bigaYeast = Math.round(bigaFlour * 0.01 * 100) / 100;
+      const bigaYeast = isColdBiga
+        ? Math.round(bigaFlour * 0.012 * 100) / 100 // 1.2% per biga fredda
+        : Math.round(bigaFlour * 0.01 * 100) / 100; // 1.0% per biga tradizionale a 18°C
       const refreshWater = Math.max(0, Math.round((directResult.water - bigaWater) * 10) / 10);
+      const coldBigaHours = Math.max(16, Math.round(availableHours - 8));
 
-      procedures.push({
-        step: stepNum++,
-        title: "🌾 Fase 1: Impasto e Fermentazione Biga (16-18 ore prima)",
-        desc: `Unire tutta la farina (${bigaFlour.toFixed(1)}g), ${bigaWater}g di acqua (45%) e ${bigaYeast}g di lievito fresco (1%). Mescolare per soli 3-4 minuti: l'impasto deve rimanere slegato e grezzo, non compatto né incordato. Lasciare riposare a 18°C per 16-18 ore.`,
-        tip: "La temperatura ideale della biga finita deve essere attorno a 18°C. Non scaldarla!"
-      });
+      if (isColdBiga) {
+        procedures.push({
+          step: stepNum++,
+          title: "❄️ Fase 1: Impasto Biga Fredda & Start Fermentativo a T.A. (2 ore)",
+          desc: `Unire tutta la farina (${bigaFlour.toFixed(1)}g), ${bigaWater}g di acqua (45%) e ${bigaYeast}g di lievito fresco (1.2% per biga fredda da frigo). Impastare per soli 3-4 minuti a velocità 1: l'impasto deve rimanere slegato, grezzo e asciutto (target 18-20°C). Lasciare riposare per 2 ore a temperatura ambiente (${ambientTemp}°C) in ciotola coperta per attivare la moltiplicazione dei lieviti prima del freddo.`,
+          tip: "Non incordare la biga! Deve sembrare un agglomerato di briciole asciutte."
+        });
 
-      procedures.push({
-        step: stepNum++,
-        title: "⚙️ Fase 2: Rinfresco e Chiusura Impasto",
-        desc: `Spezzettare la biga nella ciotola dell'impastatrice. Aggiungere il lievito residuo (${(directResult.yeastGrams - bigaYeast > 0 ? (directResult.yeastGrams - bigaYeast).toFixed(2) : 0)}g) e una parte dell'acqua di rinfresco (${refreshWater}g totali). Iniziare ad impastare a 1ª velocità. A maglia formata, inserire il sale (${directResult.salt.toFixed(1)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
-        tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
-      });
+        procedures.push({
+          step: stepNum++,
+          title: `🧊 Fase 2: Maturazione Biga in Frigorifero (4°C per ${coldBigaHours} ore)`,
+          desc: `Trasferire la biga in un mastello/contenitore con coperchio ermetico e riporla in frigorifero a 4°C per circa ${coldBigaHours} ore. A 4°C l'attività fermentativa rallenta mentre gli enzimi maturano amidi e glutine, sviluppando acidità acetica e aromi complessi.`,
+          tip: "Assicurati che il contenitore permetta un leggero rigonfiamento (+30-40%)."
+        });
+
+        procedures.push({
+          step: stepNum++,
+          title: "🌡️ Fase 3: Acclimatamento Biga (2 ore prima del rinfresco)",
+          desc: "Estrarre la biga dal frigorifero 2 ore prima dell'impasto finale e lasciarla a temperatura ambiente: la massa deve raggiungere circa 16-18°C al cuore prima di essere lavorata.",
+          tip: "Non rinfrescare mai la biga a 4°C: il glutine freddo si spezzerebbe e non legherebbe l'acqua!"
+        });
+
+        procedures.push({
+          step: stepNum++,
+          title: "⚙️ Fase 4: Rinfresco e Chiusura Impasto",
+          desc: `Spezzettare la biga acclimatata nella vasca dell'impastatrice. Aggiungere il malto, l'eventuale farina residua e il 70% dell'acqua di rinfresco (${refreshWater}g totali). Iniziare ad impastare a velocità sostenuta. A maglia formata, inserire il sale (${directResult.salt.toFixed(1)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
+          tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
+        });
+      } else {
+        procedures.push({
+          step: stepNum++,
+          title: "🌾 Fase 1: Impasto e Fermentazione Biga (16-18 ore prima)",
+          desc: `Unire tutta la farina (${bigaFlour.toFixed(1)}g), ${bigaWater}g di acqua (45%) e ${bigaYeast}g di lievito fresco (1%). Mescolare per soli 3-4 minuti: l'impasto deve rimanere slegato e grezzo, non compatto né incordato. Lasciare riposare a 18°C per 16-18 ore.`,
+          tip: "La temperatura ideale della biga finita deve essere attorno a 18°C. Non scaldarla!"
+        });
+
+        procedures.push({
+          step: stepNum++,
+          title: "⚙️ Fase 2: Rinfresco e Chiusura Impasto",
+          desc: `Spezzettare la biga nella ciotola dell'impastatrice. Aggiungere il lievito residuo (${(directResult.yeastGrams - bigaYeast > 0 ? (directResult.yeastGrams - bigaYeast).toFixed(2) : 0)}g) e una parte dell'acqua di rinfresco (${refreshWater}g totali). Iniziare ad impastare a 1ª velocità. A maglia formata, inserire il sale (${directResult.salt.toFixed(1)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + directResult.fat.toFixed(1) + 'g)' : ''}.`,
+          tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
+        });
+      }
     } else {
       if (activeAutolyse) {
         procedures.push({
@@ -1047,7 +1102,8 @@
       acclimationHours: hoursFridge > 0 ? 1 : 0,
       hoursRoomAppretto: hoursAppretto,
       isIndirect: activeBiga,
-      prefermentHours: 16,
+      isColdBiga: Boolean(isColdBiga),
+      prefermentHours: isColdBiga ? Math.max(20, Math.round(availableHours - 4)) : 16,
       useAutolyse: activeAutolyse,
       autolyseMinutes: 45,
       autolyseWaterGrams: autolyseWater,
@@ -1064,6 +1120,7 @@
       mixer,
       availableHours,
       autolyseSuggested: autolyseRecommended,
+      isColdBiga: Boolean(isColdBiga),
       recommendations: {
         autolyseRecommended,
         foldsRecommended,
@@ -1268,15 +1325,50 @@
 
     // 8. Se metodo indiretto (Biga / Poolish)
     if (isIndirect) {
-      const prefermentTime = (useAutolyse ? (mixingTime - (autolyseMinutes * 60 * 1000)) : mixingTime) - (prefermentHours * 3600 * 1000);
-      steps.push({
-        id: 'preferment',
-        priority: STEP_ORDER.preferment,
-        time: new Date(prefermentTime),
-        label: 'Impasto Prefermento (Biga / Poolish)',
-        desc: `Preparazione del prefermento e messa a riposo per ${prefermentHours} ore a temperatura idonea (18°C per biga).`,
-        duration: `${prefermentHours}h di prefermento`
-      });
+      if (options.isColdBiga) {
+        const totalBigaHours = prefermentHours || 24;
+        const coldFridgeHours = Math.max(12, totalBigaHours - 4); // 2h TA start + 2h TA acclim
+        const prefermentStart = (useAutolyse ? (mixingTime - (autolyseMinutes * 60 * 1000)) : mixingTime) - (totalBigaHours * 3600 * 1000);
+        const fridgeStart = prefermentStart + (2 * 3600 * 1000);
+        const acclimStart = (useAutolyse ? (mixingTime - (autolyseMinutes * 60 * 1000)) : mixingTime) - (2 * 3600 * 1000);
+
+        steps.push({
+          id: 'preferment_start',
+          priority: STEP_ORDER.preferment,
+          time: new Date(prefermentStart),
+          label: '❄️ Impasto Biga Fredda & Start Fermentativo (2h a T.A.)',
+          desc: 'Impastare la biga per soli 3-4 minuti a bassa velocità (deve rimanere slegata e grezza). Lasciare riposare 2 ore a temperatura ambiente per attivare i lieviti prima del freddo.',
+          duration: '2h di avvio a T.A.'
+        });
+
+        steps.push({
+          id: 'preferment_fridge',
+          priority: STEP_ORDER.preferment + 0.1,
+          time: new Date(fridgeStart),
+          label: '🧊 Messa in Frigorifero a 4°C della Biga',
+          desc: `Trasferire la biga in mastello sigillato e riporla in frigo a 4°C per ${coldFridgeHours} ore per una maturazione aromatica ed enzimatica profonda.`,
+          duration: `${coldFridgeHours}h in frigo`
+        });
+
+        steps.push({
+          id: 'preferment_acclim',
+          priority: STEP_ORDER.preferment + 0.2,
+          time: new Date(acclimStart),
+          label: '🌡️ Estrazione Biga dal Frigo per Acclimatamento',
+          desc: 'Estrarre la biga dal frigorifero 2 ore prima del rinfresco: la temperatura interna deve raggiungere circa 16-18°C prima della chiusura.',
+          duration: '2h di acclimatamento'
+        });
+      } else {
+        const prefermentTime = (useAutolyse ? (mixingTime - (autolyseMinutes * 60 * 1000)) : mixingTime) - (prefermentHours * 3600 * 1000);
+        steps.push({
+          id: 'preferment',
+          priority: STEP_ORDER.preferment,
+          time: new Date(prefermentTime),
+          label: 'Impasto Prefermento (Biga / Poolish)',
+          desc: `Preparazione del prefermento e messa a riposo per ${prefermentHours} ore a temperatura idonea (18°C per biga).`,
+          duration: `${prefermentHours}h di prefermento`
+        });
+      }
     }
 
     // Ordina cronologicamente con priorità secondaria garantita

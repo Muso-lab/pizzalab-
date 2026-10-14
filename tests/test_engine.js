@@ -282,8 +282,32 @@ function runTests() {
     useBiga: true
   });
   assert(revBiga.activeTechniques.activeBiga === true, `Biga attivata con successo`);
-  assert(revBiga.procedures.some(p => p.title.includes("Biga")), `Procedura include fase di impasto Biga`);
-  assert(revBiga.timeline.some(s => s.id === 'preferment'), `Timeline include step prefermento per la biga`);
+  // TEST 13: Biga Fredda da Frigo (4°C)
+  console.log("\n--- Test 13: Biga Fredda da Frigorifero (4°C) ---");
+  const coldBiga = calculatePrefermentBiga({
+    totalFlour: 1000,
+    totalHydration: 70,
+    bigaFlourPct: 100,
+    bigaType: 'cold',
+    coldHours: 24
+  });
+  assert(coldBiga.bigaType === 'cold', `Tipo biga fredda confermato`);
+  assert(coldBiga.biga.yeastFresh === 12, `Dose lievito fresco biga fredda al 1.2% (12g su 1000g farina)`);
+  assert(coldBiga.biga.instructions.includes("frigorifero a 4°C"), `Istruzioni biga fredda menzionano conservazione a 4°C`);
+  assert(coldBiga.biga.instructions.includes("acclimatare"), `Istruzioni biga fredda menzionano fase di acclimatamento`);
+
+  // Reverse con Biga Fredda a 48 ore
+  const revColdBiga = optimizeReversePlan({
+    targetStyle: 'teglia_romana',
+    flourKey: 'caputo_nuvola_super',
+    availableHours: 48,
+    useBiga: true
+  });
+  assert(revColdBiga.isColdBiga === true, `Riconosciuta automaticamente Biga Fredda per tempi >= 24h (${revColdBiga.availableHours}h)`);
+  assert(revColdBiga.procedures.some(p => p.title.includes("Frigorifero")), `Procedura reverse include fase frigorifero a 4°C per la biga`);
+  assert(revColdBiga.procedures.some(p => p.title.includes("Acclimatamento")), `Procedura reverse include fase di acclimatamento`);
+  assert(revColdBiga.timeline.some(s => s.id === 'preferment_fridge'), `Timeline include step dedicato alla messa in frigo della biga`);
+  assert(revColdBiga.timeline.some(s => s.id === 'preferment_acclim'), `Timeline include step dedicato all'acclimatamento`);
 
   console.log("\n🎉 TUTTI I TEST SCIENTIFICI SUPERATI CON SUCCESSO!");
 }

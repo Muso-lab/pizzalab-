@@ -226,11 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetDefaultsBtn = document.getElementById('resetDefaultsBtn');
   const saveEquipmentDirectBtn = document.getElementById('saveEquipmentDirectBtn');
   const saveEquipmentReverseBtn = document.getElementById('saveEquipmentReverseBtn');
-  const copyRecipeBtn = document.getElementById('copyRecipeBtn');
+  const fontSizeBtn = document.getElementById('fontSizeBtn');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const printBtn = document.getElementById('printBtn');
   const toast = document.getElementById('toast');
   const toastMsg = document.getElementById('toastMsg');
+  const yeastAdviceBox = document.getElementById('yeastAdviceBox');
 
   // Inizializza data infornata con domani alle 20:00
   const tomorrow = new Date();
@@ -411,6 +412,20 @@ document.addEventListener('DOMContentLoaded', () => {
     recalculateDirect();
   });
 
+  function updateYeastAdvice() {
+    if (!yeastAdviceBox || !yeastTypeSelect) return;
+    const type = yeastTypeSelect.value;
+    if (type === 'dry') {
+      yeastAdviceBox.innerHTML = `🌾 <span><strong>Lievito di Birra Secco (Disidratato):</strong> si dosa esattamente <strong>1/3 del fresco</strong> (es. se la ricetta indica 3g di fresco, usa 1g di secco). Miscelalo direttamente alla farina. <em>Nota: NON confonderlo con il lievito chimico istantaneo per torte salate!</em></span>`;
+    } else if (type === 'fresh') {
+      yeastAdviceBox.innerHTML = `📦 <span><strong>Lievito di Birra Fresco:</strong> il classico cubetto da 25g del banco frigo. Scioglilo in poca acqua a temperatura ambiente prima di aggiungerlo. <em>Attenzione: NON usare lievito chimico istantaneo!</em></span>`;
+    } else if (type === 'madre') {
+      yeastAdviceBox.innerHTML = `🍞 <span><strong>Pasta Madre Solida (50% idro):</strong> rinfrescata e attiva al raddoppio. Il calcolatore sottrae automaticamente farina (66.7%) e acqua (33.3%) dalla ricetta base per mantenere l'idratazione target al 100%.</span>`;
+    } else if (type === 'licoli') {
+      yeastAdviceBox.innerHTML = `🍶 <span><strong>Li.Co.Li (Lievito Madre Liquido 100% idro):</strong> rinfrescato e pronto. Il calcolatore sottrae esattamente metà farina e metà acqua dalla ricetta per preservare l'idratazione target.</span>`;
+    }
+  }
+
   yeastTypeSelect.addEventListener('change', () => {
     state.yeastType = yeastTypeSelect.value;
     if (state.yeastType === 'madre' || state.yeastType === 'licoli') {
@@ -418,6 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       sourdoughPctGroup.style.display = 'none';
     }
+    updateYeastAdvice();
     recalculateDirect();
   });
 
@@ -818,12 +834,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalHydration = parseFloat(prefTotalHydration.value) || 70;
     const totalSalt = parseFloat(prefTotalSalt.value) || 2.5;
 
-    if (type === 'biga') {
+    if (type === 'biga' || type === 'biga_cold') {
       bigaControls.style.display = 'contents';
       poolishControls.style.display = 'none';
 
+      const isCold = type === 'biga_cold';
       const bigaFlourPct = parseFloat(prefBigaPct.value) || 100;
-      const bigaHydr = parseFloat(prefBigaHydration.value) || 45;
+      const bigaHydr = parseFloat(prefBigaHydration.value) || (isCold ? 48 : 45);
 
       const res = engine.calculatePrefermentBiga({
         totalFlour,
@@ -831,22 +848,26 @@ document.addEventListener('DOMContentLoaded', () => {
         totalSaltPct: totalSalt,
         bigaFlourPct,
         bigaHydration: bigaHydr,
-        bigaYeastPct: 1.0
+        bigaType: isCold ? 'cold' : 'standard',
+        coldHours: 24
       });
+
+      const yeastLabel = isCold ? "🧫 Lievito Fresco (1.2% per frigo)" : "🧫 Lievito Fresco (1%)";
+      const flourLabel = isCold ? "🌾 Farina di Forza (W 320-380)" : "🌾 Farina Forte (W 320-360)";
 
       // Render Stage 1 (Biga)
       prefStage1Body.innerHTML = `
-        <tr><td>🌾 Farina Forte (W 320-360)</td><td class="ing-weight">${res.biga.flour} g</td></tr>
+        <tr><td>${flourLabel}</td><td class="ing-weight">${res.biga.flour} g</td></tr>
         <tr><td>💧 Acqua (${res.biga.hydration}%)</td><td class="ing-weight">${res.biga.water} g</td></tr>
-        <tr><td>🧫 Lievito Fresco (1%)</td><td class="ing-weight">${res.biga.yeastFresh} g</td></tr>
-        <tr><td><em>(oppure Lievito Secco IDY)</em></td><td class="ing-weight"><em>${res.biga.yeastDry} g</em></td></tr>
+        <tr><td>${yeastLabel}</td><td class="ing-weight">${res.biga.yeastFresh} g</td></tr>
+        <tr><td><em>(oppure Lievito Secco a granuli)</em></td><td class="ing-weight"><em>${res.biga.yeastDry} g</em></td></tr>
       `;
       prefStage1Instructions.textContent = res.biga.instructions;
 
       // Render Stage 2 (Rinfresco)
       prefStage2Body.innerHTML = `
         <tr><td>🌾 Farina Rimanente</td><td class="ing-weight">${res.refreshment.flour} g</td></tr>
-        <tr><td>💧 Acqua Rimanente (Fredda)</td><td class="ing-weight">${res.refreshment.water} g</td></tr>
+        <tr><td>💧 Acqua Rimanente (Molto Fredda)</td><td class="ing-weight">${res.refreshment.water} g</td></tr>
         <tr><td>🧂 Sale Marino</td><td class="ing-weight">${res.refreshment.salt} g</td></tr>
         <tr><td>🍯 Malto Diastatico (Opzionale)</td><td class="ing-weight">${res.maltGrams} g</td></tr>
       `;
@@ -1999,8 +2020,44 @@ document.addEventListener('DOMContentLoaded', () => {
     window.print();
   });
 
+  // --- GESTIONE DIMENSIONE TESTO (ACCESSIBILITÀ) ---
+  const FONT_SIZES = [
+    { id: 'normal', label: '🔤 Testo: A', desc: 'Normale (16px)' },
+    { id: 'large', label: '🔤 Testo: A⁺', desc: 'Grande (18px)' },
+    { id: 'xlarge', label: '🔤 Testo: A⁺⁺', desc: 'Molto Grande (20px)' },
+    { id: 'small', label: '🔤 Testo: A⁻', desc: 'Compatto (14.5px)' }
+  ];
+  let currentFontSizeIdx = 0;
+
+  function applyFontSize(sizeId, showFeedback = false) {
+    const foundIdx = FONT_SIZES.findIndex(f => f.id === sizeId);
+    if (foundIdx !== -1) {
+      currentFontSizeIdx = foundIdx;
+    }
+    const current = FONT_SIZES[currentFontSizeIdx];
+    document.documentElement.setAttribute('data-font-size', current.id);
+    localStorage.setItem('pizzalab_fontsize', current.id);
+    if (fontSizeBtn) {
+      fontSizeBtn.textContent = current.label;
+    }
+    if (showFeedback) {
+      showToast(`Dimensione testo: ${current.desc}`, '🔤');
+    }
+  }
+
+  if (fontSizeBtn) {
+    fontSizeBtn.addEventListener('click', () => {
+      currentFontSizeIdx = (currentFontSizeIdx + 1) % FONT_SIZES.length;
+      applyFontSize(FONT_SIZES[currentFontSizeIdx].id, true);
+    });
+  }
+
+  const savedFontSize = localStorage.getItem('pizzalab_fontsize') || 'normal';
+  applyFontSize(savedFontSize, false);
+
   // Avvio iniziale
   initReverseMode();
+  updateYeastAdvice();
   const defaultsLoaded = loadUserDefaults();
   if (!defaultsLoaded) {
     recalculateDirect();

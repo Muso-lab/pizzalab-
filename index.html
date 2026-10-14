@@ -43,6 +43,7 @@
         <button id="installAppBtn" class="btn btn-primary btn-sm" title="Installa l'app PizzaLab sul tuo smartphone" style="display: none;">📱 Installa</button>
         <button id="saveDefaultsBtn" class="btn btn-secondary btn-sm" title="Salva attrezzatura e parametri correnti come predefiniti per le prossime volte">💾 Salva Standard</button>
         <button id="resetDefaultsBtn" class="btn btn-secondary btn-sm" title="Ripristina valori originali di fabbrica" style="display: none;">🔄 Reset</button>
+        <button id="fontSizeBtn" class="btn btn-secondary btn-sm" title="Modifica dimensione testo (Normale, Grande, Molto Grande, Compatta)">🔤 Testo: A</button>
         <button id="themeToggleBtn" class="btn btn-secondary btn-sm" title="Cambia tema chiaro/scuro">🌓 Tema</button>
         <button id="printBtn" class="btn btn-secondary btn-sm" title="Stampa o salva in PDF">🖨️ Stampa</button>
       </div>
@@ -162,12 +163,14 @@
               <div class="form-group">
                 <label class="form-label" for="yeastTypeSelect">Tipo di Lievito</label>
                 <select id="yeastTypeSelect" class="form-select">
-                  <option value="fresh">Lievito di Birra Fresco (Panetto LBF)</option>
-                  <option value="dry">Lievito Secco Istantaneo (IDY)</option>
-                  <option value="ady">Lievito Secco Attivo (ADY)</option>
-                  <option value="madre">Pasta Madre Solida (Idr. 50%)</option>
-                  <option value="licoli">Li.Co.Li (Lievito Coltura Liquida 100%)</option>
+                  <option value="fresh">📦 Lievito di Birra Fresco (Cubetto da banco frigo)</option>
+                  <option value="dry">🌾 Lievito di Birra Secco Disidratato (Bustina a granuli, 1/3 del fresco)</option>
+                  <option value="madre">🍞 Pasta Madre Solida (Idr. 50%)</option>
+                  <option value="licoli">🍶 Li.Co.Li (Lievito Coltura Liquida 100%)</option>
                 </select>
+                <div id="yeastAdviceBox" class="advice-box" style="margin-top: 0.6rem; font-size: 0.8rem; line-height: 1.4; padding: 0.6rem 0.8rem;">
+                  💡 <span><strong>Attenzione ai falsi amici:</strong> usa solo <em>Lievito di Birra biologico</em> (fresco o secco a granuli). <strong>NON</strong> usare il "lievito istantaneo per pizze e torte salate" (lievito chimico per torte salate): è un agente chimico che non fermenta né matura l'impasto!</span>
+                </div>
               </div>
 
               <div id="sourdoughPctGroup" class="form-group" style="display: none;">
@@ -728,9 +731,9 @@
                 <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer;">
                   <input type="checkbox" id="revBigaCheck" style="margin-top: 0.25rem;">
                   <div>
-                    <strong style="color: var(--text-main);">🥖 Converti in Metodo Indiretto Biga (16-18h a 18°C)</strong>
+                    <strong style="color: var(--text-main);">🥖 Converti in Metodo Indiretto Biga (Tradizionale o Fredda da Frigo)</strong>
                     <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">
-                      Sfrutta il prefermento per massimizzare la croccantezza, gli aromi e la digeribilità con farine medio-forti ($W \ge 300$).
+                      Sfrutta il prefermento per massimizzare la croccantezza, gli aromi e la digeribilità con farine medio-forti (W &ge; 300): gestita a 18°C per 16-20h o in frigorifero a 4°C per maturazioni lunghe (24-48h).
                     </div>
                   </div>
                 </label>
@@ -876,8 +879,9 @@
           <div class="form-group">
             <label class="form-label">Tipo di Prefermento</label>
             <select id="prefermentTypeSelect" class="form-select">
-              <option value="biga">Biga Tradizionale (Idratazione 44-50%, 16-18h a 18°C)</option>
-              <option value="poolish">Poolish Liquido (Idratazione 100%, tempo variabile)</option>
+              <option value="biga">🥖 Biga Tradizionale a T.A. (16-18h a 18°C, LBF 1%)</option>
+              <option value="biga_cold">❄️ Biga Fredda da Frigo (24-48h a 4°C, avvio 2h TA, LBF 1.2%)</option>
+              <option value="poolish">🥣 Poolish Liquido (Idratazione 100%, tempo variabile)</option>
             </select>
           </div>
 
