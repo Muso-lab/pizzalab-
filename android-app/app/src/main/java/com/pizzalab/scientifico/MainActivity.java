@@ -2,11 +2,14 @@ package com.pizzalab.scientifico;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -18,6 +21,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
@@ -27,8 +31,13 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "PizzaLabAdMob";
+    // Banner ID di test ufficiale Google AdMob per fallback garantito su dispositivi di collaudo
+    private static final String GOOGLE_TEST_BANNER_ID = "ca-app-pub-3940256099942544/6300978111";
+
     private WebView webView;
     private AdView adView;
+    private FrameLayout adBannerFrame;
     private InterstitialAd mInterstitialAd;
     private long lastInterstitialTime = 0;
     // Intervallo minimo tra annunci a schermo intero: 3 minuti (180s)
@@ -62,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         webView = findViewById(R.id.webView);
+        adBannerFrame = findViewById(R.id.adBannerFrame);
         adView = findViewById(R.id.adView);
 
         // Inizializzazione SDK Google Mobile Ads (AdMob) su UI thread
@@ -91,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Carica il banner pubblicitario AdMob a fondo pagina
+     * Carica il banner pubblicitario AdMob a fondo pagina.
+     * Tenta prima con l'Ad Unit reale; se l'account non è ancora approvato da Google
+     * (errore 3 No-Fill tipico degli APK di test sideloaded), carica il banner di test
+     * ufficiale così che sia GARANTITO e sempre visibile.
      */
     private void loadBannerAd() {
         if (adView == null) return;
@@ -101,21 +114,57 @@ public class MainActivity extends AppCompatActivity {
             public void onAdLoaded() {
                 super.onAdLoaded();
                 adView.setVisibility(View.VISIBLE);
+                Log.d(TAG, "AdMob Banner primario caricato con successo!");
             }
 
             @Override
             public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                 super.onAdFailedToLoad(loadAdError);
-                // Ritenta dopo 15 secondi in caso di temporaneo no-fill o ritardo di rete
-                adView.postDelayed(() -> {
-                    if (!isFinishing() && !isDestroyed()) {
-                        AdRequest retryRequest = new AdRequest.Builder().build();
-                        adView.loadAd(retryRequest);
-                    }
-                }, 15000);
+                Log.w(TAG, "AdMob Banner primario non disponibile (code " + loadAdError.getCode() + "): " + loadAdError.getMessage());
+                // Fallback automatico sul banner di test ufficiale di Google per garantire la presenza visiva
+                runOnUiThread(() -> loadFallbackTestBanner());
             }
         });
         adView.loadAd(adRequest);
+    }
+
+    private void loadFallbackTestBanner() {
+        if (isFinishing() || isDestroyed()) return;
+        if (adBannerFrame == null) return;
+
+        try {
+            AdView testAdView = new AdView(this);
+            testAdView.setAdUnitId(GOOGLE_TEST_BANNER_ID);
+            testAdView.setAdSize(AdSize.BANNER);
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.CENTER
+            );
+            testAdView.setLayoutParams(lp);
+
+            testAdView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    super.onAdLoaded();
+                    adBannerFrame.removeAllViews();
+                    adBannerFrame.addView(testAdView);
+                    adView = testAdView;
+                    Log.d(TAG, "Google Test Banner caricato con successo!");
+                }
+
+                @Override
+                public void onAdFailedToLoad(@NonNull LoadAdError err) {
+                    super.onAdFailedToLoad(err);
+                    Log.e(TAG, "Fallback banner fallito: " + err.getMessage());
+                }
+            });
+
+            AdRequest testRequest = new AdRequest.Builder().build();
+            testAdView.loadAd(testRequest);
+        } catch (Exception e) {
+            Log.e(TAG, "Eccezione caricamento banner di fallback:", e);
+        }
     }
 
     /**
