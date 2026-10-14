@@ -18,8 +18,7 @@ function copyRecursive(src, dest) {
       if (entry.name !== 'node_modules' && entry.name !== '.git' && entry.name !== 'android-app' && entry.name !== 'scripts') {
         copyRecursive(srcPath, destPath);
       }
-    } else {
-      if (['index.html', 'manifest.webmanifest', 'sw.js'].includes(entry.name)) {
+      if (['index.html', 'privacy.html', 'manifest.webmanifest', 'sw.js'].includes(entry.name)) {
         fs.copyFileSync(srcPath, destPath);
       }
     }
@@ -44,6 +43,7 @@ if (!fs.existsSync(destDir)) {
 }
 
 fs.copyFileSync(path.join(srcDir, 'index.html'), path.join(destDir, 'index.html'));
+fs.copyFileSync(path.join(srcDir, 'privacy.html'), path.join(destDir, 'privacy.html'));
 fs.copyFileSync(path.join(srcDir, 'manifest.webmanifest'), path.join(destDir, 'manifest.webmanifest'));
 fs.copyFileSync(path.join(srcDir, 'sw.js'), path.join(destDir, 'sw.js'));
 

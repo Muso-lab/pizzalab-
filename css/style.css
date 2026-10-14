@@ -2844,4 +2844,38 @@ body {
   gap: 0.4rem;
 }
 
+/* ==========================================================================
+   APP FOOTER (Privacy & Info)
+   ========================================================================== */
+.app-footer {
+  text-align: center;
+  padding: 1.5rem 1rem 4rem 1rem;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border-color);
+  margin-top: 2.5rem;
+}
+
+.app-footer p {
+  margin-bottom: 0.35rem;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+
 
