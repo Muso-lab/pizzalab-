@@ -162,13 +162,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // Metodi Indiretti
   const prefermentTypeSelect = document.getElementById('prefermentTypeSelect');
   const prefTotalFlour = document.getElementById('prefTotalFlour');
+  const prefTotalFlourSlider = document.getElementById('prefTotalFlourSlider');
+  const prefTotalFlourVal = document.getElementById('prefTotalFlourVal');
   const prefTotalHydration = document.getElementById('prefTotalHydration');
+  const prefTotalHydrationSlider = document.getElementById('prefTotalHydrationSlider');
+  const prefTotalHydrationVal = document.getElementById('prefTotalHydrationVal');
   const prefTotalSalt = document.getElementById('prefTotalSalt');
+  const prefTotalSaltSlider = document.getElementById('prefTotalSaltSlider');
+  const prefTotalSaltVal = document.getElementById('prefTotalSaltVal');
   const bigaControls = document.getElementById('bigaControls');
   const poolishControls = document.getElementById('poolishControls');
   const prefBigaPct = document.getElementById('prefBigaPct');
   const prefBigaHydration = document.getElementById('prefBigaHydration');
+  const prefBigaHydrationSlider = document.getElementById('prefBigaHydrationSlider');
+  const prefBigaHydrationVal = document.getElementById('prefBigaHydrationVal');
   const prefPoolishPct = document.getElementById('prefPoolishPct');
+  const prefPoolishPctSlider = document.getElementById('prefPoolishPctSlider');
+  const prefPoolishPctVal = document.getElementById('prefPoolishPctVal');
   const prefPoolishHours = document.getElementById('prefPoolishHours');
   const prefStage1Body = document.getElementById('prefStage1Body');
   const prefStage1Instructions = document.getElementById('prefStage1Instructions');
@@ -180,10 +190,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const tegliaRectGroup = document.getElementById('tegliaRectGroup');
   const tegliaRoundGroup = document.getElementById('tegliaRoundGroup');
   const tegliaLength = document.getElementById('tegliaLength');
+  const tegliaLengthSlider = document.getElementById('tegliaLengthSlider');
+  const tegliaLengthVal = document.getElementById('tegliaLengthVal');
   const tegliaWidth = document.getElementById('tegliaWidth');
+  const tegliaWidthSlider = document.getElementById('tegliaWidthSlider');
+  const tegliaWidthVal = document.getElementById('tegliaWidthVal');
   const tegliaDiameter = document.getElementById('tegliaDiameter');
+  const tegliaDiameterSlider = document.getElementById('tegliaDiameterSlider');
+  const tegliaDiameterVal = document.getElementById('tegliaDiameterVal');
   const tegliaCoeffSelect = document.getElementById('tegliaCoeffSelect');
   const tegliaCount = document.getElementById('tegliaCount');
+  const tegliaCountSlider = document.getElementById('tegliaCountSlider');
+  const tegliaCountVal = document.getElementById('tegliaCountVal');
   const tegliaAreaDisplay = document.getElementById('tegliaAreaDisplay');
   const tegliaSingleWeightDisplay = document.getElementById('tegliaSingleWeightDisplay');
   const tegliaTotalNotice = document.getElementById('tegliaTotalNotice');
@@ -212,8 +230,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const revHoursVal = document.getElementById('revHoursVal');
   const revQuickPills = document.querySelectorAll('.quick-pill');
   const revNumBalls = document.getElementById('revNumBalls');
+  const revNumBallsSlider = document.getElementById('revNumBallsSlider');
+  const revNumBallsVal = document.getElementById('revNumBallsVal');
   const revBallWeight = document.getElementById('revBallWeight');
+  const revBallWeightSlider = document.getElementById('revBallWeightSlider');
+  const revBallWeightVal = document.getElementById('revBallWeightVal');
   const revAmbientTemp = document.getElementById('revAmbientTemp');
+  const revAmbientTempSlider = document.getElementById('revAmbientTempSlider');
+  const revAmbientTempVal = document.getElementById('revAmbientTempVal');
   const revFlourSelect = document.getElementById('revFlourSelect');
   const revCustomWGroup = document.getElementById('revCustomWGroup');
   const revCustomWInput = document.getElementById('revCustomWInput');
@@ -978,12 +1002,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   prefermentTypeSelect.addEventListener('change', recalculateIndirect);
-  prefTotalFlour.addEventListener('input', recalculateIndirect);
-  prefTotalHydration.addEventListener('input', recalculateIndirect);
-  prefTotalSalt.addEventListener('input', recalculateIndirect);
+  bindSliderAndInput(prefTotalFlourSlider, prefTotalFlour, prefTotalFlourVal, 'g', recalculateIndirect);
+  bindSliderAndInput(prefTotalHydrationSlider, prefTotalHydration, prefTotalHydrationVal, '%', recalculateIndirect);
+  bindSliderAndInput(prefTotalSaltSlider, prefTotalSalt, prefTotalSaltVal, '%', recalculateIndirect);
   prefBigaPct.addEventListener('change', recalculateIndirect);
-  prefBigaHydration.addEventListener('input', recalculateIndirect);
-  prefPoolishPct.addEventListener('input', recalculateIndirect);
+  bindSliderAndInput(prefBigaHydrationSlider, prefBigaHydration, prefBigaHydrationVal, '%', recalculateIndirect);
+  bindSliderAndInput(prefPoolishPctSlider, prefPoolishPct, prefPoolishPctVal, '%', recalculateIndirect);
   prefPoolishHours.addEventListener('change', recalculateIndirect);
 
   // --- CALCOLATORE TEGLIA ---
@@ -1021,11 +1045,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   tegliaShape.addEventListener('change', recalculateTeglia);
-  tegliaLength.addEventListener('input', recalculateTeglia);
-  tegliaWidth.addEventListener('input', recalculateTeglia);
-  tegliaDiameter.addEventListener('input', recalculateTeglia);
+  bindSliderAndInput(tegliaLengthSlider, tegliaLength, tegliaLengthVal, 'cm', recalculateTeglia);
+  bindSliderAndInput(tegliaWidthSlider, tegliaWidth, tegliaWidthVal, 'cm', recalculateTeglia);
+  bindSliderAndInput(tegliaDiameterSlider, tegliaDiameter, tegliaDiameterVal, 'cm', recalculateTeglia);
   tegliaCoeffSelect.addEventListener('change', recalculateTeglia);
-  tegliaCount.addEventListener('input', recalculateTeglia);
+  bindSliderAndInput(tegliaCountSlider, tegliaCount, tegliaCountVal, '', recalculateTeglia);
 
   applyTegliaToDirectBtn.addEventListener('click', () => {
     const singleWeight = parseInt(tegliaSingleWeightDisplay.textContent) || 720;
@@ -1518,9 +1542,9 @@ document.addEventListener('DOMContentLoaded', () => {
       revMixerSelect.addEventListener('change', recalculateReverse);
     }
 
-    if (revNumBalls) revNumBalls.addEventListener('input', recalculateReverse);
-    if (revBallWeight) revBallWeight.addEventListener('input', recalculateReverse);
-    if (revAmbientTemp) revAmbientTemp.addEventListener('input', recalculateReverse);
+    bindSliderAndInput(revNumBallsSlider, revNumBalls, revNumBallsVal, '', recalculateReverse);
+    bindSliderAndInput(revBallWeightSlider, revBallWeight, revBallWeightVal, 'g', recalculateReverse);
+    bindSliderAndInput(revAmbientTempSlider, revAmbientTemp, revAmbientTempVal, '°C', recalculateReverse);
 
     // Stima prudenziale in reverse
     if (revPrudentialToggle) {
@@ -1539,6 +1563,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const t = parseFloat(btn.dataset.temp);
         if (revAmbientTemp) {
           revAmbientTemp.value = t;
+          if (revAmbientTempSlider) revAmbientTempSlider.value = t;
+          if (revAmbientTempVal) revAmbientTempVal.textContent = `${t} °C`;
         }
         recalculateReverse();
       });
@@ -1603,6 +1629,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Cronoprogramma trasferito nella vista completa!', '⏱️');
       });
     }
+
+    // Setup scroll guard per lo slider ore
+    if (revHours) setupSliderScrollGuard(revHours);
 
     // Quick pills ore
     revQuickPills.forEach(pill => {
@@ -1843,7 +1872,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   mobileNavButtons.forEach(btn => {
+    let touched = false;
+    btn.addEventListener('touchend', (e) => {
+      touched = true;
+      e.preventDefault();
+      if (btn.id === 'bottomNavCalc') {
+        switchTab(lastActiveCalcTab || 'tab-direct');
+      } else {
+        switchTab(btn.dataset.tab);
+      }
+      setTimeout(() => { touched = false; }, 350);
+    }, { passive: false });
+
     btn.addEventListener('click', (e) => {
+      if (touched) return;
       if (btn.id === 'bottomNavCalc') {
         e.preventDefault();
         switchTab(lastActiveCalcTab || 'tab-direct');
@@ -1854,7 +1896,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('.method-chip').forEach(chip => {
+    let chipTouched = false;
+    chip.addEventListener('touchend', (e) => {
+      chipTouched = true;
+      e.preventDefault();
+      const target = chip.dataset.tabTarget;
+      if (target) switchTab(target);
+      setTimeout(() => { chipTouched = false; }, 350);
+    }, { passive: false });
+
     chip.addEventListener('click', () => {
+      if (chipTouched) return;
       const target = chip.dataset.tabTarget;
       if (target) switchTab(target);
     });
@@ -2139,9 +2191,21 @@ document.addEventListener('DOMContentLoaded', () => {
       // Sincronizza anche il tab Reverse
       if (revOvenSelect) revOvenSelect.value = defaults.ovenType;
       if (revMixerSelect) revMixerSelect.value = defaults.mixerKey;
-      if (revNumBalls) revNumBalls.value = defaults.numBalls;
-      if (revBallWeight) revBallWeight.value = defaults.ballWeight;
-      if (revAmbientTemp) revAmbientTemp.value = defaults.ambientTemp;
+      if (revNumBalls) {
+        revNumBalls.value = defaults.numBalls;
+        if (revNumBallsSlider) revNumBallsSlider.value = defaults.numBalls;
+        if (revNumBallsVal) revNumBallsVal.textContent = defaults.numBalls;
+      }
+      if (revBallWeight) {
+        revBallWeight.value = defaults.ballWeight;
+        if (revBallWeightSlider) revBallWeightSlider.value = defaults.ballWeight;
+        if (revBallWeightVal) revBallWeightVal.textContent = `${defaults.ballWeight} g`;
+      }
+      if (revAmbientTemp) {
+        revAmbientTemp.value = defaults.ambientTemp;
+        if (revAmbientTempSlider) revAmbientTempSlider.value = defaults.ambientTemp;
+        if (revAmbientTempVal) revAmbientTempVal.textContent = `${defaults.ambientTemp} °C`;
+      }
       recalculateReverse();
     }
 
@@ -2211,9 +2275,21 @@ document.addEventListener('DOMContentLoaded', () => {
         revFlourSelect.value = d.flourKey;
         updateFlourCard();
       }
-      if (revNumBalls && d.numBalls) revNumBalls.value = d.numBalls;
-      if (revBallWeight && d.ballWeight) revBallWeight.value = d.ballWeight;
-      if (revAmbientTemp && d.ambientTemp) revAmbientTemp.value = d.ambientTemp;
+      if (revNumBalls && d.numBalls) {
+        revNumBalls.value = d.numBalls;
+        if (revNumBallsSlider) revNumBallsSlider.value = d.numBalls;
+        if (revNumBallsVal) revNumBallsVal.textContent = d.numBalls;
+      }
+      if (revBallWeight && d.ballWeight) {
+        revBallWeight.value = d.ballWeight;
+        if (revBallWeightSlider) revBallWeightSlider.value = d.ballWeight;
+        if (revBallWeightVal) revBallWeightVal.textContent = `${d.ballWeight} g`;
+      }
+      if (revAmbientTemp && d.ambientTemp) {
+        revAmbientTemp.value = d.ambientTemp;
+        if (revAmbientTempSlider) revAmbientTempSlider.value = d.ambientTemp;
+        if (revAmbientTempVal) revAmbientTempVal.textContent = `${d.ambientTemp} °C`;
+      }
 
       if (resetDefaultsBtn) resetDefaultsBtn.style.display = 'inline-flex';
       recalculateDirect();

@@ -35,13 +35,19 @@
       <div class="splash-loader">
         <div class="splash-loader-bar"></div>
       </div>
-      <span class="splash-version">v2.1 Pro • Android & Web Edition</span>
+      <span class="splash-version">v2.1.1 Pro • Android & Web Edition</span>
     </div>
   </div>
 
   <!-- HEADER -->
   <header class="header">
     <div class="header-container">
+      <div class="header-left">
+        <button id="tutorialBtn" class="header-action-btn" title="Apri Guida Rapida e Tutorial">
+          <span class="btn-icon">❓</span><span class="btn-label">Guida</span>
+        </button>
+      </div>
+
       <div class="logo-badge">
         <span class="logo-icon">🍕</span>
         <div class="logo-text">
@@ -61,9 +67,6 @@
       </nav>
 
       <div class="header-actions">
-        <button id="tutorialBtn" class="header-action-btn" title="Apri Guida Rapida e Tutorial">
-          <span class="btn-icon">❓</span><span class="btn-label">Guida</span>
-        </button>
         <button id="settingsModalBtn" class="header-action-btn" title="Impostazioni, Tema, Testo, Reset e Salva">
           <span class="btn-icon">⚙️</span><span class="btn-label">Menu</span>
         </button>
@@ -681,7 +684,10 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 1.25rem;">
-              <label class="form-label">Tempo Totale a Disposizione: <span id="revHoursVal" class="val-badge">8 ore</span></label>
+              <div class="form-group-head">
+                <label class="form-label" for="revHours">Tempo Totale a Disposizione</label>
+                <span id="revHoursVal" class="val-badge">8 ore</span>
+              </div>
               
               <!-- Quick Pills -->
               <div class="quick-pills-row">
@@ -692,32 +698,70 @@
                 <button type="button" class="quick-pill" data-hours="48">🧊 48h Maturazione Fredda</button>
               </div>
 
-              <input type="range" id="revHours" class="range-slider" min="2" max="72" value="8" step="1">
-              <div class="input-with-unit" style="margin-top: 0.5rem;">
-                <input type="number" id="revHoursInput" class="form-input" min="2" max="120" value="8">
-                <span class="input-unit">ore totali</span>
+              <div class="stepper-row">
+                <button type="button" class="stepper-btn stepper-btn-minus" data-slider="revHours" data-input="revHoursInput" aria-label="Meno ore">&minus;</button>
+                <div class="stepper-slider-wrap">
+                  <input type="range" id="revHours" class="range-slider" min="2" max="72" value="8" step="1">
+                </div>
+                <button type="button" class="stepper-btn stepper-btn-plus" data-slider="revHours" data-input="revHoursInput" aria-label="Più ore">+</button>
+                <div class="stepper-direct-box">
+                  <input type="number" id="revHoursInput" class="form-input stepper-input" min="2" max="120" value="8">
+                  <span class="stepper-unit">h</span>
+                </div>
               </div>
             </div>
 
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label" for="revNumBalls">Numero Panetti</label>
-                <input type="number" id="revNumBalls" class="form-input" min="1" max="100" value="4">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="revBallWeight">Peso Singolo Panetto</label>
-                <div class="input-with-unit">
-                  <input type="number" id="revBallWeight" class="form-input" min="100" max="1500" value="260">
-                  <span class="input-unit">g</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="revNumBalls">Numero Panetti</label>
+                  <span id="revNumBallsVal" class="val-badge">4</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="revNumBallsSlider" data-input="revNumBalls" aria-label="Meno panetti">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="revNumBallsSlider" class="range-slider" min="1" max="50" value="4">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="revNumBallsSlider" data-input="revNumBalls" aria-label="Più panetti">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="revNumBalls" class="form-input stepper-input" min="1" max="100" value="4">
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="revAmbientTemp">Temperatura Ambiente Stimata</label>
-                <div class="input-with-unit">
-                  <input type="number" id="revAmbientTemp" class="form-input" min="10" max="38" step="0.5" value="21">
-                  <span class="input-unit">°C</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="revBallWeight">Peso Panetto</label>
+                  <span id="revBallWeightVal" class="val-badge">260 g</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="revBallWeightSlider" data-input="revBallWeight" aria-label="Meno peso">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="revBallWeightSlider" class="range-slider" min="100" max="1200" step="5" value="260">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="revBallWeightSlider" data-input="revBallWeight" aria-label="Più peso">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="revBallWeight" class="form-input stepper-input" min="100" max="1500" step="5" value="260">
+                    <span class="stepper-unit">g</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="form-group-head">
+                  <label class="form-label" for="revAmbientTemp">Temp. Ambiente</label>
+                  <span id="revAmbientTempVal" class="val-badge">21 °C</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="revAmbientTempSlider" data-input="revAmbientTemp" aria-label="Meno gradi">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="revAmbientTempSlider" class="range-slider" min="10" max="38" step="0.5" value="21">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="revAmbientTempSlider" data-input="revAmbientTemp" aria-label="Più gradi">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="revAmbientTemp" class="form-input stepper-input" min="10" max="45" step="0.5" value="21">
+                    <span class="stepper-unit">°C</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1043,26 +1087,56 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Farina Totale Ricetta</label>
-            <div class="input-with-unit">
-              <input type="number" id="prefTotalFlour" class="form-input" value="1000" min="200" max="10000" step="50">
-              <span class="input-unit">g</span>
+            <div class="form-group-head">
+              <label class="form-label" for="prefTotalFlour">Farina Totale Ricetta</label>
+              <span id="prefTotalFlourVal" class="val-badge">1000 g</span>
+            </div>
+            <div class="stepper-row">
+              <button type="button" class="stepper-btn stepper-btn-minus" data-slider="prefTotalFlourSlider" data-input="prefTotalFlour" aria-label="Meno farina">&minus;</button>
+              <div class="stepper-slider-wrap">
+                <input type="range" id="prefTotalFlourSlider" class="range-slider" min="200" max="5000" step="50" value="1000">
+              </div>
+              <button type="button" class="stepper-btn stepper-btn-plus" data-slider="prefTotalFlourSlider" data-input="prefTotalFlour" aria-label="Più farina">+</button>
+              <div class="stepper-direct-box">
+                <input type="number" id="prefTotalFlour" class="form-input stepper-input" value="1000" min="200" max="10000" step="50">
+                <span class="stepper-unit">g</span>
+              </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Idratazione Totale Finale</label>
-            <div class="input-with-unit">
-              <input type="number" id="prefTotalHydration" class="form-input" value="70" min="50" max="95" step="1">
-              <span class="input-unit">%</span>
+            <div class="form-group-head">
+              <label class="form-label" for="prefTotalHydration">Idratazione Totale Finale</label>
+              <span id="prefTotalHydrationVal" class="val-badge">70 %</span>
+            </div>
+            <div class="stepper-row">
+              <button type="button" class="stepper-btn stepper-btn-minus" data-slider="prefTotalHydrationSlider" data-input="prefTotalHydration" aria-label="Meno idratazione">&minus;</button>
+              <div class="stepper-slider-wrap">
+                <input type="range" id="prefTotalHydrationSlider" class="range-slider" min="50" max="95" step="1" value="70">
+              </div>
+              <button type="button" class="stepper-btn stepper-btn-plus" data-slider="prefTotalHydrationSlider" data-input="prefTotalHydration" aria-label="Più idratazione">+</button>
+              <div class="stepper-direct-box">
+                <input type="number" id="prefTotalHydration" class="form-input stepper-input" value="70" min="50" max="95" step="1">
+                <span class="stepper-unit">%</span>
+              </div>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Sale Finale</label>
-            <div class="input-with-unit">
-              <input type="number" id="prefTotalSalt" class="form-input" value="2.5" min="1" max="4" step="0.1">
-              <span class="input-unit">%</span>
+            <div class="form-group-head">
+              <label class="form-label" for="prefTotalSalt">Sale Finale</label>
+              <span id="prefTotalSaltVal" class="val-badge">2.5 %</span>
+            </div>
+            <div class="stepper-row">
+              <button type="button" class="stepper-btn stepper-btn-minus" data-slider="prefTotalSaltSlider" data-input="prefTotalSalt" aria-label="Meno sale">&minus;</button>
+              <div class="stepper-slider-wrap">
+                <input type="range" id="prefTotalSaltSlider" class="range-slider" min="1.0" max="4.0" step="0.1" value="2.5">
+              </div>
+              <button type="button" class="stepper-btn stepper-btn-plus" data-slider="prefTotalSaltSlider" data-input="prefTotalSalt" aria-label="Più sale">+</button>
+              <div class="stepper-direct-box">
+                <input type="number" id="prefTotalSalt" class="form-input stepper-input" value="2.5" min="1" max="4" step="0.1">
+                <span class="stepper-unit">%</span>
+              </div>
             </div>
           </div>
 
@@ -1076,20 +1150,40 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Idratazione Biga</label>
-              <div class="input-with-unit">
-                <input type="number" id="prefBigaHydration" class="form-input" value="45" min="42" max="52" step="1">
-                <span class="input-unit">%</span>
+              <div class="form-group-head">
+                <label class="form-label" for="prefBigaHydration">Idratazione Biga</label>
+                <span id="prefBigaHydrationVal" class="val-badge">45 %</span>
+              </div>
+              <div class="stepper-row">
+                <button type="button" class="stepper-btn stepper-btn-minus" data-slider="prefBigaHydrationSlider" data-input="prefBigaHydration" aria-label="Meno idratazione biga">&minus;</button>
+                <div class="stepper-slider-wrap">
+                  <input type="range" id="prefBigaHydrationSlider" class="range-slider" min="42" max="55" step="1" value="45">
+                </div>
+                <button type="button" class="stepper-btn stepper-btn-plus" data-slider="prefBigaHydrationSlider" data-input="prefBigaHydration" aria-label="Più idratazione biga">+</button>
+                <div class="stepper-direct-box">
+                  <input type="number" id="prefBigaHydration" class="form-input stepper-input" value="45" min="42" max="55" step="1">
+                  <span class="stepper-unit">%</span>
+                </div>
               </div>
             </div>
           </div>
 
           <div id="poolishControls" style="display: none;">
             <div class="form-group">
-              <label class="form-label">% Farina in Poolish</label>
-              <div class="input-with-unit">
-                <input type="number" id="prefPoolishPct" class="form-input" value="30" min="10" max="100" step="5">
-                <span class="input-unit">%</span>
+              <div class="form-group-head">
+                <label class="form-label" for="prefPoolishPct">% Farina in Poolish</label>
+                <span id="prefPoolishPctVal" class="val-badge">30 %</span>
+              </div>
+              <div class="stepper-row">
+                <button type="button" class="stepper-btn stepper-btn-minus" data-slider="prefPoolishPctSlider" data-input="prefPoolishPct" aria-label="Meno farina poolish">&minus;</button>
+                <div class="stepper-slider-wrap">
+                  <input type="range" id="prefPoolishPctSlider" class="range-slider" min="10" max="100" step="5" value="30">
+                </div>
+                <button type="button" class="stepper-btn stepper-btn-plus" data-slider="prefPoolishPctSlider" data-input="prefPoolishPct" aria-label="Più farina poolish">+</button>
+                <div class="stepper-direct-box">
+                  <input type="number" id="prefPoolishPct" class="form-input stepper-input" value="30" min="10" max="100" step="5">
+                  <span class="stepper-unit">%</span>
+                </div>
               </div>
             </div>
             <div class="form-group">
@@ -1159,27 +1253,58 @@
 
               <div id="tegliaRectGroup" style="display: contents;">
                 <div class="form-group">
-                  <label class="form-label">Lunghezza Teglia</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="tegliaLength" class="form-input" value="40" min="10" max="100">
-                    <span class="input-unit">cm</span>
+                  <div class="form-group-head">
+                    <label class="form-label" for="tegliaLength">Lunghezza Teglia</label>
+                    <span id="tegliaLengthVal" class="val-badge">40 cm</span>
+                  </div>
+                  <div class="stepper-row">
+                    <button type="button" class="stepper-btn stepper-btn-minus" data-slider="tegliaLengthSlider" data-input="tegliaLength" aria-label="Meno lunghezza">&minus;</button>
+                    <div class="stepper-slider-wrap">
+                      <input type="range" id="tegliaLengthSlider" class="range-slider" min="15" max="80" step="1" value="40">
+                    </div>
+                    <button type="button" class="stepper-btn stepper-btn-plus" data-slider="tegliaLengthSlider" data-input="tegliaLength" aria-label="Più lunghezza">+</button>
+                    <div class="stepper-direct-box">
+                      <input type="number" id="tegliaLength" class="form-input stepper-input" value="40" min="10" max="100">
+                      <span class="stepper-unit">cm</span>
+                    </div>
                   </div>
                 </div>
+
                 <div class="form-group">
-                  <label class="form-label">Larghezza Teglia</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="tegliaWidth" class="form-input" value="30" min="10" max="100">
-                    <span class="input-unit">cm</span>
+                  <div class="form-group-head">
+                    <label class="form-label" for="tegliaWidth">Larghezza Teglia</label>
+                    <span id="tegliaWidthVal" class="val-badge">30 cm</span>
+                  </div>
+                  <div class="stepper-row">
+                    <button type="button" class="stepper-btn stepper-btn-minus" data-slider="tegliaWidthSlider" data-input="tegliaWidth" aria-label="Meno larghezza">&minus;</button>
+                    <div class="stepper-slider-wrap">
+                      <input type="range" id="tegliaWidthSlider" class="range-slider" min="15" max="80" step="1" value="30">
+                    </div>
+                    <button type="button" class="stepper-btn stepper-btn-plus" data-slider="tegliaWidthSlider" data-input="tegliaWidth" aria-label="Più larghezza">+</button>
+                    <div class="stepper-direct-box">
+                      <input type="number" id="tegliaWidth" class="form-input stepper-input" value="30" min="10" max="100">
+                      <span class="stepper-unit">cm</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div id="tegliaRoundGroup" style="display: none;">
                 <div class="form-group">
-                  <label class="form-label">Diametro Teglia</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="tegliaDiameter" class="form-input" value="32" min="10" max="100">
-                    <span class="input-unit">cm</span>
+                  <div class="form-group-head">
+                    <label class="form-label" for="tegliaDiameter">Diametro Teglia</label>
+                    <span id="tegliaDiameterVal" class="val-badge">32 cm</span>
+                  </div>
+                  <div class="stepper-row">
+                    <button type="button" class="stepper-btn stepper-btn-minus" data-slider="tegliaDiameterSlider" data-input="tegliaDiameter" aria-label="Meno diametro">&minus;</button>
+                    <div class="stepper-slider-wrap">
+                      <input type="range" id="tegliaDiameterSlider" class="range-slider" min="15" max="60" step="1" value="32">
+                    </div>
+                    <button type="button" class="stepper-btn stepper-btn-plus" data-slider="tegliaDiameterSlider" data-input="tegliaDiameter" aria-label="Più diametro">+</button>
+                    <div class="stepper-direct-box">
+                      <input type="number" id="tegliaDiameter" class="form-input stepper-input" value="32" min="10" max="100">
+                      <span class="stepper-unit">cm</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1196,8 +1321,21 @@
               </div>
 
               <div class="form-group">
-                <label class="form-label">Numero di Teglie</label>
-                <input type="number" id="tegliaCount" class="form-input" value="1" min="1" max="20">
+                <div class="form-group-head">
+                  <label class="form-label" for="tegliaCount">Numero di Teglie</label>
+                  <span id="tegliaCountVal" class="val-badge">1</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="tegliaCountSlider" data-input="tegliaCount" aria-label="Meno teglie">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="tegliaCountSlider" class="range-slider" min="1" max="10" step="1" value="1">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="tegliaCountSlider" data-input="tegliaCount" aria-label="Più teglie">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="tegliaCount" class="form-input stepper-input" value="1" min="1" max="20">
+                    <span class="stepper-unit">pz</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

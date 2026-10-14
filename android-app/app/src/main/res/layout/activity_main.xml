@@ -11,17 +11,23 @@
         android:id="@+id/webView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/adView" />
+        android:layout_above="@+id/adContainer" />
 
-    <!-- Banner pubblicitario Google AdMob ancorato in fondo allo schermo -->
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
+    <!-- Container del banner pubblicitario Google AdMob ancorato in fondo allo schermo -->
+    <LinearLayout
+        android:id="@+id/adContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="#121418"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/admob_banner_ad_unit_id" />
+        android:gravity="center"
+        android:background="#121418">
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/admob_banner_ad_unit_id" />
+    </LinearLayout>
 
 </RelativeLayout>

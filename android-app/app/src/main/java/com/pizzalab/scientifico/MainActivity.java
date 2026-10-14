@@ -40,15 +40,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Previene qualsiasi sovrapposizione con la barra di stato / notch superiore
-        // Il fondo rimane a 0 per ancorare saldamente il banner AdMob al bordo inferiore come nella v2.0.1
+        // Applica padding per evitare sovrapposizione con la barra di stato/notch in alto
+        // e sollevare il banner AdMob sopra la barra di navigazione di sistema / gesture bar di Android in basso
         View root = findViewById(R.id.rootLayout);
         if (root != null) {
             ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
                 Insets insets = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
                 );
-                v.setPadding(0, insets.top, 0, 0);
+                v.setPadding(0, insets.top, 0, insets.bottom);
                 return windowInsets;
             });
             ViewCompat.requestApplyInsets(root);
