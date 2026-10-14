@@ -2,19 +2,13 @@
     <string name="app_name">PizzaLab</string>
 
     <!--
-      CONFIGURAZIONE PUBBLICITÀ GOOGLE ADMOB
+      CONFIGURAZIONE PUBBLICITÀ GOOGLE ADMOB (PRODUZIONE PLAY STORE)
       ======================================================================================
-      I seguenti ID sono gli ID UFFICIALI DI TEST forniti da Google.
-      Lasciali così durante lo sviluppo e i test per evitare il ban dell'account AdMob.
-
-      PRIMA DI CARICARE SUL PLAY STORE:
-      Sostituisci questi valori con i tuoi ID reali generati dalla console AdMob (https://admob.google.com):
-      1. Crea una nuova App su AdMob -> Ottieni l'App ID (formato: ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX)
-      2. Crea un'unità pubblicitaria Banner -> Ottieni il Banner ID (formato: ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX)
-      3. Crea un'unità pubblicitaria Interstiziale -> Ottieni l'Interstitial ID (formato: ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX)
+      ID Reali associati all'account AdMob dell'utente:
+      App: PizzaLab Scientifico (Android)
       ======================================================================================
     -->
-    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="admob_banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="admob_interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="admob_app_id">ca-app-pub-5948284618789157~9888360584</string>
+    <string name="admob_banner_ad_unit_id">ca-app-pub-5948284618789157/3071670799</string>
+    <string name="admob_interstitial_ad_unit_id">ca-app-pub-5948284618789157/8132425787</string>
 </resources>

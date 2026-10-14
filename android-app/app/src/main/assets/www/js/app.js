@@ -1119,7 +1119,17 @@ document.addEventListener('DOMContentLoaded', () => {
   targetBakeTime.addEventListener('change', updateTimeline);
   timelineAcclimation.addEventListener('input', updateTimeline);
 
+  // Funzione bridge per mostrare annunci nativi AdMob (con rispetto del cooldown)
+  function triggerNativeInterstitial() {
+    try {
+      if (window.PizzaLabNative && typeof window.PizzaLabNative.triggerInterstitial === 'function') {
+        window.PizzaLabNative.triggerInterstitial();
+      }
+    } catch (_) {}
+  }
+
   goToTimelineBtn.addEventListener('click', () => {
+    triggerNativeInterstitial();
     switchTab('tab-timeline');
   });
 
@@ -1523,6 +1533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cronoprogramma Esteso Button
     if (revGoToTimelineBtn) {
       revGoToTimelineBtn.addEventListener('click', () => {
+        triggerNativeInterstitial();
         if (!currentReverseResult) return;
         const p = currentReverseResult.parameters;
 
@@ -1690,6 +1701,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Copia scheda tecnica ottimizzata
     if (revCopyRecipeBtn) {
       revCopyRecipeBtn.addEventListener('click', () => {
+        triggerNativeInterstitial();
         if (!currentReverseResult) return;
         const res = currentReverseResult;
         const recipe = res.recipe;
@@ -1932,6 +1944,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- COPIA RICETTA FORMATTATA ---
   copyRecipeBtn.addEventListener('click', () => {
+    triggerNativeInterstitial();
     if (!currentCalculatedDough) return;
 
     const res = currentCalculatedDough;
