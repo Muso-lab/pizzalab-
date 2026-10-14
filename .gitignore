@@ -20,6 +20,13 @@ android-app/.cxx/
 android-app/*.iml
 android-app/app/*.iml
 
+# Android Keystore & Secrets
+*.jks
+*.keystore
+key.properties
+*.aab
+*.apk
+
 # IDE settings
 .vscode/
 .idea/
