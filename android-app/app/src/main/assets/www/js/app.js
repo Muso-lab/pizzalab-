@@ -741,6 +741,35 @@ document.addEventListener('DOMContentLoaded', () => {
     recipeTotalPct.textContent = `${totalBakersPct.toFixed(1)} %`;
     recipeTotalWeight.textContent = `${Math.round(res.totalDough)} g`;
 
+    // Aggiorna Quick Ingredients Summary Bar per la bilancia
+    const qFlour = document.getElementById('quickFlourVal');
+    const qWater = document.getElementById('quickWaterVal');
+    const qYeast = document.getElementById('quickYeastVal');
+    const qSalt = document.getElementById('quickSaltVal');
+    const qOil = document.getElementById('quickOilVal');
+    const qOilWrap = document.getElementById('quickOilWrap');
+
+    if (qFlour) qFlour.textContent = formatGrams(res.flour);
+    if (qWater) qWater.textContent = formatGrams(res.water);
+    if (qSalt) qSalt.textContent = formatGrams(res.salt);
+    if (qYeast) {
+      if (state.yeastType === 'madre') {
+        qYeast.textContent = formatGrams(res.pastaMadreGrams);
+      } else if (state.yeastType === 'licoli') {
+        qYeast.textContent = formatGrams(res.licoliGrams);
+      } else {
+        qYeast.textContent = formatYeastDisplay(res.yeastGrams);
+      }
+    }
+    if (qOilWrap && qOil) {
+      if (res.fat > 0) {
+        qOilWrap.style.display = 'inline-flex';
+        qOil.textContent = formatGrams(res.fat);
+      } else {
+        qOilWrap.style.display = 'none';
+      }
+    }
+
     // Termodinamica TFI e Ghiaccio
     const thermo = res.thermodynamics;
     waterTempDisplay.textContent = `${thermo.waterTemp.toFixed(1)} °C`;
@@ -1757,9 +1786,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- GESTIONE TABS (DESKTOP & MOBILE) ---
+  let lastActiveCalcTab = 'tab-direct';
+  const calcTabs = ['tab-direct', 'tab-reverse', 'tab-indirect', 'tab-teglia'];
+
   function switchTab(tabId) {
+    if (calcTabs.includes(tabId)) {
+      lastActiveCalcTab = tabId;
+    }
+
     if (presetsStrip) {
       presetsStrip.style.display = (tabId === 'tab-direct') ? '' : 'none';
+    }
+
+    const quickSummary = document.getElementById('quickDoughSummary');
+    if (quickSummary) {
+      quickSummary.style.display = (tabId === 'tab-direct') ? '' : 'none';
     }
 
     tabButtons.forEach(btn => {
@@ -1767,7 +1808,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     mobileNavButtons.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tab === tabId);
+      if (btn.id === 'bottomNavCalc') {
+        btn.classList.toggle('active', calcTabs.includes(tabId));
+      } else {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      }
+    });
+
+    const methodChips = document.querySelectorAll('.method-chip');
+    methodChips.forEach(chip => {
+      chip.classList.toggle('active', chip.dataset.tabTarget === tabId);
     });
 
     tabContents.forEach(content => {
@@ -1793,10 +1843,32 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   mobileNavButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      switchTab(btn.dataset.tab);
+    btn.addEventListener('click', (e) => {
+      if (btn.id === 'bottomNavCalc') {
+        e.preventDefault();
+        switchTab(lastActiveCalcTab || 'tab-direct');
+      } else {
+        switchTab(btn.dataset.tab);
+      }
     });
   });
+
+  document.querySelectorAll('.method-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const target = chip.dataset.tabTarget;
+      if (target) switchTab(target);
+    });
+  });
+
+  const jumpToRecipeBtn = document.getElementById('jumpToRecipeBtn');
+  if (jumpToRecipeBtn) {
+    jumpToRecipeBtn.addEventListener('click', () => {
+      const resultsCol = document.querySelector('.results-column');
+      if (resultsCol) {
+        resultsCol.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
 
   // --- TOAST NOTIFICATION ---
   function showToast(message, icon = '📋') {
@@ -2376,6 +2448,86 @@ document.addEventListener('DOMContentLoaded', () => {
       const target = parseInt(dot.dataset.go, 10);
       if (!isNaN(target)) updateTutorialSlide(target);
     });
+  });
+
+  // --- UNIVERSAL STEPPER CONTROLS ([-], [+], slider & input synchronization) ---
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.stepper-btn');
+    if (!btn) return;
+
+    const isMinus = btn.classList.contains('stepper-btn-minus');
+    const sliderId = btn.dataset.slider;
+    const inputId = btn.dataset.input;
+
+    const slider = sliderId ? document.getElementById(sliderId) : null;
+    const input = inputId ? document.getElementById(inputId) : null;
+
+    if (!slider && !input) return;
+
+    const targetEl = slider || input;
+    const step = parseFloat(targetEl.getAttribute('step')) || 1;
+    const min = targetEl.getAttribute('min') !== null ? parseFloat(targetEl.getAttribute('min')) : -Infinity;
+    const max = targetEl.getAttribute('max') !== null ? parseFloat(targetEl.getAttribute('max')) : Infinity;
+
+    let currentVal = parseFloat(targetEl.value) || 0;
+    let newVal = isMinus ? (currentVal - step) : (currentVal + step);
+
+    // Clamp value within bounds
+    newVal = Math.max(min, Math.min(max, newVal));
+
+    // Fix floating point issues
+    const stepDecimals = (step.toString().split('.')[1] || '').length;
+    newVal = parseFloat(newVal.toFixed(stepDecimals));
+
+    if (slider) {
+      slider.value = newVal;
+      slider.dispatchEvent(new Event('input', { bubbles: true }));
+      slider.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (input) {
+      input.value = newVal;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+
+  // --- GESTIONE SETTINGS BOTTOM SHEET MODAL ---
+  const settingsModal = document.getElementById('settingsModal');
+  const settingsModalBtn = document.getElementById('settingsModalBtn');
+  const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
+  const settingsTutorialBtn = document.getElementById('settingsTutorialBtn');
+
+  function openSettingsModal() {
+    if (!settingsModal) return;
+    settingsModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSettingsModal() {
+    if (!settingsModal) return;
+    settingsModal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  if (settingsModalBtn) settingsModalBtn.addEventListener('click', openSettingsModal);
+  if (closeSettingsModalBtn) closeSettingsModalBtn.addEventListener('click', closeSettingsModal);
+  if (settingsModal) {
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) {
+        closeSettingsModal();
+      }
+    });
+  }
+  if (settingsTutorialBtn) {
+    settingsTutorialBtn.addEventListener('click', () => {
+      closeSettingsModal();
+      openTutorial();
+    });
+  }
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && settingsModal && settingsModal.style.display === 'flex') {
+      closeSettingsModal();
+    }
   });
 
   // NOTA: il tutorial si apre unicamente su richiesta dell'utente tramite il tasto "❓ Guida" in alto,

@@ -46,7 +46,7 @@
         <span class="logo-icon">🍕</span>
         <div class="logo-text">
           <h1>PizzaLab Scientifico</h1>
-          <p>Scientific Dough Kinetics & Thermodynamics</p>
+          <span class="logo-sub">Pro • Scientific Dough Calculator</span>
         </div>
       </div>
 
@@ -61,39 +61,64 @@
       </nav>
 
       <div class="header-actions">
-        <button id="tutorialBtn" class="btn btn-secondary btn-sm" title="Apri Guida Rapida e Tutorial">❓ Guida</button>
-        <button id="installAppBtn" class="btn btn-primary btn-sm" title="Installa l'app PizzaLab sul tuo smartphone" style="display: none;">📱 Installa</button>
-        <button id="saveDefaultsBtn" class="btn btn-secondary btn-sm" title="Salva attrezzatura e parametri correnti come predefiniti per le prossime volte">💾 Salva Standard</button>
-        <button id="resetDefaultsBtn" class="btn btn-secondary btn-sm" title="Ripristina valori originali di fabbrica" style="display: none;">🔄 Reset</button>
-        <button id="fontSizeBtn" class="btn btn-secondary btn-sm" title="Modifica dimensione testo (Normale, Grande, Molto Grande, Compatta)">🔤 Testo: A</button>
-        <button id="themeToggleBtn" class="btn btn-secondary btn-sm" title="Cambia tema chiaro/scuro">🌓 Tema</button>
-        <button id="printBtn" class="btn btn-secondary btn-sm" title="Stampa o salva in PDF">🖨️ Stampa</button>
+        <button id="tutorialBtn" class="header-action-btn" title="Apri Guida Rapida e Tutorial">
+          <span class="btn-icon">❓</span><span class="btn-label">Guida</span>
+        </button>
+        <button id="settingsModalBtn" class="header-action-btn" title="Impostazioni, Tema, Testo, Reset e Salva">
+          <span class="btn-icon">⚙️</span><span class="btn-label">Menu</span>
+        </button>
+        <button id="installAppBtn" class="header-action-btn btn-install-app" title="Installa l'app PizzaLab sul tuo smartphone" style="display: none;">
+          <span class="btn-icon">📱</span><span class="btn-label">Installa</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- PRESETS STRIP -->
-  <div class="presets-strip">
-    <div class="presets-container">
-      <span class="preset-label">🎯 Stili & Preset:</span>
-      <button class="preset-pill active" data-preset="napoletana_stg">Napoletana STG (8h TA)</button>
-      <button class="preset-pill" data-preset="napoletana_canotto">Canotto Contemporanea (48h Frigo)</button>
-      <button class="preset-pill" data-preset="teglia_romana">Teglia Romana (80% Idro 48h)</button>
-      <button class="preset-pill" data-preset="tonda_romana">Scrocchiarella Romana</button>
-      <button class="preset-pill" data-preset="pinsa_romana">Pinsa ad Alta Idratazione</button>
-      <button class="preset-pill" data-preset="new_york">New York Style</button>
-      <button class="preset-pill" data-preset="focaccia_genovese">Focaccia Genovese</button>
-    </div>
-  </div>
-
   <!-- MAIN APP CONTAINER -->
   <main class="main-content">
+
+    <!-- SELETTORE METODO CALCOLO SU MOBILE (Diretto, Reverse, Biga, Teglia) -->
+    <div class="mobile-method-switcher" id="mobileMethodSwitcher">
+      <button class="method-chip active" data-tab-target="tab-direct">🍕 Diretto</button>
+      <button class="method-chip" data-tab-target="tab-reverse">🧙 Reverse</button>
+      <button class="method-chip" data-tab-target="tab-indirect">🥖 Biga</button>
+      <button class="method-chip" data-tab-target="tab-teglia">📐 Teglia</button>
+    </div>
+
+    <!-- PRESETS STRIP (Carosello Stili Rapidi) -->
+    <div class="presets-strip" id="presetsStrip">
+      <div class="presets-container">
+        <span class="preset-label">🎯 Stili:</span>
+        <button class="preset-pill active" data-preset="napoletana_stg">Napoletana STG</button>
+        <button class="preset-pill" data-preset="napoletana_canotto">Canotto 48h</button>
+        <button class="preset-pill" data-preset="teglia_romana">Teglia Romana</button>
+        <button class="preset-pill" data-preset="tonda_romana">Scrocchiarella</button>
+        <button class="preset-pill" data-preset="pinsa_romana">Pinsa Romana</button>
+        <button class="preset-pill" data-preset="new_york">New York Style</button>
+        <button class="preset-pill" data-preset="focaccia_genovese">Focaccia Genovese</button>
+      </div>
+    </div>
+
+    <!-- QUICK INGREDIENTS SUMMARY BAR (Sempre a portata d'occhio per la bilancia) -->
+    <div id="quickDoughSummary" class="quick-dough-summary">
+      <div class="quick-summary-head">
+        <span class="quick-summary-title">⚖️ Da pesare sulla bilancia:</span>
+        <button id="jumpToRecipeBtn" class="quick-summary-btn" title="Vai alla scheda ricetta dettagliata">Scheda Completa ▾</button>
+      </div>
+      <div class="quick-summary-chips">
+        <div class="quick-chip"><span class="chip-label">Farina</span> <strong id="quickFlourVal">620 g</strong></div>
+        <div class="quick-chip"><span class="chip-label">Acqua</span> <strong id="quickWaterVal">403 g</strong></div>
+        <div class="quick-chip highlight"><span class="chip-label">Lievito</span> <strong id="quickYeastVal">1.8 g</strong></div>
+        <div class="quick-chip"><span class="chip-label">Sale</span> <strong id="quickSaltVal">18 g</strong></div>
+        <div id="quickOilWrap" class="quick-chip" style="display: none;"><span class="chip-label">Olio</span> <strong id="quickOilVal">0 g</strong></div>
+      </div>
+    </div>
 
     <!-- QUICK TIP BANNER -->
     <div id="quickTipBanner" class="quick-tip-banner">
       <div class="quick-tip-content">
         <span class="tip-icon">💡</span>
-        <span class="tip-text"><strong>Consiglio Pizzaiolo:</strong> Conosci già l'orario in cui vuoi infornare? Prova la <strong>Modalità Reverse 🧙</strong>: programma le fasi all'indietro e adatta la ricetta alla temperatura del tuo forno!</span>
+        <span class="tip-text"><strong>Consiglio:</strong> Conosci l'orario in cui vuoi infornare? Usa la <strong>Modalità Reverse 🧙</strong> per calcolare i tempi all'indietro!</span>
       </div>
       <button id="closeQuickTipBtn" class="tip-close-btn" title="Chiudi consiglio" aria-label="Chiudi">✕</button>
     </div>
@@ -115,17 +140,37 @@
             </div>
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label" for="numBalls">Numero Panetti <span id="numBallsVal" class="val-badge">6</span></label>
-                <input type="range" id="numBalls" class="range-slider" min="1" max="50" value="6">
-                <input type="number" id="numBallsInput" class="form-input" min="1" max="200" value="6">
+                <div class="form-group-head">
+                  <label class="form-label" for="numBalls">Numero Panetti</label>
+                  <span id="numBallsVal" class="val-badge">6</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="numBalls" data-input="numBallsInput" aria-label="Meno panetti">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="numBalls" class="range-slider" min="1" max="50" value="6">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="numBalls" data-input="numBallsInput" aria-label="Più panetti">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="numBallsInput" class="form-input stepper-input" min="1" max="200" value="6">
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="ballWeight">Peso Singolo Panetto <span id="ballWeightVal" class="val-badge">260 g</span></label>
-                <input type="range" id="ballWeight" class="range-slider" min="100" max="1200" step="5" value="260">
-                <div class="input-with-unit">
-                  <input type="number" id="ballWeightInput" class="form-input" min="50" max="3000" value="260">
-                  <span class="input-unit">g</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="ballWeight">Peso Singolo Panetto</label>
+                  <span id="ballWeightVal" class="val-badge">260 g</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="ballWeight" data-input="ballWeightInput" aria-label="Meno peso">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="ballWeight" class="range-slider" min="100" max="1200" step="5" value="260">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="ballWeight" data-input="ballWeightInput" aria-label="Più peso">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="ballWeightInput" class="form-input stepper-input" min="50" max="3000" step="5" value="260">
+                    <span class="stepper-unit">g</span>
+                  </div>
                 </div>
               </div>
 
@@ -147,38 +192,74 @@
             </div>
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label" for="hydration">Idratazione <span id="hydrationVal" class="val-badge">62 %</span></label>
-                <input type="range" id="hydration" class="range-slider" min="50" max="95" step="1" value="62">
-                <div class="input-with-unit">
-                  <input type="number" id="hydrationInput" class="form-input" min="45" max="100" step="0.5" value="62">
-                  <span class="input-unit">%</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="hydration">Idratazione</label>
+                  <span id="hydrationVal" class="val-badge">62 %</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="hydration" data-input="hydrationInput" aria-label="Meno idratazione">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="hydration" class="range-slider" min="50" max="95" step="1" value="62">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="hydration" data-input="hydrationInput" aria-label="Più idratazione">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="hydrationInput" class="form-input stepper-input" min="45" max="100" step="0.5" value="62">
+                    <span class="stepper-unit">%</span>
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="saltPct">Sale <span id="saltPctVal" class="val-badge">2.8 %</span></label>
-                <input type="range" id="saltPct" class="range-slider" min="1.0" max="4.0" step="0.1" value="2.8">
-                <div class="input-with-unit">
-                  <input type="number" id="saltPctInput" class="form-input" min="0" max="5" step="0.1" value="2.8">
-                  <span class="input-unit">%</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="saltPct">Sale</label>
+                  <span id="saltPctVal" class="val-badge">2.8 %</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="saltPct" data-input="saltPctInput" aria-label="Meno sale">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="saltPct" class="range-slider" min="1.0" max="4.0" step="0.1" value="2.8">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="saltPct" data-input="saltPctInput" aria-label="Più sale">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="saltPctInput" class="form-input stepper-input" min="0" max="5" step="0.1" value="2.8">
+                    <span class="stepper-unit">%</span>
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="fatPct">Grassi (Olio EVO / Strutto) <span id="fatPctVal" class="val-badge">0 %</span></label>
-                <input type="range" id="fatPct" class="range-slider" min="0" max="10" step="0.5" value="0">
-                <div class="input-with-unit">
-                  <input type="number" id="fatPctInput" class="form-input" min="0" max="15" step="0.5" value="0">
-                  <span class="input-unit">%</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="fatPct">Grassi (Olio EVO / Strutto)</label>
+                  <span id="fatPctVal" class="val-badge">0 %</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="fatPct" data-input="fatPctInput" aria-label="Meno grassi">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="fatPct" class="range-slider" min="0" max="10" step="0.5" value="0">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="fatPct" data-input="fatPctInput" aria-label="Più grassi">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="fatPctInput" class="form-input stepper-input" min="0" max="15" step="0.5" value="0">
+                    <span class="stepper-unit">%</span>
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="sugarPct">Zucchero / Malto Diastatico <span id="sugarPctVal" class="val-badge">0 %</span></label>
-                <input type="range" id="sugarPct" class="range-slider" min="0" max="5" step="0.5" value="0">
-                <div class="input-with-unit">
-                  <input type="number" id="sugarPctInput" class="form-input" min="0" max="10" step="0.5" value="0">
-                  <span class="input-unit">%</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="sugarPct">Zucchero / Malto Diastatico</label>
+                  <span id="sugarPctVal" class="val-badge">0 %</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="sugarPct" data-input="sugarPctInput" aria-label="Meno zuccheri">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="sugarPct" class="range-slider" min="0" max="5" step="0.5" value="0">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="sugarPct" data-input="sugarPctInput" aria-label="Più zuccheri">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="sugarPctInput" class="form-input stepper-input" min="0" max="10" step="0.5" value="0">
+                    <span class="stepper-unit">%</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,29 +304,56 @@
             </div>
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label" for="hoursRoomPuntata">1ª Liev. Puntata a T.A. <span id="hoursRoomPuntataVal" class="val-badge">2 h</span></label>
-                <input type="range" id="hoursRoomPuntata" class="range-slider" min="0" max="24" step="0.5" value="2">
-                <div class="input-with-unit">
-                  <input type="number" id="hoursRoomPuntataInput" class="form-input" min="0" max="48" step="0.5" value="2">
-                  <span class="input-unit">ore</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="hoursRoomPuntata">1ª Liev. Puntata a T.A.</label>
+                  <span id="hoursRoomPuntataVal" class="val-badge">2 h</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="hoursRoomPuntata" data-input="hoursRoomPuntataInput" aria-label="Meno puntata">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="hoursRoomPuntata" class="range-slider" min="0" max="24" step="0.5" value="2">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="hoursRoomPuntata" data-input="hoursRoomPuntataInput" aria-label="Più puntata">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="hoursRoomPuntataInput" class="form-input stepper-input" min="0" max="48" step="0.5" value="2">
+                    <span class="stepper-unit">h</span>
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="hoursFridge">Maturazione in Frigo (4°C) <span id="hoursFridgeVal" class="val-badge">0 h</span></label>
-                <input type="range" id="hoursFridge" class="range-slider" min="0" max="96" step="2" value="0">
-                <div class="input-with-unit">
-                  <input type="number" id="hoursFridgeInput" class="form-input" min="0" max="120" step="1" value="0">
-                  <span class="input-unit">ore</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="hoursFridge">Maturazione in Frigo (4°C)</label>
+                  <span id="hoursFridgeVal" class="val-badge">0 h</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="hoursFridge" data-input="hoursFridgeInput" aria-label="Meno frigo">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="hoursFridge" class="range-slider" min="0" max="96" step="2" value="0">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="hoursFridge" data-input="hoursFridgeInput" aria-label="Più frigo">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="hoursFridgeInput" class="form-input stepper-input" min="0" max="120" step="1" value="0">
+                    <span class="stepper-unit">h</span>
+                  </div>
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="hoursRoomAppretto">2ª Liev. Appretto nei Panetti <span id="hoursRoomApprettoVal" class="val-badge">6 h</span></label>
-                <input type="range" id="hoursRoomAppretto" class="range-slider" min="1" max="24" step="0.5" value="6">
-                <div class="input-with-unit">
-                  <input type="number" id="hoursRoomApprettoInput" class="form-input" min="0.5" max="36" step="0.5" value="6">
-                  <span class="input-unit">ore</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="hoursRoomAppretto">2ª Liev. Appretto nei Panetti</label>
+                  <span id="hoursRoomApprettoVal" class="val-badge">6 h</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="hoursRoomAppretto" data-input="hoursRoomApprettoInput" aria-label="Meno appretto">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="hoursRoomAppretto" class="range-slider" min="1" max="24" step="0.5" value="6">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="hoursRoomAppretto" data-input="hoursRoomApprettoInput" aria-label="Più appretto">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="hoursRoomApprettoInput" class="form-input stepper-input" min="0.5" max="36" step="0.5" value="6">
+                    <span class="stepper-unit">h</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -259,11 +367,20 @@
             </div>
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label" for="flourW">Forza Farina (W) <span id="flourWVal" class="val-badge">W 260</span></label>
-                <input type="range" id="flourW" class="range-slider" min="160" max="420" step="10" value="260">
-                <div class="input-with-unit">
-                  <input type="number" id="flourWInput" class="form-input" min="140" max="450" step="5" value="260">
-                  <span class="input-unit">W</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="flourW">Forza Farina (W)</label>
+                  <span id="flourWVal" class="val-badge">W 260</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="flourW" data-input="flourWInput" aria-label="Meno W">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="flourW" class="range-slider" min="160" max="420" step="10" value="260">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="flourW" data-input="flourWInput" aria-label="Più W">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="flourWInput" class="form-input stepper-input" min="140" max="450" step="5" value="260">
+                    <span class="stepper-unit">W</span>
+                  </div>
                 </div>
               </div>
 
@@ -309,11 +426,20 @@
 
             <div class="form-grid">
               <div class="form-group">
-                <label class="form-label" for="ambientTemp">Temperatura Ambiente <span id="ambientTempVal" class="val-badge">22 °C</span></label>
-                <input type="range" id="ambientTemp" class="range-slider" min="12" max="36" step="0.5" value="22">
-                <div class="input-with-unit">
-                  <input type="number" id="ambientTempInput" class="form-input" min="5" max="45" step="0.5" value="22">
-                  <span class="input-unit">°C</span>
+                <div class="form-group-head">
+                  <label class="form-label" for="ambientTemp">Temperatura Ambiente</label>
+                  <span id="ambientTempVal" class="val-badge">22 °C</span>
+                </div>
+                <div class="stepper-row">
+                  <button type="button" class="stepper-btn stepper-btn-minus" data-slider="ambientTemp" data-input="ambientTempInput" aria-label="Meno temperatura">&minus;</button>
+                  <div class="stepper-slider-wrap">
+                    <input type="range" id="ambientTemp" class="range-slider" min="12" max="36" step="0.5" value="22">
+                  </div>
+                  <button type="button" class="stepper-btn stepper-btn-plus" data-slider="ambientTemp" data-input="ambientTempInput" aria-label="Più temperatura">+</button>
+                  <div class="stepper-direct-box">
+                    <input type="number" id="ambientTempInput" class="form-input stepper-input" min="5" max="45" step="0.5" value="22">
+                    <span class="stepper-unit">°C</span>
+                  </div>
                 </div>
               </div>
 
@@ -1285,33 +1411,21 @@
 
   </main>
 
-  <!-- MOBILE BOTTOM NAVIGATION (Visible only on mobile devices <= 768px) -->
+  <!-- MOBILE BOTTOM NAVIGATION (Ergonomic 4-tab bar) -->
   <nav class="mobile-bottom-nav">
-    <button class="mobile-nav-btn active" data-tab="tab-direct">
+    <button class="mobile-nav-btn active" data-tab="tab-direct" id="bottomNavCalc">
       <span class="mobile-nav-icon">🍕</span>
-      <span class="mobile-nav-label">Diretto</span>
+      <span class="mobile-nav-label">Calcola</span>
     </button>
-    <button class="mobile-nav-btn" data-tab="tab-reverse">
-      <span class="mobile-nav-icon">🧙</span>
-      <span class="mobile-nav-label">Reverse</span>
-    </button>
-    <button class="mobile-nav-btn" data-tab="tab-indirect">
-      <span class="mobile-nav-icon">🥖</span>
-      <span class="mobile-nav-label">Biga</span>
-    </button>
-    <button class="mobile-nav-btn" data-tab="tab-teglia">
-      <span class="mobile-nav-icon">📐</span>
-      <span class="mobile-nav-label">Teglia</span>
-    </button>
-    <button class="mobile-nav-btn" data-tab="tab-blend">
+    <button class="mobile-nav-btn" data-tab="tab-blend" id="bottomNavBlend">
       <span class="mobile-nav-icon">🌾</span>
       <span class="mobile-nav-label">Farine</span>
     </button>
-    <button class="mobile-nav-btn" data-tab="tab-timeline">
+    <button class="mobile-nav-btn" data-tab="tab-timeline" id="bottomNavTimeline">
       <span class="mobile-nav-icon">⏱️</span>
       <span class="mobile-nav-label">Timeline</span>
     </button>
-    <button class="mobile-nav-btn" data-tab="tab-science">
+    <button class="mobile-nav-btn" data-tab="tab-science" id="bottomNavScience">
       <span class="mobile-nav-icon">🧪</span>
       <span class="mobile-nav-label">Teoria</span>
     </button>
@@ -1521,6 +1635,60 @@
         <label class="onboarding-dismiss-label">
           <input type="checkbox" id="dontShowTutorialAgain"> Non mostrare più automaticamente all'avvio
         </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS & ACTIONS BOTTOM SHEET MODAL -->
+  <div id="settingsModal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-card settings-bottom-sheet">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">⚙️</span>
+          <div>
+            <h3 id="settingsModalTitle" class="modal-title">Impostazioni & Strumenti</h3>
+            <p class="modal-subtitle">Personalizzazione, salvataggio e stampa</p>
+          </div>
+        </div>
+        <button id="closeSettingsModalBtn" class="modal-close-btn" aria-label="Chiudi impostazioni">&times;</button>
+      </div>
+
+      <div class="modal-body settings-modal-body">
+        <div class="settings-group">
+          <span class="settings-group-title">Aspetto & Leggibilità</span>
+          <div class="settings-buttons-grid">
+            <button id="themeToggleBtn" class="btn btn-secondary btn-settings-action">
+              <span>🌓 Cambia Tema (Scuro / Chiaro)</span>
+            </button>
+            <button id="fontSizeBtn" class="btn btn-secondary btn-settings-action">
+              <span>🔤 Testo: A</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <span class="settings-group-title">Preferenze Ricetta</span>
+          <div class="settings-buttons-grid">
+            <button id="saveDefaultsBtn" class="btn btn-secondary btn-settings-action">
+              <span>💾 Salva come Standard</span>
+            </button>
+            <button id="resetDefaultsBtn" class="btn btn-secondary btn-settings-action">
+              <span>🔄 Ripristina Default</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <span class="settings-group-title">Strumenti & Guida</span>
+          <div class="settings-buttons-grid">
+            <button id="printBtn" class="btn btn-secondary btn-settings-action">
+              <span>🖨️ Stampa / Esporta PDF</span>
+            </button>
+            <button id="settingsTutorialBtn" class="btn btn-secondary btn-settings-action">
+              <span>❓ Rivedi Tutorial & Guida</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
