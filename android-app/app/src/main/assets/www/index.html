@@ -2,16 +2,21 @@
 <html lang="it" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <title>PizzaLab Scientifico - Calcolatore Professionale Impasti Pizza</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
-  <link rel="apple-touch-icon" href="icons/icon.svg">
-  <meta name="theme-color" content="#121418">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+  <meta name="theme-color" content="#0f141c">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="PizzaLab">
+  <meta name="application-name" content="PizzaLab">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1281,6 +1286,113 @@
   <div id="toast" class="toast">
     <span id="toastIcon">📋</span>
     <span id="toastMsg">Ricetta copiata negli appunti!</span>
+  </div>
+
+  <!-- MODALE GUIDA INSTALLAZIONE PWA -->
+  <div id="installModal" class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="installModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">📲</span>
+          <div>
+            <h3 id="installModalTitle" class="modal-title">Installa PizzaLab sul tuo Telefono</h3>
+            <p class="modal-subtitle">Funziona al 100% offline come un'app nativa</p>
+          </div>
+        </div>
+        <button id="closeInstallModalBtn" class="modal-close-btn" aria-label="Chiudi finestra">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Info Badge -->
+        <div class="install-pwa-badge">
+          <img src="icons/icon-192.png" alt="PizzaLab Icon" class="install-pwa-icon">
+          <div class="install-pwa-info">
+            <strong>PizzaLab Scientifico</strong>
+            <span>Zero consumo dati • Zero pubblicità • 100% Offline</span>
+          </div>
+        </div>
+
+        <!-- Sezione Istruzioni Android (mostrata di default per Android) -->
+        <div id="installGuideAndroid" class="install-guide-section">
+          <div class="guide-step">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <strong>Apri il menu di Chrome / Browser</strong>
+              <p>Tocca i <strong>tre puntini verticali (⋮)</strong> in alto a destra nella barra del browser.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <strong>Seleziona l'opzione di installazione</strong>
+              <p>Tocca <strong>"Installa app"</strong> oppure <strong>"Aggiungi a schermata Home"</strong>.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">3</span>
+            <div class="step-text">
+              <strong>Conferma</strong>
+              <p>Tocca <strong>"Installa"</strong>: troverai PizzaLab con la sua icona sulla Home, avviabile a schermo intero senza barra del browser!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sezione Istruzioni iOS (mostrata se iPhone / iPad) -->
+        <div id="installGuideIos" class="install-guide-section" style="display: none;">
+          <div class="guide-step">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <strong>Tocca il pulsante Condividi</strong>
+              <p>In basso nella barra di Safari, tocca il tasto <strong>Condividi</strong> (quadrato con freccia verso l'alto <span class="ios-share-glyph">⎋</span>).</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <strong>Aggiungi alla schermata Home</strong>
+              <p>Scorri le azioni verso il basso e seleziona <strong>"Aggiungi alla schermata Home"</strong> (icona ➕).</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">3</span>
+            <div class="step-text">
+              <strong>Conferma</strong>
+              <p>Tocca <strong>"Aggiungi"</strong> in alto a destra. L'icona PizzaLab sarà salvata tra le tue app!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sezione Istruzioni Desktop (mostrata per PC/Mac) -->
+        <div id="installGuideDesktop" class="install-guide-section" style="display: none;">
+          <div class="guide-step">
+            <span class="step-num">1</span>
+            <div class="step-text">
+              <strong>Barra degli indirizzi</strong>
+              <p>In Chrome o Edge su computer, clicca sull'icona <strong>"Installa PizzaLab"</strong> (computer con freccetta verso il basso) all'estremità destra della barra degli indirizzi.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <span class="step-num">2</span>
+            <div class="step-text">
+              <strong>Oppure dal menu del browser</strong>
+              <p>Clicca sul menu ⋮ in alto a destra &gt; <strong>"Salva e condividi"</strong> &gt; <strong>"Installa PizzaLab"</strong>.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Selettore rapido del sistema operativo -->
+        <div class="guide-os-switcher">
+          <span>Guida per:</span>
+          <button type="button" class="os-btn active" data-os="android">🤖 Android</button>
+          <button type="button" class="os-btn" data-os="ios">🍏 iPhone / iPad</button>
+          <button type="button" class="os-btn" data-os="desktop">💻 PC / Mac</button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="modalGotItBtn" class="btn btn-primary btn-block">Ho capito 👍</button>
+      </div>
+    </div>
   </div>
 
   <!-- SCRIPTS -->

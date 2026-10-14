@@ -1,24 +1,72 @@
 {
+  "id": "./",
   "name": "PizzaLab Scientifico - Calcolatore Pizza",
   "short_name": "PizzaLab",
   "description": "Calcolatore scientifico per impasti pizza, reologia inversa, cinetica fermentativa e termodinamica TFI.",
+  "lang": "it",
+  "dir": "ltr",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#121418",
-  "theme_color": "#121418",
-  "orientation": "portrait-primary",
+  "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
+  "background_color": "#0f141c",
+  "theme_color": "#0f141c",
+  "orientation": "any",
+  "prefer_related_applications": false,
   "categories": ["food", "utilities", "productivity"],
   "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
     {
       "src": "icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Impasto Diretto",
+      "short_name": "Diretto",
+      "description": "Calcola impasto pizza con metodo diretto",
+      "url": "./index.html?tab=tab-direct",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "src": "icons/icon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml"
+      "name": "Modalità Reverse",
+      "short_name": "Reverse",
+      "description": "Algoritmo inverso dai tuoi vincoli di tempo e farina",
+      "url": "./index.html?tab=tab-reverse",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Calcolo Teglia",
+      "short_name": "Teglia",
+      "description": "Calcola l'impasto esatto per la dimensione della teglia",
+      "url": "./index.html?tab=tab-teglia",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

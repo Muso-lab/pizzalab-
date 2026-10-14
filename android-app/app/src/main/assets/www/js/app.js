@@ -2,6 +2,30 @@
  * PizzaLab Scientifico - UI Controller & Application Logic
  */
 
+// Cattura immediata dell'evento PWA prima di DOMContentLoaded per non perderlo mai
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  console.log('[PizzaLab PWA] Evento beforeinstallprompt intercettato con successo');
+  const btn = document.getElementById('installAppBtn');
+  if (btn && !window.isPizzaLabStandalone?.()) {
+    btn.style.display = 'inline-flex';
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  console.log('[PizzaLab PWA] Applicazione installata con successo');
+  deferredInstallPrompt = null;
+  const btn = document.getElementById('installAppBtn');
+  if (btn) btn.style.display = 'none';
+  const modal = document.getElementById('installModal');
+  if (modal) modal.style.display = 'none';
+  if (typeof window.showPizzaLabToast === 'function') {
+    window.showPizzaLabToast('PizzaLab installata sulla schermata Home! 🍕', '📱');
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   const engine = window.PizzaEngine;
   if (!engine) {
@@ -1711,8 +1735,8 @@ document.addEventListener('DOMContentLoaded', () => {
       content.classList.toggle('active', content.id === tabId);
     });
 
-    // Su mobile scorri delicatamente in cima per un feeling da app nativa
-    if (window.innerWidth <= 768) {
+    // Su mobile (portrait o landscape) scorri delicatamente in cima per un feeling da app nativa
+    if (window.innerWidth <= 768 || window.innerHeight <= 520) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1735,41 +1759,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- REGISTRAZIONE PWA & SERVICE WORKER ---
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').then((reg) => {
-        console.log('PizzaLab PWA Service Worker attivo:', reg.scope);
-      }).catch((err) => {
-        console.warn('PizzaLab Service Worker non registrato:', err);
-      });
-    });
-  }
-
-  let deferredInstallPrompt = null;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    if (installAppBtn) installAppBtn.style.display = 'inline-flex';
-  });
-
-  if (installAppBtn) {
-    installAppBtn.addEventListener('click', () => {
-      if (!deferredInstallPrompt) {
-        showToast('Su iOS: tocca "Condividi" nel browser e scegli "Aggiungi a schermata Home" 📲', '💡');
-        return;
-      }
-      deferredInstallPrompt.prompt();
-      deferredInstallPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          showToast('App PizzaLab installata sulla schermata Home!', '📱');
-        }
-        deferredInstallPrompt = null;
-        installAppBtn.style.display = 'none';
-      });
-    });
-  }
-
   // --- TOAST NOTIFICATION ---
   function showToast(message, icon = '📋') {
     toastMsg.textContent = message;
@@ -1778,6 +1767,149 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       toast.classList.remove('show');
     }, 2800);
+  }
+  window.showPizzaLabToast = showToast;
+
+  // --- VERIFICA STATO PWA STANDALONE ---
+  window.isPizzaLabStandalone = () => {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone === true ||
+           document.referrer.includes('android-app://');
+  };
+
+  // --- REGISTRAZIONE PWA & SERVICE WORKER (RESILIENTE) ---
+  if ('serviceWorker' in navigator) {
+    const registerSW = () => {
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).then((reg) => {
+        console.log('[PizzaLab PWA] Service Worker attivo con scope:', reg.scope);
+      }).catch((err) => {
+        console.warn('[PizzaLab PWA] Service Worker non registrato:', err);
+      });
+    };
+
+    if (document.readyState === 'complete') {
+      registerSW();
+    } else {
+      window.addEventListener('load', registerSW);
+    }
+  }
+
+  // --- GESTIONE INSTALLABILITÀ PWA (#installAppBtn & #installModal) ---
+  function setupInstallUI() {
+    const installBtn = document.getElementById('installAppBtn');
+    const modal = document.getElementById('installModal');
+    const closeBtn = document.getElementById('closeInstallModalBtn');
+    const gotItBtn = document.getElementById('modalGotItBtn');
+    const osBtns = document.querySelectorAll('.os-btn');
+
+    if (!installBtn) return;
+
+    // Se l'app è già installata e in esecuzione come standalone, nascondi il pulsante
+    if (window.isPizzaLabStandalone()) {
+      installBtn.style.display = 'none';
+      return;
+    }
+
+    // Se siamo nel normale browser, mostra il pulsante in modo evidente
+    installBtn.style.display = 'inline-flex';
+
+    function detectUserOS() {
+      const ua = navigator.userAgent || '';
+      if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+        return 'ios';
+      }
+      if (/Android/i.test(ua)) {
+        return 'android';
+      }
+      return 'desktop';
+    }
+
+    function switchGuideOS(targetOS) {
+      const androidSec = document.getElementById('installGuideAndroid');
+      const iosSec = document.getElementById('installGuideIos');
+      const desktopSec = document.getElementById('installGuideDesktop');
+
+      if (androidSec) androidSec.style.display = (targetOS === 'android') ? 'flex' : 'none';
+      if (iosSec) iosSec.style.display = (targetOS === 'ios') ? 'flex' : 'none';
+      if (desktopSec) desktopSec.style.display = (targetOS === 'desktop') ? 'flex' : 'none';
+
+      osBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.os === targetOS);
+      });
+    }
+
+    function openModal() {
+      if (!modal) {
+        const os = detectUserOS();
+        if (os === 'ios') {
+          showToast('Tocca Condividi ⎋ e scegli "Aggiungi a schermata Home" ➕', '📲');
+        } else {
+          showToast('Tocca il menu ⋮ in alto a destra e seleziona "Installa app" 📲', '💡');
+        }
+        return;
+      }
+      switchGuideOS(detectUserOS());
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    }
+
+    installBtn.addEventListener('click', () => {
+      if (deferredInstallPrompt) {
+        // Caso 1: Browser supporta prompt nativo (es. Chrome su Android)
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            showToast('PizzaLab installata con successo! 🍕', '📱');
+            installBtn.style.display = 'none';
+          }
+          deferredInstallPrompt = null;
+        }).catch((err) => {
+          console.warn('[PizzaLab PWA] Errore prompt nativo:', err);
+          openModal();
+        });
+      } else {
+        // Caso 2: Browser senza beforeinstallprompt o che richiede azione manuale (iOS Safari, Firefox Android, ecc.)
+        openModal();
+      }
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (gotItBtn) gotItBtn.addEventListener('click', closeModal);
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+        closeModal();
+      }
+    });
+
+    osBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchGuideOS(btn.dataset.os);
+      });
+    });
+
+    // Monitora il cambio in standalone a runtime
+    try {
+      window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+        if (e.matches) {
+          installBtn.style.display = 'none';
+          closeModal();
+        }
+      });
+    } catch (_) {}
   }
 
   // --- COPIA RICETTA FORMATTATA ---
@@ -2071,4 +2203,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateTimeline();
   recalculateReverse();
+
+  // Inizializzazione interfaccia PWA e supporto App Shortcuts (?tab=tab-...)
+  setupInstallUI();
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam && ['tab-direct', 'tab-reverse', 'tab-indirect', 'tab-teglia', 'tab-blend', 'tab-timeline', 'tab-science'].includes(tabParam)) {
+      switchTab(tabParam);
+    }
+  } catch (_) {}
 });
