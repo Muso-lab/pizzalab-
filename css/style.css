@@ -107,6 +107,7 @@ body {
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-color);
   padding: 1rem 1.5rem;
+  padding-top: max(1rem, env(safe-area-inset-top, 1rem));
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1358,6 +1359,7 @@ body {
   /* 1. Header & Actions */
   .header {
     padding: 0.45rem 0.65rem;
+    padding-top: max(0.45rem, env(safe-area-inset-top, 0.45rem));
     width: 100%;
     box-sizing: border-box;
   }
@@ -1752,6 +1754,7 @@ body {
   /* 1. ULTRA-COMPACT HEADER (Saves valuable vertical viewport) */
   .header {
     padding: 0.25rem 0.85rem;
+    padding-top: max(0.25rem, env(safe-area-inset-top, 0.25rem));
     padding-left: max(0.85rem, env(safe-area-inset-left, 0px));
     padding-right: max(0.85rem, env(safe-area-inset-right, 0px));
   }

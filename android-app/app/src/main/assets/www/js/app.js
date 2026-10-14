@@ -2,6 +2,15 @@
  * PizzaLab Scientifico - UI Controller & Application Logic
  */
 
+// Funzione universale per verificare se l'app è in esecuzione standalone (PWA o APK nativo Android)
+window.isPizzaLabStandalone = () => {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true ||
+         document.referrer.includes('android-app://') ||
+         window.location.protocol === 'file:' ||
+         typeof window.PizzaLabNative !== 'undefined';
+};
+
 // Cattura immediata dell'evento PWA prima di DOMContentLoaded per non perderlo mai
 let deferredInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -9,7 +18,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   deferredInstallPrompt = e;
   console.log('[PizzaLab PWA] Evento beforeinstallprompt intercettato con successo');
   const btn = document.getElementById('installAppBtn');
-  if (btn && !window.isPizzaLabStandalone?.()) {
+  if (btn && !window.isPizzaLabStandalone()) {
     btn.style.display = 'inline-flex';
   }
 });
@@ -1800,15 +1809,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.showPizzaLabToast = showToast;
 
-  // --- VERIFICA STATO PWA STANDALONE ---
+  // --- VERIFICA STATO PWA STANDALONE / NATIVO ANDROID ---
   window.isPizzaLabStandalone = () => {
     return window.matchMedia('(display-mode: standalone)').matches ||
            window.navigator.standalone === true ||
-           document.referrer.includes('android-app://');
+           document.referrer.includes('android-app://') ||
+           window.location.protocol === 'file:' ||
+           typeof window.PizzaLabNative !== 'undefined';
   };
 
   // --- REGISTRAZIONE PWA & SERVICE WORKER (RESILIENTE) ---
-  if ('serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
     const registerSW = () => {
       navigator.serviceWorker.register('./sw.js', { scope: './' }).then((reg) => {
         console.log('[PizzaLab PWA] Service Worker attivo con scope:', reg.scope);

@@ -9,6 +9,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
@@ -34,6 +39,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Previene qualsiasi sovrapposizione con la barra di stato, notch e navigation bar
+        View root = findViewById(R.id.rootLayout);
+        if (root != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
+                Insets insets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+                );
+                v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+                return windowInsets;
+            });
+            ViewCompat.requestApplyInsets(root);
+        }
+
+        // Assicura icone chiare (bianche) sulla barra di stato con sfondo scuro (#0f141c)
+        WindowInsetsControllerCompat insetsController =
+            WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        if (insetsController != null) {
+            insetsController.setAppearanceLightStatusBars(false);
+        }
 
         webView = findViewById(R.id.webView);
         adView = findViewById(R.id.adView);
