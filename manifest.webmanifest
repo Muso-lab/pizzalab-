@@ -48,17 +48,17 @@
   ],
   "shortcuts": [
     {
-      "name": "Impasto Diretto",
-      "short_name": "Diretto",
-      "description": "Calcola impasto pizza con metodo diretto",
-      "url": "./index.html?tab=tab-direct",
-      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
-    },
-    {
       "name": "Modalità Inversa",
       "short_name": "Inversa",
       "description": "Algoritmo inverso dai tuoi vincoli di tempo e farina",
       "url": "./index.html?tab=tab-reverse",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Impasto Diretto",
+      "short_name": "Diretto",
+      "description": "Calcola impasto pizza con metodo diretto",
+      "url": "./index.html?tab=tab-direct",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     },
     {

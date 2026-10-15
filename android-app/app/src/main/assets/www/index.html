@@ -35,7 +35,7 @@
       <div class="splash-loader">
         <div class="splash-loader-bar"></div>
       </div>
-      <span class="splash-version">v2.1.4 Pro • Edizione Android & Web</span>
+      <span class="splash-version">v2.1.5 Pro • Edizione Android & Web</span>
     </div>
   </div>
 
@@ -55,8 +55,8 @@
 
       <!-- Desktop Tabs Navigation (nascosta su mobile) -->
       <nav class="tabs-nav">
-        <button class="tab-btn active" data-tab="tab-direct">🍕 Impasto Diretto</button>
-        <button class="tab-btn" data-tab="tab-reverse">🧙 Modalità Inversa</button>
+        <button class="tab-btn active" data-tab="tab-reverse">🧙 Modalità Inversa</button>
+        <button class="tab-btn" data-tab="tab-direct">🍕 Impasto Diretto</button>
         <button class="tab-btn" data-tab="tab-indirect">🥖 Metodi Indiretti</button>
         <button class="tab-btn" data-tab="tab-teglia">📐 Calcolo Teglia</button>
         <button class="tab-btn" data-tab="tab-blend">🌾 Blend Farine</button>
@@ -83,16 +83,16 @@
   <!-- MAIN APP CONTAINER -->
   <main class="main-content">
 
-    <!-- SELETTORE METODO CALCOLO SU MOBILE (Diretto, Reverse, Biga, Teglia) -->
+    <!-- SELETTORE METODO CALCOLO SU MOBILE (Inversa, Diretto, Biga, Teglia) -->
     <div class="mobile-method-switcher" id="mobileMethodSwitcher">
-      <button class="method-chip active" data-tab-target="tab-direct">🍕 Diretto</button>
-      <button class="method-chip" data-tab-target="tab-reverse">🧙 Inversa</button>
+      <button class="method-chip active" data-tab-target="tab-reverse">🧙 Inversa</button>
+      <button class="method-chip" data-tab-target="tab-direct">🍕 Diretto</button>
       <button class="method-chip" data-tab-target="tab-indirect">🥖 Biga</button>
       <button class="method-chip" data-tab-target="tab-teglia">📐 Teglia</button>
     </div>
 
-    <!-- PRESETS STRIP (Carosello Stili Rapidi) -->
-    <div class="presets-strip" id="presetsStrip">
+    <!-- PRESETS STRIP (Carosello Stili Rapidi - specifico per calcolatore diretto) -->
+    <div class="presets-strip" id="presetsStrip" style="display: none;">
       <div class="presets-container">
         <span class="preset-label">🎯 Stili:</span>
         <button class="preset-pill active" data-preset="napoletana_stg">Napoletana STG</button>
@@ -105,8 +105,8 @@
       </div>
     </div>
 
-    <!-- QUICK INGREDIENTS SUMMARY BAR (Sempre a portata d'occhio per la bilancia) -->
-    <div id="quickDoughSummary" class="quick-dough-summary">
+    <!-- QUICK INGREDIENTS SUMMARY BAR (Specifico per calcolatore diretto) -->
+    <div id="quickDoughSummary" class="quick-dough-summary" style="display: none;">
       <div class="quick-summary-head">
         <span class="quick-summary-title">⚖️ Da pesare sulla bilancia:</span>
         <button id="jumpToRecipeBtn" class="quick-summary-btn" title="Vai alla scheda ricetta dettagliata">Scheda Completa ▾</button>
@@ -124,7 +124,7 @@
     <div id="quickTipBanner" class="quick-tip-banner">
       <div class="quick-tip-content">
         <span class="tip-icon">💡</span>
-        <span class="tip-text"><strong>Consiglio:</strong> Conosci l'orario in cui vuoi infornare? Usa la <strong>Modalità Inversa 🧙</strong> per calcolare i tempi all'indietro!</span>
+        <span class="tip-text"><strong>Modalità Inversa Attiva:</strong> Ottimizza la formula partendo da orario e attrezzatura. Vuoi impostare a mano percentuali e ore? Passa a <strong>🍕 Diretto</strong>!</span>
       </div>
       <button id="closeQuickTipBtn" class="tip-close-btn" title="Chiudi consiglio" aria-label="Chiudi">✕</button>
     </div>
@@ -132,7 +132,7 @@
     <!-- ========================================== -->
     <!-- TAB 1: CALCOLATORE DIRETTO                 -->
     <!-- ========================================== -->
-    <div id="tab-direct" class="tab-content active">
+    <div id="tab-direct" class="tab-content">
       <div class="calculator-grid">
 
         <!-- Colonna Sinistra: Input e Parametri -->
@@ -668,7 +668,7 @@
     <!-- ========================================== -->
     <!-- TAB REVERSE: OTTIMIZZATORE INTELLIGENTE    -->
     <!-- ========================================== -->
-    <div id="tab-reverse" class="tab-content">
+    <div id="tab-reverse" class="tab-content active">
       
       <!-- Banner Informativo Modalità Reverse -->
       <div class="reverse-hero">
@@ -1598,8 +1598,8 @@
 
   <!-- MOBILE BOTTOM NAVIGATION (Ergonomic 4-tab bar) -->
   <nav class="mobile-bottom-nav">
-    <button class="mobile-nav-btn active" data-tab="tab-direct" id="bottomNavCalc">
-      <span class="mobile-nav-icon">🍕</span>
+    <button class="mobile-nav-btn active" data-tab="tab-reverse" id="bottomNavCalc">
+      <span class="mobile-nav-icon">🧙</span>
       <span class="mobile-nav-label">Calcola</span>
     </button>
     <button class="mobile-nav-btn" data-tab="tab-blend" id="bottomNavBlend">

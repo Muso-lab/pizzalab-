@@ -1844,8 +1844,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- GESTIONE TABS (DESKTOP & MOBILE) ---
-  let lastActiveCalcTab = 'tab-direct';
-  const calcTabs = ['tab-direct', 'tab-reverse', 'tab-indirect', 'tab-teglia'];
+  let lastActiveCalcTab = 'tab-reverse';
+  const calcTabs = ['tab-reverse', 'tab-direct', 'tab-indirect', 'tab-teglia'];
 
   function switchTab(tabId) {
     if (calcTabs.includes(tabId)) {
@@ -1906,7 +1906,7 @@ document.addEventListener('DOMContentLoaded', () => {
       touched = true;
       e.preventDefault();
       if (btn.id === 'bottomNavCalc') {
-        switchTab(lastActiveCalcTab || 'tab-direct');
+        switchTab(lastActiveCalcTab || 'tab-reverse');
       } else {
         switchTab(btn.dataset.tab);
       }
@@ -1917,7 +1917,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (touched) return;
       if (btn.id === 'bottomNavCalc') {
         e.preventDefault();
-        switchTab(lastActiveCalcTab || 'tab-direct');
+        switchTab(lastActiveCalcTab || 'tab-reverse');
       } else {
         switchTab(btn.dataset.tab);
       }
@@ -2433,10 +2433,14 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
-    if (tabParam && ['tab-direct', 'tab-reverse', 'tab-indirect', 'tab-teglia', 'tab-blend', 'tab-timeline', 'tab-science'].includes(tabParam)) {
+    if (tabParam && ['tab-reverse', 'tab-direct', 'tab-indirect', 'tab-teglia', 'tab-blend', 'tab-timeline', 'tab-science'].includes(tabParam)) {
       switchTab(tabParam);
+    } else {
+      switchTab('tab-reverse');
     }
-  } catch (_) {}
+  } catch (_) {
+    switchTab('tab-reverse');
+  }
 
   // --- GESTIONE SPLASH SCREEN (Sicuro, non blocca mai l'interfaccia) ---
   const splashScreen = document.getElementById('splashScreen');
