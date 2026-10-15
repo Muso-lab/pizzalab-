@@ -49,19 +49,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Applica padding per evitare sovrapposizione con la barra di stato/notch in alto
-        // e sollevare il banner AdMob sopra la barra di navigazione di sistema / gesture bar di Android in basso
+        // Applica il padding per posizionare la WebView millimetricamente al di sotto
+        // della barra di stato / notifiche e sollevare AdMob sopra la barra di navigazione di sistema
         View root = findViewById(R.id.rootLayout);
         if (root != null) {
             ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
-                Insets insets = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+                Insets statusInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.statusBars() | WindowInsetsCompat.Type.displayCutout()
                 );
-                // Applichiamo SOLO insets.bottom per sollevare il banner AdMob sopra la barra gesti/navigazione di sistema.
-                // NON applichiamo insets.top a rootLayout perché il tema NoActionBar gestisce già nativamente
-                // la barra di stato, ed applicarlo creerebbe un'enorme voragine vuota di 140px sopra l'header.
-                v.setPadding(0, 0, 0, insets.bottom);
-                return windowInsets;
+                Insets navInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.navigationBars()
+                );
+
+                int topPadding = statusInsets.top;
+                if (topPadding == 0) {
+                    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+                    if (resourceId > 0) {
+                        topPadding = getResources().getDimensionPixelSize(resourceId);
+                    }
+                }
+
+                v.setPadding(0, topPadding, 0, navInsets.bottom);
+                return WindowInsetsCompat.CONSUMED;
             });
             ViewCompat.requestApplyInsets(root);
         }

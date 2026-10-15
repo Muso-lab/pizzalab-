@@ -1850,8 +1850,8 @@ input[type="number"] {
     border-bottom: 1px solid var(--border-color, #334155);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     display: block;
-    padding: clamp(24px, 5.8vw, 30px) 0.75rem 0.45rem;
-    padding-top: clamp(24px, 5.8vw, 30px);
+    padding: 0.25rem 0.75rem 0.35rem;
+    padding-top: 0.25rem;
   }
 
   html[data-theme="light"] .header,
