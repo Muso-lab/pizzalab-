@@ -31,34 +31,32 @@
         <div class="splash-pulse"></div>
       </div>
       <h1 class="splash-title">PizzaLab Scientifico</h1>
-      <p class="splash-tagline">Scientific Dough Kinetics & Thermodynamics</p>
+      <p class="splash-tagline">Cinetica e Termodinamica Scientifica degli Impasti</p>
       <div class="splash-loader">
         <div class="splash-loader-bar"></div>
       </div>
-      <span class="splash-version">v2.1.3 Pro • Android & Web Edition</span>
+      <span class="splash-version">v2.1.4 Pro • Edizione Android & Web</span>
     </div>
   </div>
 
   <!-- HEADER -->
   <header class="header">
     <div class="header-container">
-      <div class="header-left">
-        <button id="tutorialBtn" class="header-action-btn" title="Apri Guida Rapida e Tutorial">
-          <span class="btn-icon">❓</span><span class="btn-label">Guida</span>
-        </button>
-      </div>
-
-      <div class="logo-badge">
-        <span class="logo-icon">🍕</span>
-        <div class="logo-text">
-          <h1>PizzaLab Scientifico</h1>
-          <span class="logo-sub">Pro • Scientific Dough Calculator</span>
+      
+      <!-- Riga 1: Brand / Titolo App Grande ed Evidente -->
+      <div class="header-brand-row">
+        <div class="logo-badge">
+          <span class="logo-icon">🍕</span>
+          <div class="logo-text">
+            <h1>PizzaLab Scientifico</h1>
+          </div>
         </div>
       </div>
 
+      <!-- Desktop Tabs Navigation (nascosta su mobile) -->
       <nav class="tabs-nav">
         <button class="tab-btn active" data-tab="tab-direct">🍕 Impasto Diretto</button>
-        <button class="tab-btn" data-tab="tab-reverse">🧙 Modalità Reverse</button>
+        <button class="tab-btn" data-tab="tab-reverse">🧙 Modalità Inversa</button>
         <button class="tab-btn" data-tab="tab-indirect">🥖 Metodi Indiretti</button>
         <button class="tab-btn" data-tab="tab-teglia">📐 Calcolo Teglia</button>
         <button class="tab-btn" data-tab="tab-blend">🌾 Blend Farine</button>
@@ -66,7 +64,11 @@
         <button class="tab-btn" data-tab="tab-science">🧪 Teoria Scientifica</button>
       </nav>
 
-      <div class="header-actions">
+      <!-- Riga 2 (Mobile) / Azioni Destra (Desktop) -->
+      <div class="header-actions-row">
+        <button id="tutorialBtn" class="header-action-btn" title="Apri Guida Rapida e Tutorial">
+          <span class="btn-icon">❓</span><span class="btn-label">Guida</span>
+        </button>
         <button id="settingsModalBtn" class="header-action-btn" title="Impostazioni, Tema, Testo, Reset e Salva">
           <span class="btn-icon">⚙️</span><span class="btn-label">Menu</span>
         </button>
@@ -74,6 +76,7 @@
           <span class="btn-icon">📱</span><span class="btn-label">Installa</span>
         </button>
       </div>
+
     </div>
   </header>
 
@@ -83,7 +86,7 @@
     <!-- SELETTORE METODO CALCOLO SU MOBILE (Diretto, Reverse, Biga, Teglia) -->
     <div class="mobile-method-switcher" id="mobileMethodSwitcher">
       <button class="method-chip active" data-tab-target="tab-direct">🍕 Diretto</button>
-      <button class="method-chip" data-tab-target="tab-reverse">🧙 Reverse</button>
+      <button class="method-chip" data-tab-target="tab-reverse">🧙 Inversa</button>
       <button class="method-chip" data-tab-target="tab-indirect">🥖 Biga</button>
       <button class="method-chip" data-tab-target="tab-teglia">📐 Teglia</button>
     </div>
@@ -97,7 +100,7 @@
         <button class="preset-pill" data-preset="teglia_romana">Teglia Romana</button>
         <button class="preset-pill" data-preset="tonda_romana">Scrocchiarella</button>
         <button class="preset-pill" data-preset="pinsa_romana">Pinsa Romana</button>
-        <button class="preset-pill" data-preset="new_york">New York Style</button>
+        <button class="preset-pill" data-preset="new_york">Stile New York</button>
         <button class="preset-pill" data-preset="focaccia_genovese">Focaccia Genovese</button>
       </div>
     </div>
@@ -121,7 +124,7 @@
     <div id="quickTipBanner" class="quick-tip-banner">
       <div class="quick-tip-content">
         <span class="tip-icon">💡</span>
-        <span class="tip-text"><strong>Consiglio:</strong> Conosci l'orario in cui vuoi infornare? Usa la <strong>Modalità Reverse 🧙</strong> per calcolare i tempi all'indietro!</span>
+        <span class="tip-text"><strong>Consiglio:</strong> Conosci l'orario in cui vuoi infornare? Usa la <strong>Modalità Inversa 🧙</strong> per calcolare i tempi all'indietro!</span>
       </div>
       <button id="closeQuickTipBtn" class="tip-close-btn" title="Chiudi consiglio" aria-label="Chiudi">✕</button>
     </div>
@@ -190,7 +193,7 @@
           <!-- Card Idratazione e Condimenti -->
           <div class="card">
             <div class="card-header">
-              <span class="card-title">💧 2. Idratazione & Ingredienti (Baker's %)</span>
+              <span class="card-title">💧 2. Idratazione & Ingredienti (Percentuali su Farina %)</span>
               <span class="card-subtitle">Percentuali calcolate su 100% Farina</span>
             </div>
             <div class="form-grid">
@@ -404,25 +407,47 @@
               <span class="card-subtitle">Controllo calore e temperatura acqua</span>
             </div>
 
-            <!-- Box Stima Prudenziale (Senza Termometro) -->
-            <div class="prudential-card">
+            <!-- Box Cuscinetto di Sicurezza Termica & Clima Stagionale -->
+            <div id="prudentialCard" class="prudential-card">
               <div class="prudential-header">
-                <div class="prudential-title">
-                  <span>🛡️ Modalità Stima Prudenziale (Senza Termometro)</span>
+                <div class="prudential-title-group">
+                  <span class="prudential-badge-status" id="prudentialBadgeStatus">🛡️ Consigliato per la casa</span>
+                  <div class="prudential-title">🛡️ Cuscinetto di Sicurezza & Clima Stagionale</div>
+                  <div class="prudential-subtitle">Previene la sovralievitazione: applica un cuscinetto del <strong>-10% sul lievito</strong> e calibra automaticamente il clima di casa con 1 click.</div>
                 </div>
-                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.825rem; font-weight: 600;">
-                  <input type="checkbox" id="prudentialToggle" style="accent-color: var(--accent); width: 16px; height: 16px;">
-                  Attiva Stima di Sicurezza
-                </label>
+                <div class="prudential-toggle-wrap">
+                  <label class="toggle-switch" title="Attiva o disattiva il cuscinetto di sicurezza">
+                    <input type="checkbox" id="prudentialToggle">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
               </div>
-              <div id="prudentialDetails" style="display: none; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.45;">
-                <p style="margin-bottom: 0.5rem;">
-                  Se non possiedi un termometro a sonda per misurare ambiente, farina o acqua, seleziona la stagione stimata. Il calcolatore applicherà un <strong>cuscinetto prudenziale del -10% sul lievito</strong> (evitando il collasso della maglia da sovralievitazione) e stimerà automaticamente le temperature:
-                </p>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                  <button type="button" class="btn btn-secondary btn-sm seasonal-btn" data-temp="18">❄️ Inverno (~18°C)</button>
-                  <button type="button" class="btn btn-secondary btn-sm seasonal-btn active" data-temp="20">🌸 Mezza Stagione (~20°C)</button>
-                  <button type="button" class="btn btn-secondary btn-sm seasonal-btn" data-temp="26">☀️ Estate (~26°C)</button>
+              <div id="prudentialDetails" class="prudential-details" style="display: none;">
+                <div class="prudential-explanation">
+                  <p>
+                    <strong>Perché attivarlo:</strong> riducendo il lievito del 10% l'impasto guadagna oltre 1-2 ore di tenuta in fermentazione (plateau). Se la stanza si scalda o la cena ritarda, la maglia glutinica non collasserà e la pizza non inacidira.
+                  </p>
+                  <span class="prudential-step-label">🌡️ Seleziona il clima indicativo della tua cucina:</span>
+                </div>
+                <div class="seasonal-buttons-grid">
+                  <button type="button" class="btn seasonal-btn" data-temp="18">
+                    <span class="season-icon">❄️</span>
+                    <span class="season-name">Inverno</span>
+                    <span class="season-temp">~18°C (fresco)</span>
+                  </button>
+                  <button type="button" class="btn seasonal-btn active" data-temp="21">
+                    <span class="season-icon">🌸</span>
+                    <span class="season-name">Clima Mite</span>
+                    <span class="season-temp">~21°C (standard)</span>
+                  </button>
+                  <button type="button" class="btn seasonal-btn" data-temp="26">
+                    <span class="season-icon">☀️</span>
+                    <span class="season-name">Estate</span>
+                    <span class="season-temp">~26°C (caldo)</span>
+                  </button>
+                </div>
+                <div class="prudential-active-banner">
+                  ✅ <strong>Modalità Protetta Attiva:</strong> Temperature impostate e lievito ricalibrato (-10%) per massima tolleranza ai ritardi.
                 </div>
               </div>
             </div>
@@ -554,7 +579,7 @@
                 <thead>
                   <tr>
                     <th>Ingrediente</th>
-                    <th>Baker's %</th>
+                    <th>% su Farina</th>
                     <th style="text-align: right;">Peso Grammi</th>
                   </tr>
                 </thead>
@@ -648,7 +673,7 @@
       <!-- Banner Informativo Modalità Reverse -->
       <div class="reverse-hero">
         <div>
-          <div class="reverse-hero-title">🧙 Modalità Reverse: Ottimizzatore Intelligente</div>
+          <div class="reverse-hero-title">🧙 Modalità Inversa: Ottimizzatore Intelligente</div>
           <div class="reverse-hero-subtitle">
             Indica cosa vuoi preparare, la farina e gli strumenti che hai in cucina: il motore scientifico calcolerà la formula perfetta per te.
           </div>
@@ -677,7 +702,7 @@
                   <option value="teglia_romana">Teglia Romana ad Alta Idratazione (Alveolata e croccante, 78-82% idro)</option>
                   <option value="tonda_romana">Tonda Romana Scrocchiarella (Bassa, stesa a mattarello o sottile)</option>
                   <option value="pinsa_romana">Pinsa Romana (Mix croccante fuori, nuvola dentro)</option>
-                  <option value="new_york">New York Style (Sottile, pieghevole, con olio e zucchero)</option>
+                  <option value="new_york">Stile New York (Sottile, pieghevole, con olio e zucchero)</option>
                   <option value="focaccia_genovese">Focaccia Genovese Classica (Spessore 2cm, morbida e unta)</option>
                 </select>
               </div>
@@ -691,7 +716,7 @@
               
               <!-- Quick Pills -->
               <div class="quick-pills-row">
-                <button type="button" class="quick-pill" data-hours="4">⚡ 4h Express</button>
+                <button type="button" class="quick-pill" data-hours="4">⚡ 4h Rapida</button>
                 <button type="button" class="quick-pill active" data-hours="8">🕒 8h Giornata</button>
                 <button type="button" class="quick-pill" data-hours="12">🌙 12h Giornata/Notte</button>
                 <button type="button" class="quick-pill" data-hours="24">❄️ 24h Frigo</button>
@@ -778,24 +803,46 @@
               </div>
             </div>
 
-            <!-- Stima Prudenziale in Reverse -->
-            <div class="prudential-card" style="margin-top: 1rem;">
+            <!-- Box Cuscinetto di Sicurezza in Modalità Inversa -->
+            <div id="revPrudentialCard" class="prudential-card" style="margin-top: 1rem;">
               <div class="prudential-header">
-                <div class="prudential-title">🛡️ Stima Prudenziale (Temperatura non misurata)</div>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="revPrudentialToggle">
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-              <div id="revPrudentialDetails" style="display: none; margin-top: 0.75rem; font-size: 0.825rem; color: var(--text-muted); line-height: 1.45;">
-                Scegli il clima approssimativo della tua cucina:
-                <div class="btn-group" style="margin-top: 0.4rem; gap: 0.4rem; flex-wrap: wrap;">
-                  <button type="button" class="btn btn-secondary btn-sm rev-seasonal-btn" data-temp="20">🌸 Primavera / Autunno (~20°C)</button>
-                  <button type="button" class="btn btn-secondary btn-sm rev-seasonal-btn" data-temp="27">☀️ Estate (~27°C)</button>
-                  <button type="button" class="btn btn-secondary btn-sm rev-seasonal-btn" data-temp="16">❄️ Inverno (~16°C)</button>
+                <div class="prudential-title-group">
+                  <span class="prudential-badge-status" id="revPrudentialBadgeStatus">🛡️ Consigliato per la casa</span>
+                  <div class="prudential-title">🛡️ Cuscinetto di Sicurezza & Clima Stagionale</div>
+                  <div class="prudential-subtitle">Previene la sovralievitazione: applica un cuscinetto del <strong>-10% sul lievito</strong> e calibra la stanza con 1 click.</div>
                 </div>
-                <div style="margin-top: 0.5rem; font-size: 0.78rem; color: var(--accent);">
-                  Margine di sicurezza applicato: <strong>-10% lievito</strong> per prevenire sovralievitazione.
+                <div class="prudential-toggle-wrap">
+                  <label class="toggle-switch" title="Attiva o disattiva il cuscinetto di sicurezza">
+                    <input type="checkbox" id="revPrudentialToggle">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div id="revPrudentialDetails" class="prudential-details" style="display: none;">
+                <div class="prudential-explanation">
+                  <p>
+                    Scegli il clima approssimativo della tua cucina per calibrare i tempi di puntata e appretto:
+                  </p>
+                </div>
+                <div class="seasonal-buttons-grid">
+                  <button type="button" class="btn seasonal-btn rev-seasonal-btn" data-temp="18">
+                    <span class="season-icon">❄️</span>
+                    <span class="season-name">Inverno</span>
+                    <span class="season-temp">~18°C (fresco)</span>
+                  </button>
+                  <button type="button" class="btn seasonal-btn rev-seasonal-btn active" data-temp="21">
+                    <span class="season-icon">🌸</span>
+                    <span class="season-name">Clima Mite</span>
+                    <span class="season-temp">~21°C (standard)</span>
+                  </button>
+                  <button type="button" class="btn seasonal-btn rev-seasonal-btn" data-temp="26">
+                    <span class="season-icon">☀️</span>
+                    <span class="season-name">Estate</span>
+                    <span class="season-temp">~26°C (caldo)</span>
+                  </button>
+                </div>
+                <div class="prudential-active-banner">
+                  ✅ <strong>Protezione Attiva:</strong> Margine di sicurezza applicato (-10% lievito per prevenire il collasso della maglia).
                 </div>
               </div>
             </div>
@@ -1012,7 +1059,7 @@
 
             <!-- Cronoprogramma Rapido -->
             <div class="card-header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
-              <span class="card-title">⏱️ Tabella di Marcia (Backward Timeline)</span>
+              <span class="card-title">⏱️ Tabella di Marcia (Cronoprogramma a Ritroso)</span>
               <span class="card-subtitle">Orari esatti calcolati a ritroso per la tua infornata</span>
             </div>
             <div class="timeline-card" style="padding-left: 1.5rem;">
@@ -1372,7 +1419,7 @@
     <div id="tab-blend" class="tab-content">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">🌾 Calcolatore Miscela Farine (Blend W Ponderato)</span>
+          <span class="card-title">🌾 Calcolatore Miscela Farine (W Ponderato della Miscela)</span>
           <span class="card-subtitle">Combina farine diverse per ottenere la forza e l'estensibilità desiderata</span>
         </div>
 
@@ -1444,7 +1491,7 @@
     <div id="tab-timeline" class="tab-content">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">⏱️ Cronoprogramma di Lavoro Scientifico (Backward Planning)</span>
+          <span class="card-title">⏱️ Cronoprogramma di Lavoro Scientifico (Pianificazione a Ritroso)</span>
           <span class="card-subtitle">Inserisci il momento esatto in cui desideri sfornare e ottieni la tabella di marcia calcolata al minuto</span>
         </div>
 
@@ -1539,7 +1586,7 @@
 
     <!-- APP FOOTER WITH PRIVACY POLICY LINK (Play Store & Web) -->
     <footer class="app-footer">
-      <p>PizzaLab Scientifico v2.1 Pro • Dough Kinetics & Thermodynamics</p>
+      <p>PizzaLab Scientifico v2.1 Pro • Cinetica & Termodinamica degli Impasti</p>
       <div class="footer-links">
         <a href="privacy.html" target="_blank" rel="noopener">Informativa sulla Privacy</a>
         <span>•</span>
@@ -1561,7 +1608,7 @@
     </button>
     <button class="mobile-nav-btn" data-tab="tab-timeline" id="bottomNavTimeline">
       <span class="mobile-nav-icon">⏱️</span>
-      <span class="mobile-nav-label">Timeline</span>
+      <span class="mobile-nav-label">Tempi</span>
     </button>
     <button class="mobile-nav-btn" data-tab="tab-science" id="bottomNavScience">
       <span class="mobile-nav-icon">🧪</span>
@@ -1703,7 +1750,7 @@
               <span>Regola idratazione, farina W, temperature e ottieni il lievito esatto al grammo.</span>
             </div>
             <div class="feat-item">
-              <span class="feat-badge">Modalità Reverse 🧙</span>
+              <span class="feat-badge">Modalità Inversa 🧙</span>
               <span>Parti dall'orario di cena e dalla tua farina: il motore adatta la ricetta al tuo forno.</span>
             </div>
             <div class="feat-item">
@@ -1745,7 +1792,7 @@
               <span>Tutti i pesi sono numeri interi arrotondati per le normali bilance da cucina (minimo 1g per il lievito).</span>
             </div>
             <div class="feat-item">
-              <span class="feat-badge">Smart Scroll-Guard</span>
+              <span class="feat-badge">Protezione Scorrimento</span>
               <span>Scorri la pagina con il pollice in totale tranquillità: gli slider non si sposteranno accidentalmente!</span>
             </div>
             <div class="feat-item">
@@ -1811,7 +1858,7 @@
               <span>💾 Salva come Standard</span>
             </button>
             <button id="resetDefaultsBtn" class="btn btn-secondary btn-settings-action">
-              <span>🔄 Ripristina Default</span>
+              <span>🔄 Ripristina Predefiniti</span>
             </button>
           </div>
         </div>
@@ -1823,7 +1870,7 @@
               <span>🖨️ Stampa / Esporta PDF</span>
             </button>
             <button id="settingsTutorialBtn" class="btn btn-secondary btn-settings-action">
-              <span>❓ Rivedi Tutorial & Guida</span>
+              <span>❓ Rivedi Guida & Istruzioni</span>
             </button>
           </div>
         </div>

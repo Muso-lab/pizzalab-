@@ -163,7 +163,7 @@
       iceGrams = Math.round(totalWater * (tapWaterTemp - theoreticalWaterTemp) / (LATENT_HEAT_ICE_FUSION + tapWaterTemp));
       if (iceGrams > totalWater) iceGrams = totalWater;
       liquidWaterGrams = Math.round(totalWater - iceGrams);
-      warning = "Attenzione: la temperatura richiesta dell'acqua è inferiore a 3°C. È necessario sostituire una parte dell'acqua con ghiaccio tritato fino!";
+      warning = `Temperatura acqua richiesta inferiore a 3°C (${theoreticalWaterTemp}°C). Consiglio pratico casalingo: puoi sostituire ${iceGrams}g di acqua con ghiaccio tritato, oppure riporre farina e ciotola in freezer per 30 minuti prima dell'impasto usando normale acqua fredda di frigo!`;
     } else if (theoreticalWaterTemp > 35) {
       warning = "Attenzione: l'acqua richiesta supera i 35°C, rischio di surriscaldare e inattivare i lieviti prima dell'incordatura!";
     }
@@ -179,6 +179,43 @@
       friction,
       warning
     };
+  }
+
+  /**
+   * Fornisce consigli pratici realistici in base alla temperatura dell'acqua calcolata
+   */
+  function getWaterTempAdvice(waterTemp, targetTFI = 23) {
+    if (waterTemp <= 4) {
+      return {
+        category: 'molto_fredda',
+        label: 'Acqua fredda da frigo (3-5°C)',
+        practicalTip: 'Tieni l\'acqua in frigo. In alternativa per abbattere il calore senza ghiaccio, riponi la ciotola e la farina in freezer per 30 minuti prima di impastare!'
+      };
+    } else if (waterTemp <= 12) {
+      return {
+        category: 'fredda_frigo',
+        label: `Acqua fredda da frigo (~${Math.round(waterTemp)}°C)`,
+        practicalTip: 'Usa acqua tenuta in frigorifero per compensare l\'attrito dell\'impastatrice.'
+      };
+    } else if (waterTemp <= 18) {
+      return {
+        category: 'rubinetto_fresca',
+        label: `Acqua fresca di rubinetto (~${Math.round(waterTemp)}°C)`,
+        practicalTip: 'Basta la normale acqua fresca corrente del rubinetto.'
+      };
+    } else if (waterTemp <= 24) {
+      return {
+        category: 'ambiente',
+        label: `Acqua a temperatura ambiente (~${Math.round(waterTemp)}°C)`,
+        practicalTip: 'Usa acqua a temperatura ambiente per favorire un avvio fermentativo regolare.'
+      };
+    } else {
+      return {
+        category: 'tiepida',
+        label: `Acqua leggermente tiepida (~${Math.round(waterTemp)}°C)`,
+        practicalTip: 'In ambiente molto fresco, scalda appena l\'acqua (senza superare 30°C) per attivare i lieviti.'
+      };
+    }
   }
 
   /**
@@ -492,7 +529,7 @@
     const totalDough = totalFlour + totalWater + totalSalt + totalFat + totalSugar + bigaYeastFresh + maltGrams;
 
     const bigaInstructions = isCold
-      ? `Impastare brevemente a spirale (o a mano) per 3-4 minuti: l'impasto deve risultare grezzo, slegato e asciutto, senza formare maglia glutinica (temperatura finale ottimale: 18-20°C). Lasciare riposare 1-2 ore a temperatura ambiente per lo Start Fermentativo dei lieviti, quindi sigillare in mastello ermetico e riporre in frigorifero a 4°C per ${coldHours} ore. Estrarre dal frigorifero 1-2 ore prima del rinfresco per acclimatare la massa (target 16-18°C al cuore).`
+      ? `Impastare brevemente a spirale (o a mano) per 3-4 minuti: l'impasto deve risultare grezzo, slegato e asciutto, senza formare maglia glutinica (temperatura finale ottimale: 18-20°C). Lasciare riposare 1-2 ore a temperatura ambiente per l'avvio fermentativo dei lieviti, quindi sigillare in mastello ermetico e riporre in frigorifero a 4°C per ${coldHours} ore. Estrarre dal frigorifero 1-2 ore prima del rinfresco per acclimatare la massa (target 16-18°C al cuore).`
       : "Impastare brevemente a spirale (o a mano) per 3-4 minuti senza formare maglia glutinica ('grezza e slegata'). Temperatura finale biga ottimale: 18-20°C. Riposo: 16-18 ore a 18°C.";
 
     const refreshInstructions = isCold
@@ -846,7 +883,7 @@
       hoursFridge = 0;
       hoursPuntata = 1;
       hoursAppretto = Math.max(2, availableHours - hoursPuntata);
-      strategyNotes.push(`⚡ Lievitazione Express (${availableHours}h a T.A.): gestione diretta a temperatura ambiente senza passaggio in frigorifero.`);
+      strategyNotes.push(`⚡ Lievitazione Rapida (${availableHours}h a T.A.): gestione diretta a temperatura ambiente senza passaggio in frigorifero.`);
       if (flour.w > 300) {
         compatibilityScore -= 20;
         strategyNotes.push(`⚠️ Farina molto forte (${flour.name} - W ${flour.w}) per sole ${availableHours} ore: consigliata autolisi di 45 minuti con il 60% dell'acqua per accelerare l'idrolisi enzimatica.`);
@@ -996,7 +1033,7 @@
       if (isColdBiga) {
         procedures.push({
           step: stepNum++,
-          title: "❄️ Fase 1: Impasto Biga Fredda & Start Fermentativo a T.A. (2 ore)",
+          title: "❄️ Fase 1: Impasto Biga Fredda & Avvio Fermentativo a T.A. (2 ore)",
           desc: `Unire tutta la farina (${Math.round(bigaFlour)}g), ${Math.round(bigaWater)}g di acqua (45%) e ${Math.max(1, Math.round(bigaYeast))}g di lievito fresco (1.2% per biga fredda da frigo). Impastare per soli 3-4 minuti a velocità 1: l'impasto deve rimanere slegato, grezzo e asciutto (target 18-20°C). Lasciare riposare per 2 ore a temperatura ambiente (${ambientTemp}°C) in ciotola coperta per attivare la moltiplicazione dei lieviti prima del freddo.`,
           tip: "Non incordare la biga! Deve sembrare un agglomerato di briciole asciutte."
         });
@@ -1019,7 +1056,7 @@
           step: stepNum++,
           title: "⚙️ Fase 4: Rinfresco e Chiusura Impasto",
           desc: `Spezzettare la biga acclimatata nella vasca dell'impastatrice. Aggiungere il malto, l'eventuale farina residua e il 70% dell'acqua di rinfresco (${Math.round(refreshWater)}g totali). Iniziare ad impastare a velocità sostenuta. A maglia formata, inserire il sale (${Math.round(directResult.salt)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + Math.round(directResult.fat) + 'g)' : ''}.`,
-          tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
+          tip: `Temperatura acqua di rinfresco: ${directResult.thermodynamics.waterTemp.toFixed(1)}°C (${getWaterTempAdvice(directResult.thermodynamics.waterTemp).label}). ${getWaterTempAdvice(directResult.thermodynamics.waterTemp).practicalTip}`
         });
       } else {
         procedures.push({
@@ -1033,7 +1070,7 @@
           step: stepNum++,
           title: "⚙️ Fase 2: Rinfresco e Chiusura Impasto",
           desc: `Spezzettare la biga nella ciotola dell'impastatrice. Aggiungere l'eventuale lievito residuo (${Math.max(0, Math.round(directResult.yeastGrams - bigaYeast))}g) e una parte dell'acqua di rinfresco (${Math.round(refreshWater)}g totali). Iniziare ad impastare a 1ª velocità. A maglia formata, inserire il sale (${Math.round(directResult.salt)}g) e l'acqua restante a filo${directResult.fat > 0 ? ', quindi l\'olio EVO (' + Math.round(directResult.fat) + 'g)' : ''}.`,
-          tip: `Per l'acqua di rinfresco usa acqua molto fredda da frigo (${directResult.thermodynamics.waterTemp.toFixed(1)}°C) per compensare l'attrito e chiudere a 23°C.`
+          tip: `Temperatura acqua di rinfresco: ${directResult.thermodynamics.waterTemp.toFixed(1)}°C (${getWaterTempAdvice(directResult.thermodynamics.waterTemp).label}). ${getWaterTempAdvice(directResult.thermodynamics.waterTemp).practicalTip}`
         });
       }
     } else {
@@ -1049,7 +1086,7 @@
           step: stepNum++,
           title: "⚙️ Fase 2: Chiusura e Incordatura Finale",
           desc: `Unire alla massa in autolisi il lievito (${Math.max(1, Math.round(directResult.yeastGrams))}g LBF o ${Math.max(1, Math.round(directResult.yeastGrams / 3))}g IDY). Avviare l'impastatrice a velocità 1 inserendo a filo la restante acqua (${Math.round(closingWater)}g). Non appena la massa si raccoglie attorno al gancio/spirale, aggiungere il sale (${Math.round(directResult.salt)}g)${directResult.sugar > 0 ? ', il malto/zucchero (' + Math.round(directResult.sugar) + 'g)' : ''}${directResult.fat > 0 ? ' e infine l\'olio EVO (' + Math.round(directResult.fat) + 'g)' : ''}. Incordare fino a maglia liscia e velo sottile.`,
-          tip: `Temperatura acqua consigliata: ${directResult.thermodynamics.waterTemp.toFixed(1)}°C per chiusura perfetta a 23°C.`
+          tip: `Temperatura acqua consigliata: ${directResult.thermodynamics.waterTemp.toFixed(1)}°C (${getWaterTempAdvice(directResult.thermodynamics.waterTemp).label}). ${getWaterTempAdvice(directResult.thermodynamics.waterTemp).practicalTip}`
         });
       } else {
         procedures.push({
@@ -1064,7 +1101,7 @@
         procedures.push({
           step: stepNum++,
           title: "🤲 Fase Pieghe di Rinforzo",
-          desc: "Durante la prima ora di puntata, eseguire 3 serie di pieghe a tre (slap & fold sul piano o coil folds in ciotola) distanziate di 20 minuti l'una dall'altra. Questo passaggio asciuga l'impasto e conferisce tensione ed elasticità alla maglia glutinica.",
+          desc: "Durante la prima ora di puntata, eseguire 3 serie di pieghe a tre (sul piano di lavoro o in ciotola) distanziate di 20 minuti l'una dall'altra. Questo passaggio asciuga l'impasto e conferisce tensione ed elasticità alla maglia glutinica.",
           tip: "Inumidirsi leggermente le mani con acqua fresca per evitare che l'impasto si attacchi."
         });
       }
@@ -1282,7 +1319,7 @@
           priority: STEP_ORDER.folds,
           time: new Date(foldsTime),
           label: '🤲 Pieghe di Rinforzo (3 serie ogni 20 min)',
-          desc: 'Eseguire 3 serie di pieghe a tre (slap & fold o coil folds in ciotola) distanziate di 20 minuti per rafforzare la maglia glutinica e dare verticalità.',
+          desc: 'Eseguire 3 serie di pieghe a tre (sul piano di lavoro o in ciotola) distanziate di 20 minuti per rafforzare la maglia glutinica e dare verticalità.',
           duration: '1h totale'
         });
       }
@@ -1336,7 +1373,7 @@
           id: 'preferment_start',
           priority: STEP_ORDER.preferment,
           time: new Date(prefermentStart),
-          label: '❄️ Impasto Biga Fredda & Start Fermentativo (2h a T.A.)',
+          label: '❄️ Impasto Biga Fredda & Avvio Fermentativo (2h a T.A.)',
           desc: 'Impastare la biga per soli 3-4 minuti a bassa velocità (deve rimanere slegata e grezza). Lasciare riposare 2 ore a temperatura ambiente per attivare i lieviti prima del freddo.',
           duration: '2h di avvio a T.A.'
         });
@@ -1485,7 +1522,7 @@
       yeastType: 'fresh'
     },
     new_york: {
-      name: "New York Style Pizza",
+      name: "Pizza in Stile New York",
       category: "Internazionale",
       description: "Fetta piegabile e dorata, idratazione 63-65%, farina di forza con aggiunta di olio e zucchero (o malto) per favorire la colorazione nei forni casalinghi a 250-280°C.",
       hydration: 63,
@@ -1527,6 +1564,7 @@
     calculateYeastPercentage,
     calculateThermodynamics,
     calculateFlourBlend,
+    getWaterTempAdvice,
     analyzeMaturation,
     calculateDirectDough,
     calculatePrefermentBiga,

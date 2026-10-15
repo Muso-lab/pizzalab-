@@ -551,11 +551,40 @@ document.addEventListener('DOMContentLoaded', () => {
     recalculateDirect();
   });
 
+  // Funzioni di sincronizzazione visiva per il cuscinetto di sicurezza
+  function updatePrudentialCardVisuals(isActive) {
+    const card = document.getElementById('prudentialCard');
+    const badge = document.getElementById('prudentialBadgeStatus');
+    if (card) card.classList.toggle('is-active', isActive);
+    if (badge) {
+      badge.textContent = isActive ? '✅ PROTEZIONE ATTIVA (-10% LIEVITO)' : '🛡️ Consigliato per la casa';
+      badge.style.background = isActive ? 'rgba(16, 185, 129, 0.25)' : '';
+      badge.style.color = isActive ? '#10b981' : '';
+    }
+    if (prudentialDetails) {
+      prudentialDetails.style.display = isActive ? 'block' : 'none';
+    }
+  }
+
+  function updateRevPrudentialCardVisuals(isActive) {
+    const card = document.getElementById('revPrudentialCard');
+    const badge = document.getElementById('revPrudentialBadgeStatus');
+    if (card) card.classList.toggle('is-active', isActive);
+    if (badge) {
+      badge.textContent = isActive ? '✅ PROTEZIONE ATTIVA (-10% LIEVITO)' : '🛡️ Consigliato per la casa';
+      badge.style.background = isActive ? 'rgba(16, 185, 129, 0.25)' : '';
+      badge.style.color = isActive ? '#10b981' : '';
+    }
+    if (revPrudentialDetails) {
+      revPrudentialDetails.style.display = isActive ? 'block' : 'none';
+    }
+  }
+
   // Modalità Stima Prudenziale
   if (prudentialToggle) {
     prudentialToggle.addEventListener('change', () => {
       state.isPrudentialMode = prudentialToggle.checked;
-      prudentialDetails.style.display = state.isPrudentialMode ? 'block' : 'none';
+      updatePrudentialCardVisuals(state.isPrudentialMode);
       if (state.isPrudentialMode) {
         state.flourTemp = Math.round((state.ambientTemp - 0.5) * 10) / 10;
         flourTempInput.value = state.flourTemp;
@@ -796,12 +825,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Termodinamica TFI e Ghiaccio
     const thermo = res.thermodynamics;
-    waterTempDisplay.textContent = `${thermo.waterTemp.toFixed(1)} °C`;
-    thermoSubtext.textContent = `Formula: (3 × ${thermo.targetTemp}°C) - (${thermo.roomTemp}°C amb + ${thermo.flourTemp}°C farina + ${thermo.friction}°C attrito)`;
+    const advice = engine.getWaterTempAdvice ? engine.getWaterTempAdvice(thermo.waterTemp, thermo.targetTemp) : { label: '', practicalTip: '' };
+    waterTempDisplay.textContent = advice.label ? `${thermo.waterTemp.toFixed(1)} °C (${advice.label})` : `${thermo.waterTemp.toFixed(1)} °C`;
+    thermoSubtext.innerHTML = `<strong>${advice.practicalTip}</strong><br><span style="opacity: 0.85; font-size: 0.8rem;">Formula TFI: (3 × ${thermo.targetTemp}°C) - (${thermo.roomTemp}°C amb + ${thermo.flourTemp}°C farina + ${thermo.friction}°C attrito)</span>`;
 
     if (thermo.needsIce) {
       iceAlertBox.style.display = 'flex';
-      iceGramsDisplay.textContent = `${thermo.iceGrams} g ghiaccio + ${thermo.liquidWaterGrams} g acqua`;
+      iceGramsDisplay.textContent = `${thermo.iceGrams} g ghiaccio tritato + ${thermo.liquidWaterGrams} g acqua fredda`;
     } else {
       iceAlertBox.style.display = 'none';
     }
@@ -987,7 +1017,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <tr><td>🌾 Farina Poolish</td><td class="ing-weight">${Math.round(res.poolish.flour)} g</td></tr>
         <tr><td>💧 Acqua Poolish (100%)</td><td class="ing-weight">${Math.round(res.poolish.water)} g</td></tr>
         <tr><td>🧫 Lievito Fresco (${res.poolish.hours}h)</td><td class="ing-weight">${Math.max(1, Math.round(res.poolish.yeastFresh))} g</td></tr>
-        <tr><td><em>(oppure Lievito Secco IDY)</em></td><td class="ing-weight"><em>${Math.max(1, Math.round(res.poolish.yeastDry))} g</em></td></tr>
+        <tr><td><em>(oppure Lievito Secco disidratato)</em></td><td class="ing-weight"><em>${Math.max(1, Math.round(res.poolish.yeastDry))} g</em></td></tr>
       `;
       prefStage1Instructions.textContent = res.poolish.instructions;
 
@@ -1433,7 +1463,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="ing-weight">${formatYeastDisplay(recipe.yeastGrams)}</td>
         </tr>
         <tr style="opacity: 0.75; font-size: 0.85rem;">
-          <td class="ing-name" style="padding-left: 1.5rem;">↳ <em>oppure Lievito Secco (IDY)</em></td>
+          <td class="ing-name" style="padding-left: 1.5rem;">↳ <em>oppure Lievito Secco Disidratato</em></td>
           <td class="ing-pct">${(recipe.yeastPct / 3).toFixed(3)} %</td>
           <td class="ing-weight">${formatYeastDisplay(recipe.yeastGrams / 3)}</td>
         </tr>
@@ -1449,12 +1479,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Termodinamica TFI
     if (revWaterTempDisplay) {
       const thermo = res.recipe.thermodynamics;
-      revWaterTempDisplay.textContent = `${thermo.waterTemp.toFixed(1)} °C`;
+      const advice = engine.getWaterTempAdvice ? engine.getWaterTempAdvice(thermo.waterTemp, thermo.targetTemp) : { label: '', practicalTip: '' };
+      revWaterTempDisplay.textContent = advice.label ? `${thermo.waterTemp.toFixed(1)} °C (${advice.label})` : `${thermo.waterTemp.toFixed(1)} °C`;
       if (revThermoSubtext) {
         if (thermo.needsIce) {
-          revThermoSubtext.innerHTML = `⚠️ <strong>Attrito elevato!</strong> Usa <strong>${thermo.iceGrams}g</strong> di ghiaccio tritato + <strong>${thermo.liquidWaterGrams}g</strong> di acqua fredda da frigo.`;
+          revThermoSubtext.innerHTML = `⚠️ <strong>Attrito elevato!</strong> Usa <strong>${thermo.iceGrams}g</strong> di ghiaccio tritato + <strong>${thermo.liquidWaterGrams}g</strong> di acqua fredda da frigo.<br><span style="opacity: 0.85; font-size: 0.8rem;">${advice.practicalTip}</span>`;
         } else {
-          revThermoSubtext.textContent = `Acqua a ${thermo.waterTemp.toFixed(1)}°C per chiusura a 23°C con ${res.mixer.name}.`;
+          revThermoSubtext.innerHTML = `<strong>${advice.practicalTip}</strong><br><span style="opacity: 0.85; font-size: 0.8rem;">Target chiusura impasto: 23°C con ${res.mixer.name}.</span>`;
         }
       }
     }
@@ -1549,9 +1580,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stima prudenziale in reverse
     if (revPrudentialToggle) {
       revPrudentialToggle.addEventListener('change', () => {
-        if (revPrudentialDetails) {
-          revPrudentialDetails.style.display = revPrudentialToggle.checked ? 'block' : 'none';
-        }
+        updateRevPrudentialCardVisuals(revPrudentialToggle.checked);
         recalculateReverse();
       });
     }
@@ -1702,8 +1731,8 @@ document.addEventListener('DOMContentLoaded', () => {
         state.ovenType = p.ovenType;
         state.isPrudentialMode = p.isPrudentialMode;
         if (prudentialToggle) {
-          prudentialToggle.checked = p.isPrudentialMode;
-          if (prudentialDetails) prudentialDetails.style.display = p.isPrudentialMode ? 'block' : 'none';
+          prudentialToggle.checked = !!p.isPrudentialMode;
+          updatePrudentialCardVisuals(!!p.isPrudentialMode);
         }
         if (p.mixerKey) {
           state.friction = p.friction;
@@ -1774,7 +1803,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const recipe = res.recipe;
         const thermo = recipe.thermodynamics;
 
-        let text = `🍕 RICETTA OTTIMIZZATA (MODALITÀ REVERSE) - PizzaLab\n`;
+        let text = `🍕 RICETTA OTTIMIZZATA (MODALITÀ INVERSA) - PizzaLab\n`;
         text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
         text += `Stile: ${res.styleName}\n`;
         text += `Farina: ${res.flour.name} (W ${res.flour.w}, Proteine ${res.flour.protein}%)\n`;
@@ -1791,14 +1820,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (recipe.fat > 0) text += `• Olio EVO: ${Math.round(recipe.fat)}g (${recipe.fatPct.toFixed(1)}%)\n`;
         if (recipe.sugar > 0) text += `• Malto/Zucchero: ${Math.round(recipe.sugar)}g (${recipe.sugarPct.toFixed(1)}%)\n`;
         text += `• Lievito Fresco LBF: ${yeastFreshStr} (${recipe.yeastPct.toFixed(2)}%)\n`;
-        text += `  (oppure Lievito Secco IDY: ${yeastDryStr})\n\n`;
+        text += `  (oppure Lievito Secco Disidratato: ${yeastDryStr})\n\n`;
         text += `🌡️ TEMPERATURA ACQUA TFI: ${thermo.waterTemp.toFixed(1)}°C\n\n`;
         text += `📋 ADATTAMENTI SCIENTIFICI:\n`;
         res.strategyNotes.forEach(n => { text += `• ${n}\n`; });
         text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
 
         navigator.clipboard.writeText(text).then(() => {
-          showToast('Scheda Reverse copiata con successo!', '📋');
+          showToast('Scheda Ricetta Inversa copiata con successo!', '📋');
         }).catch(() => {
           const ta = document.createElement('textarea');
           ta.value = text;
@@ -2102,7 +2131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.yeastType === 'fresh') {
       text += `• Lievito Fresco LBF: ${yeastFreshText} (${res.yeastPct.toFixed(2)}%)\n`;
     } else if (state.yeastType === 'dry') {
-      text += `• Lievito Secco IDY: ${yeastDryText} (${res.yeastPct.toFixed(2)}%)\n`;
+      text += `• Lievito Secco Disidratato: ${yeastDryText} (${res.yeastPct.toFixed(2)}%)\n`;
     } else if (state.yeastType === 'licoli') {
       text += `• Li.Co.Li (Idr. 100%): ${Math.round(res.licoliGrams)}g (${res.yeastPct}%)\n`;
     } else if (state.yeastType === 'madre') {
@@ -2264,8 +2293,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (yeastTypeSelect && d.yeastType) yeastTypeSelect.value = d.yeastType;
       if (prudentialToggle && d.isPrudentialMode !== undefined) {
-        prudentialToggle.checked = d.isPrudentialMode;
-        if (prudentialDetails) prudentialDetails.style.display = d.isPrudentialMode ? 'block' : 'none';
+        prudentialToggle.checked = !!d.isPrudentialMode;
+        updatePrudentialCardVisuals(!!d.isPrudentialMode);
       }
 
       // Sincronizza UI Reverse

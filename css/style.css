@@ -154,12 +154,14 @@ body {
   text-transform: uppercase;
 }
 
-.header-left {
+.header-left,
+.header-brand-row {
   display: flex;
   align-items: center;
 }
 
-.header-actions {
+.header-actions,
+.header-actions-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -419,10 +421,20 @@ body {
   margin: 0;
 }
 
+/* Suppress native spin buttons on number inputs across all browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .stepper-direct-box {
   position: relative;
-  width: 76px;
-  min-width: 76px;
+  width: 86px;
+  min-width: 86px;
   display: flex;
   align-items: center;
 }
@@ -431,7 +443,7 @@ body {
   width: 100%;
   height: 38px;
   min-height: 38px;
-  padding: 0 1.35rem 0 0.45rem;
+  padding: 0 1.85rem 0 0.45rem !important;
   text-align: right;
   font-family: var(--font-mono);
   font-size: 0.925rem !important;
@@ -440,6 +452,7 @@ body {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   color: var(--text-main);
+  box-sizing: border-box;
 }
 
 .stepper-direct-box .stepper-unit {
@@ -449,6 +462,7 @@ body {
   color: var(--text-muted);
   pointer-events: none;
   font-weight: 600;
+  user-select: none;
 }
 
 /* Settings Bottom Sheet Modal */
@@ -607,25 +621,36 @@ body {
 
 .card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.65rem;
   border-bottom: 1px solid var(--border-color);
 }
 
 .card-title {
-  font-size: 1.1rem;
+  width: 100%;
+  font-size: 1.08rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   color: var(--text-main);
+  line-height: 1.35;
 }
 
 .card-subtitle {
+  width: 100%;
   font-size: 0.8rem;
   color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.recipe-table-card .card-header {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Form Controls */
@@ -693,6 +718,11 @@ body {
   color: var(--text-dim);
   pointer-events: none;
   font-family: var(--font-mono);
+  user-select: none;
+}
+
+.input-with-unit .form-input {
+  padding-right: 2.75rem !important;
 }
 
 /* Range Sliders */
@@ -951,30 +981,145 @@ body {
   margin-top: 0.5rem;
 }
 
-/* Prudential & Oven Badges */
+/* Prudential & Safety Cushion */
 .prudential-card {
   background: rgba(244, 162, 97, 0.08);
-  border: 1px dashed var(--accent);
+  border: 1.5px solid rgba(244, 162, 97, 0.35);
   border-radius: var(--radius-md);
   padding: 1rem;
   margin-bottom: 1.25rem;
+  transition: all 0.25s ease;
+}
+
+.prudential-card.is-active {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.12);
 }
 
 .prudential-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.prudential-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.prudential-badge-status {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: rgba(244, 162, 97, 0.2);
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
 }
 
 .prudential-title {
-  font-size: 0.9rem;
+  font-size: 0.96rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text-main);
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  line-height: 1.35;
+}
+
+.prudential-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.prudential-toggle-wrap {
+  flex-shrink: 0;
+  padding-top: 0.25rem;
+}
+
+.prudential-details {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-color);
+  font-size: 0.825rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.prudential-explanation p {
+  margin-bottom: 0.5rem;
+}
+
+.seasonal-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.seasonal-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.3rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.seasonal-btn:hover {
+  background: var(--bg-surface);
+  border-color: var(--accent);
+}
+
+.seasonal-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(244, 162, 97, 0.35);
+}
+
+.seasonal-btn .season-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.seasonal-btn .season-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.seasonal-btn .season-temp {
+  font-size: 0.68rem;
+  opacity: 0.85;
+  margin-top: 0.1rem;
+}
+
+.prudential-active-banner {
+  margin-top: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #10b981;
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 
 .oven-specs-grid {
@@ -1659,10 +1804,10 @@ body {
     box-sizing: border-box;
   }
 
-  /* 1. Header & Actions - Solid Opaque Native-Style Mobile Header (56px) */
+  /* 1. Header & Actions - 2-Row Dedicated Mobile Layout */
   .header {
-    height: 56px;
-    min-height: 56px;
+    height: auto;
+    min-height: unset;
     width: 100%;
     box-sizing: border-box;
     position: sticky;
@@ -1672,10 +1817,10 @@ body {
     background-color: #0f141c !important;
     opacity: 1 !important;
     border-bottom: 1px solid var(--border-color, #334155);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    padding: 0 0.85rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    display: block;
+    padding: 0.5rem 0.85rem 0.45rem;
+    padding-top: max(0.5rem, env(safe-area-inset-top, 0.5rem));
   }
 
   html[data-theme="light"] .header,
@@ -1688,90 +1833,80 @@ body {
 
   .header-container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    position: relative;
+    justify-content: center;
+    gap: 0.35rem;
+    position: static;
     width: 100%;
     max-width: 100%;
-    height: 100%;
     margin: 0;
     padding: 0;
   }
 
-  .header-left {
-    order: 1;
+  .header-brand-row {
+    width: 100%;
     display: flex;
+    justify-content: center;
     align-items: center;
-    z-index: 2;
   }
 
-  .logo-badge {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+  .header-brand-row .logo-badge {
+    position: static;
+    transform: none;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     margin: 0;
     padding: 0;
-    z-index: 1;
-    pointer-events: none;
-    max-width: calc(100% - 150px);
+    max-width: 100%;
     width: auto;
-    white-space: nowrap;
   }
 
-  .logo-icon {
-    font-size: 1.35rem;
-    flex-shrink: 0;
-    line-height: 1;
-    margin-right: 5px;
+  .header-brand-row .logo-icon {
+    font-size: 1.55rem;
+    margin-right: 6px;
+    filter: drop-shadow(0 2px 8px var(--primary-glow));
   }
 
-  .logo-text {
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .logo-text h1 {
-    font-size: 1.05rem;
+  .header-brand-row .logo-text h1 {
+    font-size: 1.3rem;
     font-weight: 800;
-    color: #ffffff !important;
+    letter-spacing: -0.02em;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin: 0;
-    padding: 0;
-    line-height: 1.2;
-    text-align: center;
+    line-height: 1.25;
+    background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 50%, #f4a261 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  html[data-theme="light"] .logo-text h1,
-  body.light-mode .logo-text h1 {
+  html[data-theme="light"] .header-brand-row .logo-text h1,
+  body.light-mode .header-brand-row .logo-text h1 {
     color: #0f172a !important;
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: #0f172a;
   }
 
   .logo-sub {
     display: none !important;
   }
 
-  .header-actions {
-    order: 3;
+  .header-actions-row {
+    width: 100%;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.4rem;
-    z-index: 2;
+    gap: 0.65rem;
   }
 
-  .header-action-btn {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.78rem;
+  .header-actions-row .header-action-btn {
+    padding: 0.3rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 600;
     min-height: 32px;
+    border-radius: var(--radius-full);
   }
 
   /* 2. Mobile Method Switcher */
@@ -2167,10 +2302,17 @@ body {
   }
 
   .header-container {
+    flex-direction: row !important;
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .header-brand-row {
+    width: auto !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   /* Hide bulky desktop tab buttons from top header */
@@ -2198,13 +2340,19 @@ body {
     display: none !important;
   }
 
-  .header-actions {
+  .header-actions,
+  .header-actions-row {
+    width: auto !important;
+    display: flex !important;
+    align-items: center !important;
     gap: 0.35rem;
   }
 
-  .header-actions .btn-sm {
+  .header-actions .btn-sm,
+  .header-actions-row .header-action-btn {
     padding: 0.25rem 0.55rem;
     font-size: 0.75rem;
+    min-height: 28px;
   }
 
   /* 2. COMPACT PRESETS STRIP */
@@ -3569,6 +3717,62 @@ body.light-mode .reverse-hero-title {
 html[data-theme="light"] .reverse-hero-desc,
 body.light-mode .reverse-hero-desc {
   color: #475569 !important;
+}
+
+/* Prudential Card & Safety Cushion in Light Mode */
+html[data-theme="light"] .prudential-card,
+body.light-mode .prudential-card {
+  background: #fffbeb !important;
+  border-color: #fde68a !important;
+}
+
+html[data-theme="light"] .prudential-card.is-active,
+body.light-mode .prudential-card.is-active {
+  background: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+}
+
+html[data-theme="light"] .prudential-title,
+body.light-mode .prudential-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .prudential-subtitle,
+body.light-mode .prudential-subtitle {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .prudential-details,
+body.light-mode .prudential-details {
+  border-top-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .seasonal-btn,
+body.light-mode .seasonal-btn {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .seasonal-btn:hover,
+body.light-mode .seasonal-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: var(--accent) !important;
+}
+
+html[data-theme="light"] .seasonal-btn.active,
+body.light-mode .seasonal-btn.active {
+  background: #d9480f !important;
+  border-color: #d9480f !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] .prudential-active-banner,
+body.light-mode .prudential-active-banner {
+  background: #f0fdf4 !important;
+  border-color: #86efac !important;
+  color: #15803d !important;
 }
 
 
