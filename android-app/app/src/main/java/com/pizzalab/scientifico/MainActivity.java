@@ -57,7 +57,10 @@ public class MainActivity extends AppCompatActivity {
                 Insets insets = windowInsets.getInsets(
                     WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
                 );
-                v.setPadding(0, insets.top, 0, insets.bottom);
+                // Applichiamo SOLO insets.bottom per sollevare il banner AdMob sopra la barra gesti/navigazione di sistema.
+                // NON applichiamo insets.top a rootLayout perché il tema NoActionBar gestisce già nativamente
+                // la barra di stato, ed applicarlo creerebbe un'enorme voragine vuota di 140px sopra l'header.
+                v.setPadding(0, 0, 0, insets.bottom);
                 return windowInsets;
             });
             ViewCompat.requestApplyInsets(root);

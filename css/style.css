@@ -108,7 +108,7 @@ body {
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-color);
   padding: 0.35rem 1.25rem 0.45rem;
-  padding-top: max(0.35rem, env(safe-area-inset-top, 0px));
+  padding-top: 0.35rem;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -1850,8 +1850,8 @@ input[type="number"] {
     border-bottom: 1px solid var(--border-color, #334155);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     display: block;
-    padding: 0.08rem 0.75rem 0.35rem;
-    padding-top: max(0.08rem, env(safe-area-inset-top, 0px));
+    padding: 0.15rem 0.75rem 0.35rem;
+    padding-top: 0.15rem;
   }
 
   html[data-theme="light"] .header,
@@ -2413,9 +2413,9 @@ input[type="number"] {
     background-color: #0f141c !important;
     opacity: 1 !important;
     padding: 0.25rem 0.85rem;
-    padding-top: max(0.25rem, env(safe-area-inset-top, 0.25rem));
-    padding-left: max(0.85rem, env(safe-area-inset-left, 0px));
-    padding-right: max(0.85rem, env(safe-area-inset-right, 0px));
+    padding-top: 0.25rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
   }
 
