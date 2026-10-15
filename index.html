@@ -35,7 +35,7 @@
       <div class="splash-loader">
         <div class="splash-loader-bar"></div>
       </div>
-      <span class="splash-version">v2.1.5 Pro • Edizione Android & Web</span>
+      <span class="splash-version">v2.1.6 Pro • Edizione Android & Web</span>
     </div>
   </div>
 
@@ -639,24 +639,6 @@
                 <button id="goToTimelineBtn" class="btn btn-secondary btn-block">⏱️ Crea Cronoprogramma</button>
               </div>
 
-              <!-- SLOT PUBBLICITARIO RESPONSIVE (Google AdSense / AdMob / Sponsor) -->
-              <div class="ad-banner-slot">
-                <div class="ad-badge">📢 Partner Sponsor</div>
-                <div class="ad-content-box">
-                  <!-- SEGNAPOSTO: Inserisci qui il tuo codice AdMob / Google AdSense -->
-                  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="YYYYYYYYYY" data-ad-format="auto" data-full-width-responsive="true"></ins> -->
-                  <div class="ad-placeholder-graphic">
-                    <span class="ad-icon">🔥</span>
-                    <div class="ad-text-wrap">
-                      <div class="ad-headline">Forni Professionali per Pizza a Casa</div>
-                      <div class="ad-subtext">Cottura autentica a 500°C in 60 secondi con pietra biscotto campana.</div>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-sm ad-cta-btn" onclick="alert('Spazio Pubblicitario: predisposto per Google AdMob, AdSense o affiliazioni per monetizzare la tua webapp!')">Scopri</button>
-                  </div>
-                </div>
-                <div class="ad-subinfo">Spazio pubblicitario conforme a Google AdSense / AdMob (Banner 320x50 / 300x250)</div>
-              </div>
-
             </div>
 
           </div>
@@ -994,7 +976,7 @@
         <!-- Colonna Destra: Risultato Ottimizzato -->
         <div class="results-column">
 
-          <!-- Card Risultato Strategico -->
+          <!-- Card 1: Verdetto Scientifico Ottimizzato -->
           <div class="card recipe-table-card">
             <div class="card-header">
               <span class="card-title">✨ Verdetto Scientifico Ottimizzato</span>
@@ -1056,9 +1038,11 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Cronoprogramma Rapido -->
-            <div class="card-header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
+          <!-- Card 2: Tabella di Marcia a Ritroso -->
+          <div class="card">
+            <div class="card-header">
               <span class="card-title">⏱️ Tabella di Marcia (Cronoprogramma a Ritroso)</span>
               <span class="card-subtitle">Orari esatti calcolati a ritroso per la tua infornata</span>
             </div>
@@ -1070,18 +1054,20 @@
             <button type="button" id="revGoToTimelineBtn" class="btn btn-secondary btn-block" style="margin-top: 0.75rem;">
               ⏱️ Apri nel Cronoprogramma Completo
             </button>
+          </div>
 
-            <!-- Card Procedura Operativa Passo-Passo -->
-            <div class="card-header" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">
+          <!-- Card 3: Procedura Operativa Passo-Passo -->
+          <div class="card">
+            <div class="card-header">
               <span class="card-title">📋 Procedura Operativa Passo-Passo</span>
               <span class="card-subtitle">Istruzioni tecniche calibrate sulla tua ricetta</span>
             </div>
-            <div id="revProceduresList" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+            <div id="revProceduresList" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem;">
               <!-- Popolato dinamicamente da app.js -->
             </div>
 
             <!-- Bottoni Azione -->
-            <div class="btn-group" style="margin-top: 1.5rem; flex-direction: column;">
+            <div class="btn-group" style="flex-direction: column; gap: 0.6rem;">
               <button id="revApplyToDirectBtn" class="btn btn-primary btn-block">
                 📥 Carica questa Ricetta nel Calcolatore Completo
               </button>
@@ -1089,23 +1075,6 @@
                 📋 Copia Scheda Tecnica Ottimizzata
               </button>
             </div>
-
-            <!-- SLOT PUBBLICITARIO RESPONSIVE REVERSE -->
-            <div class="ad-banner-slot">
-              <div class="ad-badge">📢 Sponsor Ufficiale</div>
-              <div class="ad-content-box">
-                <div class="ad-placeholder-graphic">
-                  <span class="ad-icon">🌾</span>
-                  <div class="ad-text-wrap">
-                    <div class="ad-headline">Farine Professionali Certificate</div>
-                    <div class="ad-subtext">Caputo, 5 Stagioni, Molino Grassi con schede alveografiche e W garantito.</div>
-                  </div>
-                  <button type="button" class="btn btn-primary btn-sm ad-cta-btn" onclick="alert('Spazio Pubblicitario: predisposto per Google AdMob, AdSense o sponsor locali!')">Scopri</button>
-                </div>
-              </div>
-              <div class="ad-subinfo">Spazio pubblicitario conforme a Google AdSense / AdMob</div>
-            </div>
-
           </div>
 
         </div>
@@ -1423,31 +1392,33 @@
           <span class="card-subtitle">Combina farine diverse per ottenere la forza e l'estensibilità desiderata</span>
         </div>
 
-        <div id="flourBlendRows">
-          <div class="blend-row blend-row-header">
-            <span>Nome Farina</span>
-            <span>Forza W</span>
-            <span>Proteine %</span>
-            <span>Quota %</span>
-            <span></span>
-          </div>
+        <div class="blend-table-wrap">
+          <div id="flourBlendRows">
+            <div class="blend-row blend-row-header">
+              <span>Nome Farina</span>
+              <span>Forza W</span>
+              <span>Proteine %</span>
+              <span>Quota %</span>
+              <span></span>
+            </div>
 
-          <!-- Riferimento 1 -->
-          <div class="blend-row">
-            <input type="text" class="form-input blend-name" value="Farina Tipo 0 Forte (es. Manitoba)">
-            <input type="number" class="form-input blend-w" value="380" min="100" max="500">
-            <input type="number" class="form-input blend-prot" value="14.0" min="8" max="20" step="0.1">
-            <input type="number" class="form-input blend-pct" value="40" min="0" max="100">
-            <button class="btn btn-secondary btn-sm" disabled style="opacity: 0.3;">✕</button>
-          </div>
+            <!-- Riferimento 1 -->
+            <div class="blend-row">
+              <input type="text" class="form-input blend-name" value="Farina Tipo 0 Forte (es. Manitoba)" placeholder="Tipo Farina">
+              <input type="number" class="form-input blend-w" value="380" min="100" max="500" placeholder="W">
+              <input type="number" class="form-input blend-prot" value="14.0" min="8" max="20" step="0.1" placeholder="%">
+              <input type="number" class="form-input blend-pct" value="40" min="0" max="100" placeholder="%">
+              <button class="btn btn-secondary btn-sm delete-row-btn" disabled style="opacity: 0.3;">✕</button>
+            </div>
 
-          <!-- Riferimento 2 -->
-          <div class="blend-row">
-            <input type="text" class="form-input blend-name" value="Farina Tipo 00 / 0 Media">
-            <input type="number" class="form-input blend-w" value="240" min="100" max="500">
-            <input type="number" class="form-input blend-prot" value="11.5" min="8" max="20" step="0.1">
-            <input type="number" class="form-input blend-pct" value="60" min="0" max="100">
-            <button class="btn btn-secondary btn-sm" disabled style="opacity: 0.3;">✕</button>
+            <!-- Riferimento 2 -->
+            <div class="blend-row">
+              <input type="text" class="form-input blend-name" value="Farina Tipo 00 / 0 Media" placeholder="Tipo Farina">
+              <input type="number" class="form-input blend-w" value="240" min="100" max="500" placeholder="W">
+              <input type="number" class="form-input blend-prot" value="11.5" min="8" max="20" step="0.1" placeholder="%">
+              <input type="number" class="form-input blend-pct" value="60" min="0" max="100" placeholder="%">
+              <button class="btn btn-secondary btn-sm delete-row-btn" disabled style="opacity: 0.3;">✕</button>
+            </div>
           </div>
         </div>
 
@@ -1533,54 +1504,55 @@
 
         <h2>1. Reologia della Farina: Forza W e Indice P/L</h2>
         <p>
-          Il valore <strong>W</strong> (espresso in $10^{-4} \text{ Joule}$) viene misurato attraverso l'<strong>Alveografo di Chopin</strong> e rappresenta l'energia necessaria a deformare una bolla d'impasto fino alla rottura.
+          Il valore <strong>W</strong> (espresso convenzionalmente in <strong>10<sup>-4</sup> Joule</strong>) viene misurato attraverso l'<strong>Alveografo di Chopin</strong> e rappresenta l'energia cinetica necessaria a deformare e gonfiare una bolla d'impasto fino alla rottura meccanica.
         </p>
         <ul>
-          <li><strong>W 160 – 200 (Farine Deboli):</strong> Basso contenuto proteico (9-10.5%), maglia glutinica morbida. Ideali per maturazioni brevi a T.A. (4-6 ore) e idratazioni non superiori al 60%.</li>
-          <li><strong>W 220 – 280 (Farine Medie):</strong> Tipiche farine "Napoletana STG" o farine per uso comune (11-12.5% proteine). Sopportano bene 8-16 ore a temperatura ambiente.</li>
-          <li><strong>W 300 – 350 (Farine Forti):</strong> Ricche di gliadine e glutenine (13-14.5% proteine). Creano una maglia resistente che necessita di tempi prolungati di rilassamento e idrolisi enzimatica (24-48 ore in frigo).</li>
-          <li><strong>Rapporto P/L:</strong> Misura il bilanciamento tra tenacità (P) ed estensibilità (L). Il valore ideale per pizza è <strong>0.50 – 0.60</strong>. Un P/L &gt; 0.8 produce impasti rigidi che si ritirano al momento della stesura.</li>
+          <li><strong>W 160 – 200 (Farine Deboli):</strong> Basso tenore proteico (9.0% – 10.5%), maglia glutinica cedevole e morbida. Ideali per maturazioni brevi a temperatura ambiente (4 – 6 ore) e idratazioni fino al 60%.</li>
+          <li><strong>W 220 – 280 (Farine Medie):</strong> Tipiche farine "Napoletana STG" o per pizzeria tradizionale (11.0% – 12.5% proteine). Sopportano ottimamente 8 – 16 ore a temperatura ambiente.</li>
+          <li><strong>W 300 – 350 (Farine Forti):</strong> Ricche di gliadine e glutenine strutturate (13.0% – 14.5% proteine). Generano un reticolo viscoelastico tenace che necessita di tempi prolungati di distensione e idrolisi enzimatica controllata (24 – 48 ore in frigorifero a 4°C).</li>
+          <li><strong>Rapporto P/L:</strong> Misura il bilanciamento tra tenacità (P = altezza curva) ed estensibilità (L = lunghezza bolla). Il valore ottimale per pizza al piatto è <strong>0.50 – 0.60</strong>. Un indice P/L &gt; 0.8 produce impasti rigidi e gommati che tendono a ritirarsi durante la stesura.</li>
         </ul>
 
         <h2>2. Cinetica di Fermentazione e Modello di Craig (TXCraig1)</h2>
         <p>
-          Il metabolismo del lievito <em>Saccharomyces cerevisiae</em> non risponde in modo lineare, ma segue curve di crescita esponenziale dipendenti dalla temperatura e dal tempo:
+          Il metabolismo del lievito <em>Saccharomyces cerevisiae</em> non segue un andamento lineare, ma una curva esponenziale termodinamica regolata dalla temperatura della massa e dalla durata delle fasi:
         </p>
         <div class="formula-block">
-          % Lievito Secco (IDY) = 1.65 / (EFU)^1.08<br>
-          % Lievito Fresco (LBF) = % IDY × 3.0
+          % Lievito Secco (IDY) = 1.65 / (EFU)<sup>1.08</sup><br>
+          % Lievito Fresco (LBF) = % IDY &times; 3.0
         </div>
         <p>
-          Le <strong>EFU (Effective Fermentation Units)</strong> integrano le diverse fasi termiche. Inoltre, quando l'impasto viene posto in frigorifero a 4°C, la temperatura al cuore non scende istantaneamente: questo calcolatore integra l'inerzia termica della massa con la legge di raffreddamento di Newton:
+          Le <strong>EFU (Effective Fermentation Units)</strong> integrano i coefficienti termici delle singole fasi. Inoltre, quando la massa viene riposta in frigorifero a 4°C, il cuore dell'impasto non raggiunge la temperatura istantaneamente: il motore matematico integra l'inerzia termica della massa con la legge di raffreddamento di Newton:
         </p>
         <div class="formula-block">
-          T_impasto(t) = T_frigo + (T_iniziale - T_frigo) · e^(-t / τ)   [con τ ≈ 3.0 ore]
-        </div>
-
-        <h2>3. Termodinamica e Calcolo dell'Acqua (TFI)</h2>
-        <p>
-          Per chiudere l'impasto alla temperatura ideale (tipicamente <strong>23°C</strong>), si applica la classica <em>Regola del 3</em>:
-        </p>
-        <div class="formula-block">
-          T_acqua = (3 × T_target) - (T_ambiente + T_farina + T_attrito_impastatrice)
-        </div>
-        <p>
-          Nei mesi caldi estivi o con impastatrici ad alto attrito meccanico, la formula può restituire una temperatura inferiore a 3°C. In questi casi, il calcolatore attiva automaticamente l'equazione dell'<strong>entalpia di fusione del ghiaccio</strong> (80 kcal/kg), specificando l'esatta massa di ghiaccio tritato da sostituire all'acqua liquida:
-        </p>
-        <div class="formula-block">
-          m_ghiaccio = m_acqua_totale × (T_rubinetto - T_desiderata) / (80 + T_rubinetto)
+          T<sub>impasto</sub>(t) = T<sub>frigo</sub> + (T<sub>iniziale</sub> - T<sub>frigo</sub>) &middot; e<sup>-t / &tau;</sup> &nbsp;&nbsp;[costante termica &tau; &approx; 3.0 ore]
         </div>
 
-        <h2>4. Maturazione Enzimatica vs Lievitazione</h2>
+        <h2>3. Termodinamica e Calcolo Temperatura Acqua (TFI)</h2>
         <p>
-          La digestione dell'impasto è dovuta a due fenomeni paralleli ma distinti:
+          Per chiudere l'impasto alla Temperatura Finale Ideale (tipicamente <strong>23°C – 24°C</strong>), si applica la classica <em>Regola del 3</em> adattata all'attrito del macchinario:
+        </p>
+        <div class="formula-block">
+          T<sub>acqua</sub> = (3 &times; T<sub>target</sub>) - (T<sub>ambiente</sub> + T<sub>farina</sub> + T<sub>attrito_impastatrice</sub>)
+        </div>
+        <p>
+          Nei mesi caldi estivi o con impastatrici ad alto attrito meccanico (es. spirale a 2ª velocità o planetaria sostenuta), il calcolo può restituire un valore inferiore a 3°C. In questi scenari, il calcolatore attiva automaticamente l'equazione dell'<strong>entalpia di transizione di fase del ghiaccio</strong> (calore latente di fusione pari a 80 kcal/kg), specificando i grammi esatti di ghiaccio tritato da dosare in sostituzione parziale dell'acqua:
+        </p>
+        <div class="formula-block">
+          m<sub>ghiaccio</sub> = m<sub>acqua_totale</sub> &times; (T<sub>rubinetto</sub> - T<sub>desiderata</sub>) / (80 + T<sub>rubinetto</sub>)
+        </div>
+
+        <h2>4. Maturazione Enzimatica vs Fermentazione dei Lieviti</h2>
+        <p>
+          La digeribilità e la leggerezza del cornicione derivano da due processi biochimici paralleli ma indipendenti:
         </p>
         <ul>
-          <li><strong>Fermentazione:</strong> I lieviti consumano gli zuccheri semplici rilasciando $CO_2$ ed etanolo (gonfiamento).</li>
-          <li><strong>Maturazione Enzimatica:</strong> Le alfa e beta-amilasi scindono gli amidi complessi in maltosio e glucosio, mentre le proteasi scompongono le catene proteiche del glutine in amminoacidi semplici e peptidi.</li>
+          <li><strong>Fermentazione:</strong> I lieviti metabolizzano i carboidrati semplici liberando CO<sub>2</sub> ed etanolo, responsabili del volume e dell'alveolatura della pasta.</li>
+          <li><strong>Maturazione Enzimatica:</strong> Le &alpha; e &beta;-amilasi scindono gli amidi complessi in maltosio e glucosio, mentre le proteasi scompongono le catene proteiche del glutine in amminoacidi semplici e peptidi facilmente assimilabili.</li>
         </ul>
         <p>
-          A 4°C in frigorifero, i lieviti rallentano di oltre il 90%, mentre gli enzimi continuano la loro attività a circa il 30% della velocità. Questo permette alla maturazione di progredire senza che l'impasto diventi sovralievitato!
+          A 4°C in frigorifero, i lieviti rallentano la produzione di gas di oltre il 90%, mentre l'attività proteolitica degli enzimi prosegue a circa il 30% della velocità normale. Ciò consente una maturazione profonda senza rischiare la sovralievitazione o il collasso strutturale della massa.
+        </p>
       </div>
     </div>
 

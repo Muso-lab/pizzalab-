@@ -654,6 +654,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- CALCOLO IMPASTO DIRETTO ---
   function recalculateDirect() {
+    if (document.activeElement !== totalDoughWeightInput) {
+      state.totalDoughWeight = state.numBalls * state.ballWeight;
+      if (totalDoughWeightInput) totalDoughWeightInput.value = state.totalDoughWeight;
+    }
+
     const res = engine.calculateDirectDough({
       numBalls: state.numBalls,
       ballWeight: state.ballWeight,
@@ -1141,10 +1146,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const newRow = document.createElement('div');
     newRow.className = 'blend-row';
     newRow.innerHTML = `
-      <input type="text" class="form-input blend-name" value="Altra Farina">
-      <input type="number" class="form-input blend-w" value="300" min="100" max="500">
-      <input type="number" class="form-input blend-prot" value="13.0" min="8" max="20" step="0.1">
-      <input type="number" class="form-input blend-pct" value="20" min="0" max="100">
+      <input type="text" class="form-input blend-name" value="Altra Farina" placeholder="Tipo Farina">
+      <input type="number" class="form-input blend-w" value="300" min="100" max="500" placeholder="W">
+      <input type="number" class="form-input blend-prot" value="13.0" min="8" max="20" step="0.1" placeholder="%">
+      <input type="number" class="form-input blend-pct" value="20" min="0" max="100" placeholder="%">
       <button class="btn btn-secondary btn-sm delete-row-btn" style="color: #d90429;">✕</button>
     `;
     flourBlendRows.appendChild(newRow);
@@ -1901,44 +1906,36 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   mobileNavButtons.forEach(btn => {
-    let touched = false;
-    btn.addEventListener('touchend', (e) => {
-      touched = true;
-      e.preventDefault();
+    let lastNavTrigger = 0;
+    const activateNav = (e) => {
+      const now = Date.now();
+      if (now - lastNavTrigger < 200) return;
+      lastNavTrigger = now;
+      if (e && e.cancelable && e.type !== 'click') e.preventDefault();
       if (btn.id === 'bottomNavCalc') {
         switchTab(lastActiveCalcTab || 'tab-reverse');
       } else {
         switchTab(btn.dataset.tab);
       }
-      setTimeout(() => { touched = false; }, 350);
-    }, { passive: false });
+    };
 
-    btn.addEventListener('click', (e) => {
-      if (touched) return;
-      if (btn.id === 'bottomNavCalc') {
-        e.preventDefault();
-        switchTab(lastActiveCalcTab || 'tab-reverse');
-      } else {
-        switchTab(btn.dataset.tab);
-      }
-    });
+    btn.addEventListener('pointerdown', activateNav);
+    btn.addEventListener('click', activateNav);
   });
 
   document.querySelectorAll('.method-chip').forEach(chip => {
-    let chipTouched = false;
-    chip.addEventListener('touchend', (e) => {
-      chipTouched = true;
-      e.preventDefault();
+    let lastChipTrigger = 0;
+    const activateChip = (e) => {
+      const now = Date.now();
+      if (now - lastChipTrigger < 200) return;
+      lastChipTrigger = now;
+      if (e && e.cancelable && e.type !== 'click') e.preventDefault();
       const target = chip.dataset.tabTarget;
       if (target) switchTab(target);
-      setTimeout(() => { chipTouched = false; }, 350);
-    }, { passive: false });
+    };
 
-    chip.addEventListener('click', () => {
-      if (chipTouched) return;
-      const target = chip.dataset.tabTarget;
-      if (target) switchTab(target);
-    });
+    chip.addEventListener('pointerdown', activateChip);
+    chip.addEventListener('click', activateChip);
   });
 
   const jumpToRecipeBtn = document.getElementById('jumpToRecipeBtn');
