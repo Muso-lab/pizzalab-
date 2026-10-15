@@ -16,8 +16,8 @@ android {
         applicationId "com.pizzalab.scientifico"
         minSdk 24
         targetSdk 36
-        versionCode 11
-        versionName "2.1.6"
+        versionCode 12
+        versionName "2.1.7"
     }
 
     signingConfigs {
@@ -39,7 +39,8 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
