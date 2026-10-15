@@ -2332,12 +2332,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', newTheme);
+    document.body.classList.toggle('light-mode', newTheme === 'light');
     localStorage.setItem('pizzalab_theme', newTheme);
   });
 
   const savedTheme = localStorage.getItem('pizzalab_theme');
   if (savedTheme) {
     document.documentElement.setAttribute('data-theme', savedTheme);
+    document.body.classList.toggle('light-mode', savedTheme === 'light');
   }
 
   // --- STAMPA ---

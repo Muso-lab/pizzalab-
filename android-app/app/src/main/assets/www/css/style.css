@@ -38,18 +38,19 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-[data-theme="light"] {
+[data-theme="light"],
+body.light-mode {
   --bg-main: #f8fafc;
   --bg-surface: #f1f5f9;
   --bg-card: #ffffff;
-  --bg-input: #f8fafc;
+  --bg-input: #ffffff;
   
   --border-color: #cbd5e1;
   --border-focus: #e76f51;
   
   --text-main: #0f172a;
-  --text-muted: #475569;
-  --text-dim: #94a3b8;
+  --text-muted: #334155;
+  --text-dim: #64748b;
   
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
@@ -184,7 +185,7 @@ body {
 .header-action-btn:hover {
   background: var(--bg-surface);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--accent);
   transform: translateY(-1px);
 }
 
@@ -341,7 +342,7 @@ body {
 .quick-chip strong {
   font-family: var(--font-mono);
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .quick-chip.highlight {
@@ -359,6 +360,12 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.3rem;
+}
+
+/* Eliminate redundant value badges inside parameter form headers, as stepper input already displays the value */
+.form-group-head .val-badge,
+.form-label .val-badge {
+  display: none !important;
 }
 
 .stepper-row {
@@ -499,7 +506,7 @@ body {
   min-height: 48px;
   background: var(--bg-input);
   border: 1px solid var(--border-color);
-  color: var(--text-main);
+  color: var(--text-main) !important;
   transition: all 0.2s ease;
   cursor: pointer;
 }
@@ -507,7 +514,7 @@ body {
 .btn-settings-action:hover {
   background: var(--bg-surface);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--accent) !important;
 }
 
 .btn-settings-action:active {
@@ -1057,15 +1064,15 @@ body {
 
 .btn-secondary {
   background: var(--bg-surface);
-  color: #f1f5f9;
-  border: 1px solid rgba(244, 162, 97, 0.4);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary:hover, .btn-secondary:active {
-  background: #2a3240;
+  background: var(--bg-card);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--accent);
   box-shadow: 0 2px 6px rgba(244, 162, 97, 0.2);
 }
 
@@ -1641,7 +1648,7 @@ body {
 
   /* Padding bottom to avoid content covered by fixed bottom navigation */
   body {
-    padding-bottom: 84px;
+    padding-bottom: 70px;
   }
 
   .main-content {
@@ -1671,9 +1678,12 @@ body {
     padding: 0 0.85rem;
   }
 
+  html[data-theme="light"] .header,
   body.light-mode .header {
     background: #f8fafc !important;
     background-color: #f8fafc !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
   }
 
   .header-container {
@@ -1741,6 +1751,7 @@ body {
     text-align: center;
   }
 
+  html[data-theme="light"] .logo-text h1,
   body.light-mode .logo-text h1 {
     color: #0f172a !important;
   }
@@ -1995,35 +2006,32 @@ body {
     text-align: center;
   }
 
-  /* 8. Mobile Bottom Navigation Bar (4 Ergonomic Tabs) */
+  /* 8. Mobile Bottom Navigation Bar (4 Ergonomic Centered Tabs) */
   .mobile-bottom-nav {
     display: flex;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: calc(64px + env(safe-area-inset-bottom, 0px));
-    min-height: 64px;
+    height: 56px;
+    min-height: 56px;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
     background: var(--bg-card);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border-top: 1px solid var(--border-color);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
     z-index: 1000;
-    align-items: stretch;
+    align-items: center;
     justify-content: space-around;
     padding: 0 4px;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .mobile-nav-btn {
     flex: 1 1 25%;
     max-width: 25%;
-    height: 100%;
-    min-height: 64px;
+    height: 48px;
+    min-height: 48px;
     background: transparent;
     border: none;
     color: var(--text-muted);
@@ -2031,34 +2039,39 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     cursor: pointer;
     font-family: inherit;
-    padding: 6px 2px;
+    padding: 4px 2px;
     border-radius: var(--radius-md);
     transition: all 0.15s ease;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     user-select: none;
     -webkit-user-select: none;
+    box-sizing: border-box;
   }
 
   .mobile-nav-icon {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     line-height: 1;
     pointer-events: none;
+    display: block;
+    margin: 0;
   }
 
   .mobile-nav-label {
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     white-space: nowrap;
     overflow: visible;
     text-align: center;
-    line-height: 1.1;
+    line-height: 1;
     color: var(--text-muted);
     pointer-events: none;
     letter-spacing: 0.1px;
+    display: block;
+    margin: 0;
   }
 
   .mobile-nav-btn:hover,
@@ -2073,11 +2086,11 @@ body {
 
   .mobile-nav-btn.active {
     color: var(--accent);
-    background: rgba(224, 86, 36, 0.12);
+    background: rgba(224, 86, 36, 0.15);
   }
 
   .mobile-nav-btn.active .mobile-nav-icon {
-    transform: scale(1.12);
+    transform: scale(1.1);
     transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
@@ -3273,6 +3286,291 @@ body {
 .footer-links a:hover {
   color: var(--accent);
 }
+
+/* ==========================================================================
+   LIGHT MODE COMPLETE ACCESSIBILITY & CONTRAST RULES
+   Guarantees crisp, high-contrast text and surfaces across all screens & menus
+   ========================================================================== */
+html[data-theme="light"],
+body.light-mode {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .header,
+body.light-mode .header {
+  background: #f8fafc !important;
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+html[data-theme="light"] .logo-text h1,
+body.light-mode .logo-text h1 {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .header-action-btn,
+body.light-mode .header-action-btn {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .header-action-btn:hover,
+body.light-mode .header-action-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+html[data-theme="light"] .mobile-bottom-nav,
+body.light-mode .mobile-bottom-nav {
+  background: #ffffff !important;
+  border-top: 1px solid #cbd5e1 !important;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+html[data-theme="light"] .mobile-nav-btn,
+body.light-mode .mobile-nav-btn {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .mobile-nav-btn.active,
+body.light-mode .mobile-nav-btn.active {
+  color: #d9480f !important;
+  background: rgba(217, 72, 15, 0.12) !important;
+}
+
+html[data-theme="light"] .mobile-nav-btn.active .mobile-nav-label,
+body.light-mode .mobile-nav-btn.active .mobile-nav-label {
+  color: #d9480f !important;
+}
+
+html[data-theme="light"] .quick-dough-summary,
+body.light-mode .quick-dough-summary {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  border-left: 4px solid var(--accent) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06) !important;
+}
+
+html[data-theme="light"] .quick-summary-title,
+body.light-mode .quick-summary-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .quick-summary-btn,
+body.light-mode .quick-summary-btn {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+html[data-theme="light"] .quick-summary-btn:hover,
+body.light-mode .quick-summary-btn:hover {
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+html[data-theme="light"] .quick-chip,
+body.light-mode .quick-chip {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .quick-chip strong,
+body.light-mode .quick-chip strong {
+  color: #0f172a !important;
+}
+
+/* Modals & Settings Menu in Light Mode */
+html[data-theme="light"] .modal-card,
+body.light-mode .modal-card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-theme="light"] .modal-header,
+body.light-mode .modal-header {
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+html[data-theme="light"] .modal-title,
+body.light-mode .modal-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .modal-subtitle,
+body.light-mode .modal-subtitle {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .modal-close-btn,
+body.light-mode .modal-close-btn {
+  color: #64748b !important;
+}
+
+html[data-theme="light"] .modal-close-btn:hover,
+body.light-mode .modal-close-btn:hover {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .settings-group-title,
+body.light-mode .settings-group-title {
+  color: #334155 !important;
+  font-weight: 800;
+}
+
+html[data-theme="light"] .btn-settings-action,
+body.light-mode .btn-settings-action {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+html[data-theme="light"] .btn-settings-action:hover,
+body.light-mode .btn-settings-action:hover {
+  background: #e2e8f0 !important;
+  border-color: var(--accent) !important;
+  color: #c2410c !important;
+}
+
+/* Cards & Forms in Light Mode */
+html[data-theme="light"] .card,
+body.light-mode .card {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+html[data-theme="light"] .card-title,
+body.light-mode .card-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .card-subtitle,
+body.light-mode .card-subtitle {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .form-label,
+body.light-mode .form-label {
+  color: #1e293b !important;
+}
+
+html[data-theme="light"] .form-input,
+html[data-theme="light"] .form-select,
+body.light-mode .form-input,
+body.light-mode .form-select {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .stepper-btn,
+body.light-mode .stepper-btn {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .stepper-btn:hover,
+body.light-mode .stepper-btn:hover {
+  background-color: #e2e8f0 !important;
+  color: var(--accent) !important;
+}
+
+html[data-theme="light"] .stepper-unit,
+body.light-mode .stepper-unit {
+  color: #64748b !important;
+}
+
+/* Recipe Table in Light Mode */
+html[data-theme="light"] .recipe-table-card,
+body.light-mode .recipe-table-card {
+  background: #ffffff !important;
+}
+
+html[data-theme="light"] .recipe-table th,
+body.light-mode .recipe-table th {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .recipe-table td,
+body.light-mode .recipe-table td {
+  color: #0f172a !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+html[data-theme="light"] .recipe-table .ing-name,
+body.light-mode .recipe-table .ing-name {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .recipe-table .ing-pct,
+body.light-mode .recipe-table .ing-pct {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .recipe-table .ing-weight,
+body.light-mode .recipe-table .ing-weight {
+  color: #0f172a !important;
+}
+
+/* Method Switcher & Preset Pills in Light Mode */
+html[data-theme="light"] .method-chip,
+body.light-mode .method-chip {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+html[data-theme="light"] .method-chip.active,
+body.light-mode .method-chip.active {
+  background: #d9480f !important;
+  color: #ffffff !important;
+  border-color: #d9480f !important;
+}
+
+html[data-theme="light"] .preset-pill,
+body.light-mode .preset-pill {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+html[data-theme="light"] .preset-pill.active,
+body.light-mode .preset-pill.active {
+  background: #d9480f !important;
+  color: #ffffff !important;
+}
+
+html[data-theme="light"] .preset-label,
+body.light-mode .preset-label {
+  color: #0f172a !important;
+}
+
+/* Reverse Hero Banner in Light Mode */
+html[data-theme="light"] .reverse-hero,
+body.light-mode .reverse-hero {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .reverse-hero-title,
+body.light-mode .reverse-hero-title {
+  color: #0f172a !important;
+}
+
+html[data-theme="light"] .reverse-hero-desc,
+body.light-mode .reverse-hero-desc {
+  color: #475569 !important;
+}
+
 
 
 
